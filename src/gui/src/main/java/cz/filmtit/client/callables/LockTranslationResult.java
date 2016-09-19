@@ -8,6 +8,7 @@ package cz.filmtit.client.callables;
 import cz.filmtit.client.Callable;
 import cz.filmtit.client.Gui;
 import cz.filmtit.client.pages.TranslationWorkspace;
+import cz.filmtit.client.subgestbox.PosteditBox;
 import cz.filmtit.client.subgestbox.SubgestBox;
 import cz.filmtit.share.LevelLogEnum;
 import cz.filmtit.share.TranslationResult;
@@ -35,32 +36,67 @@ public class LockTranslationResult extends Callable<Void> {
         this.workspace = workspace;
         this.subgestBox.setEnabled(false);
 
-        enqueue();
+        PosteditBox posteditBox = this.subgestBox.getPosteditBox();
+        if (posteditBox != null) {
+            posteditBox.setEnabled(false);
+        }
+
+        if (!workspace.getLockTranslationResultCalls().containsKey(tResult.getSourceChunk())) {
+            workspace.getLockTranslationResultCalls().put(tResult.getSourceChunk(), this);
+            enqueue();
+
+        }
     }
 
     @Override
     protected void onFinalError(String message) {
-        
-        subgestBox.setEnabled(true);
         subgestBox.addStyleDependentName("unlocked");
         subgestBox.setEnabled(false);
+
+        PosteditBox posteditBox = subgestBox.getPosteditBox();
+        if (posteditBox != null) {
+            posteditBox.addStyleDependentName("unlocked");
+            posteditBox.setEnabled(false);
+        }
+
+        workspace.getLockTranslationResultCalls().remove(tResult.getSourceChunk());
         workspace.setPrevLockedSubgestBox(subgestBox);
-        
+
     }
 
     @Override
     public void onSuccessAfterLog(Void result) {
-        Gui.log(LevelLogEnum.Notice, "LockTranslationResult", "Locked Translation Result id: " + String.valueOf(tResult.getChunkId()) + " SessionId: " + Gui.getSessionID());
-        subgestBox.setEnabled(true);
-        workspace.setLockedSubgestBox(subgestBox);
+        Gui.log(LevelLogEnum.Error, "LockTranslationResult", "Locked Translation Result id: " + String.valueOf(tResult.getChunkId()) + " SessionId: " + Gui.getSessionID());
 
-        if (workspace.getPrevLockedSubgestBox() != null) {
-            workspace.getPrevLockedSubgestBox().removeStyleDependentName("unlocked");
-            workspace.getPrevLockedSubgestBox().setEnabled(true);
+        workspace.getLockTranslationResultCalls().remove(tResult.getSourceChunk());
+
+        subgestBox.setEnabled(true);
+        PosteditBox posteditBox = subgestBox.getPosteditBox();
+        if (posteditBox != null) {
+            subgestBox.getPosteditBox().setEnabled(true);
+
+        }
+
+        workspace.setLockedSubgestBox(subgestBox);
+        SubgestBox prevLockedSubgestBox = workspace.getPrevLockedSubgestBox();
+
+        if (prevLockedSubgestBox != null) {
+            prevLockedSubgestBox.removeStyleDependentName("unlocked");
+            prevLockedSubgestBox.setEnabled(true);
+
+            PosteditBox prevPosteditBox = prevLockedSubgestBox.getPosteditBox();
+            if (prevPosteditBox != null) {
+                prevPosteditBox.removeStyleDependentName("unlocked");
+                prevPosteditBox.setEnabled(true);
+            }
         }
 
         workspace.getTimer().schedule(60000);
+
         subgestBox.addStyleDependentName("locked");
+        if (posteditBox != null) {
+            posteditBox.addStyleDependentName("locked");
+        }
 
         new ReloadTranslationResults(workspace.getCurrentDocument().getId(), workspace);
 
@@ -68,7 +104,10 @@ public class LockTranslationResult extends Callable<Void> {
 
     @Override
     protected void call() {
+
+        Gui.log(LevelLogEnum.Error, "LockTranslationResult", String.valueOf(subgestBox.getChunk().getId() + " | " + workspace.getLockTranslationResultCalls().size()));
         filmTitService.lockTranslationResult(tResult, Gui.getSessionID(), this);
+
     }
 
 }

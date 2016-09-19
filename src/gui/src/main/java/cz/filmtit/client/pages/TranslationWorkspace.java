@@ -34,6 +34,7 @@ import cz.filmtit.client.PageHandler.Page;
 import cz.filmtit.client.SubtitleSynchronizer;
 import cz.filmtit.client.callables.*;
 import cz.filmtit.client.dialogs.TimeEditDialog;
+import cz.filmtit.client.subgestbox.PosteditBox;
 import cz.filmtit.client.subgestbox.SubgestBox;
 import cz.filmtit.client.subgestbox.SubgestHandler;
 import cz.filmtit.client.widgets.VideoWidget;
@@ -49,7 +50,8 @@ import java.util.*;
  */
 public class TranslationWorkspace extends Composite {
 
-	private static TranslationWorkspaceUiBinder uiBinder = GWT.create(TranslationWorkspaceUiBinder.class);
+    private static TranslationWorkspaceUiBinder uiBinder = GWT.create(TranslationWorkspaceUiBinder.class);
+    private boolean posteditOn;
 
     /**
      * @return the lockedSubgestBox
@@ -98,6 +100,20 @@ public class TranslationWorkspace extends Composite {
      */
     public Document getCurrentDocument() {
         return currentDocument;
+    }
+
+    /**
+     * @return the unlockTranslationResultCalls
+     */
+    public Map<TimedChunk, UnlockTranslationResult> getUnlockTranslationResultCalls() {
+        return unlockTranslationResultCalls;
+    }
+
+    /**
+     * @return the lockTranslationResultCalls
+     */
+    public Map<TimedChunk, LockTranslationResult> getLockTranslationResultCalls() {
+        return lockTranslationResultCalls;
     }
 
 	interface TranslationWorkspaceUiBinder extends UiBinder<Widget, TranslationWorkspace> {
@@ -192,14 +208,19 @@ public class TranslationWorkspace extends Composite {
     public SubgestHandler subgestHandler;
 
     private List<SubgestBox.FakeSubgestBox> targetBoxes;
+    private List<PosteditBox.FakePosteditBox> posteditBoxes;
+
+    
     private Widget activeSuggestionWidget = null;
 
     // column numbers in the subtitle-table
     private static final int TIMES_COLNUMBER      = 0;
     private static final int SOURCETEXT_COLNUMBER = 2;
     private static final int TARGETBOX_COLNUMBER  = 4;
+    private static final int POSTEDIT_COLNUMBER = 6;
     private static final int SOURCE_DIALOGMARK_COLNUMBER = 1;
     private static final int TARGET_DIALOGMARK_COLNUMBER = 3;
+    private static final int POSTEDIT_DIALOGMARK_COLNUMBER = 5;
 
     private boolean isVideo=false;
 
@@ -256,6 +277,8 @@ public class TranslationWorkspace extends Composite {
      */
     public TranslationWorkspace(Document doc, DocumentOrigin documentOrigin) {
         initWidget(uiBinder.createAndBindUi(this));
+        posteditOn = true;
+        
 
         Gui.getPageHandler().setPageUrl(Page.TranslationWorkspace);
         Gui.getGuiStructure().activateMenuItem(Page.TranslationWorkspace);
@@ -283,6 +306,7 @@ public class TranslationWorkspace extends Composite {
         }
         
         this.targetBoxes = new ArrayList<SubgestBox.FakeSubgestBox>();
+        this.posteditBoxes = new ArrayList<PosteditBox.FakePosteditBox>();
 
         scrollPanel.setStyleName("scrollPanel");
         // hiding the suggestion popup when scrolling the subtitle panel
@@ -292,24 +316,39 @@ public class TranslationWorkspace extends Composite {
                 deactivateSuggestionWidget();
             }
         } );
-
-        table.setWidth("100%");
-        table.getColumnFormatter().setWidth(TIMES_COLNUMBER,      "164px");
-        table.getColumnFormatter().setWidth(SOURCETEXT_COLNUMBER, "400px");
-        table.getColumnFormatter().setWidth(TARGETBOX_COLNUMBER,  "390px");
-        table.getColumnFormatter().setWidth(SOURCE_DIALOGMARK_COLNUMBER,  "10px");
-        table.getColumnFormatter().setWidth(TARGET_DIALOGMARK_COLNUMBER,  "10px");
-        translationHPanel.setCellWidth(scrollPanel, "100%");
-        //translationHPanel.setCellWidth(emptyPanel, "0%");
-
         
+        table.setWidth("100%");
+        translationHPanel.setCellWidth(scrollPanel, "100%");     
         this.subgestHandler = new SubgestHandler(this);
+
+        if (posteditOn) {    
+
+            table.getColumnFormatter().setWidth(TIMES_COLNUMBER,      "164px");
+            table.getColumnFormatter().setWidth(SOURCETEXT_COLNUMBER, "260px");
+            table.getColumnFormatter().setWidth(TARGETBOX_COLNUMBER,  "260px");
+            table.getColumnFormatter().setWidth(POSTEDIT_COLNUMBER,  "260px");
+            table.getColumnFormatter().setWidth(SOURCE_DIALOGMARK_COLNUMBER,  "10px");
+            table.getColumnFormatter().setWidth(TARGET_DIALOGMARK_COLNUMBER,  "10px");
+            table.getColumnFormatter().setWidth(POSTEDIT_DIALOGMARK_COLNUMBER,  "10px");
+            
+            table.setWidget(0, POSTEDIT_COLNUMBER,  new Label("Postedit"));
+            table.setWidget(0, POSTEDIT_DIALOGMARK_COLNUMBER, new Label(""));
+        
+        } else {
+            table.getColumnFormatter().setWidth(TIMES_COLNUMBER,      "164px");
+            table.getColumnFormatter().setWidth(SOURCETEXT_COLNUMBER, "400px");
+            table.getColumnFormatter().setWidth(TARGETBOX_COLNUMBER,  "390px");
+            table.getColumnFormatter().setWidth(SOURCE_DIALOGMARK_COLNUMBER,  "10px");
+            table.getColumnFormatter().setWidth(TARGET_DIALOGMARK_COLNUMBER,  "10px");
+        }
         
         table.setWidget(0, TIMES_COLNUMBER,      new Label("Timing"));
         table.setWidget(0, SOURCETEXT_COLNUMBER, new Label("Original"));
         table.setWidget(0, TARGETBOX_COLNUMBER,  new Label("Translation"));
+
         table.setWidget(0, SOURCE_DIALOGMARK_COLNUMBER, new Label(""));
         table.setWidget(0, TARGET_DIALOGMARK_COLNUMBER, new Label(""));
+        
         table.getRowFormatter().setStyleName(0, "header");
          
         Gui.getGuiStructure().contentPanel.setWidget(this);
@@ -330,6 +369,9 @@ public class TranslationWorkspace extends Composite {
                 }
                 
                 prevLockedSubgestBox.addStyleDependentName("unlocked");
+                if (posteditOn) {
+                    prevLockedSubgestBox.getPosteditBox().addStyleDependentName("unlocked");
+                }
             }
         };
 	}
@@ -345,6 +387,9 @@ public class TranslationWorkspace extends Composite {
             vlcPlayer.setHiddenTrue();
     	}*/
     }
+    
+    private Map<TimedChunk, UnlockTranslationResult> unlockTranslationResultCalls = new HashMap<TimedChunk, UnlockTranslationResult>();
+    private Map<TimedChunk, LockTranslationResult> lockTranslationResultCalls = new HashMap<TimedChunk, LockTranslationResult>();
     
     ///////////////////////////////////////
     //                                   //
@@ -723,9 +768,9 @@ public class TranslationWorkspace extends Composite {
      
      /**
      * Display the whole row for the given (source-language) chunk in the table, i.e. the timing,
-     * the chunk text and an empty (fake)subgestbox. 
-     *
-     * We have to suppose these are coming in the same order as they appear in the source.
+ the chunk text and an empty (fakeSubgetsBox)subgestbox. 
+
+ We have to suppose these are coming in the same order as they appear in the source.
      * @param chunk - source-language chunk to show
      */
     public void showSource(TimedChunk chunk) {
@@ -756,12 +801,22 @@ public class TranslationWorkspace extends Composite {
         sourcelabel.addDoubleClickHandler(new SourceChangeHandler(chunk, sourcelabel));
         table.setWidget(index + 1, SOURCETEXT_COLNUMBER, sourcelabel);
 
-        // initializing targetbox - fake
+        // initializing targetbox - fakeSubgetsBox
         SubgestBox targetbox = new SubgestBox(chunk, this, index+1);
-        SubgestBox.FakeSubgestBox fake = targetbox.new FakeSubgestBox(index+1);
-        targetBoxes.add(fake);
-        table.setWidget(index + 1, TARGETBOX_COLNUMBER, fake);
-
+        SubgestBox.FakeSubgestBox fakeSubgetsBox = targetbox.new FakeSubgestBox(index+1);
+        targetBoxes.add(fakeSubgetsBox);
+        table.setWidget(index + 1, TARGETBOX_COLNUMBER, fakeSubgetsBox);
+        
+        // initializing posteditbox - fakeSubgetsBox
+        if (posteditOn) {
+            PosteditBox posteditBox = new PosteditBox(chunk, this, index+1);
+            PosteditBox.FakePosteditBox fakePosteditBox = posteditBox.new FakePosteditBox(index+1);        
+            posteditBoxes.add(fakePosteditBox);
+            table.setWidget(index + 1, POSTEDIT_COLNUMBER, fakePosteditBox);
+            
+            targetbox.setPosteditBox(posteditBox);
+            posteditBox.setSubgestBox(targetbox);
+        }
         // chunk-marking (dialogs):
         // setting sourcemarks:
         HTML sourcemarks = new HTML();
@@ -881,13 +936,26 @@ public class TranslationWorkspace extends Composite {
     }
     
     /**
-     * Shows the real subgestbox instead of the fake one.
+     * Shows the real subgestbox instead of the fakeSubgetsBox one.
      */
-    public void replaceFake(TimedChunk chunk, SubgestBox.FakeSubgestBox fake, SubgestBox real) {
+    public void replaceFakeSubgestBox(TimedChunk chunk, SubgestBox.FakeSubgestBox fake, SubgestBox real) {
         table.remove(fake);
         int id = synchronizer.getIndexOf(chunk);
         table.setWidget(id+1, TARGETBOX_COLNUMBER, real);
         
+        real.setFocus(true);
+        if (posteditOn) {
+            replaceFakePosteditBox(chunk, real.getPosteditBox().getSubstitute(), real.getPosteditBox());
+        }
+    }
+    
+    /**
+     * Shows the real posteditbox instead of the fakeSubgetsBox one.
+     */
+    public void replaceFakePosteditBox(TimedChunk chunk, PosteditBox.FakePosteditBox fake, PosteditBox real) {
+        table.remove(fake);
+        int id = synchronizer.getIndexOf(chunk);
+        table.setWidget(id+1, POSTEDIT_COLNUMBER, real);        
         real.setFocus(true);
     }
 
@@ -918,6 +986,10 @@ public class TranslationWorkspace extends Composite {
 
             targetBoxes.get(index).getFather().setTranslationResult(transresult);
             targetBoxes.get(index).removeStyleName("loading");
+            
+            if (posteditOn) {
+                posteditBoxes.get(index).removeStyleName("loading");
+            }
         }
 
     }
@@ -941,6 +1013,9 @@ public class TranslationWorkspace extends Composite {
             //index is there -> insert result
             int index = synchronizer.getIndexOf(chunkIndex);
             targetBoxes.get(index).removeStyleName("loading");
+            if (posteditOn) {
+                posteditBoxes.get(index).removeStyleName("loading");
+            }
         }
 
     }
@@ -966,7 +1041,36 @@ public class TranslationWorkspace extends Composite {
                 if (targetbox.isAttached()) {
                     targetbox.setFocus(true);
                 }
-                else { // there is already a real box instead of the fake one
+                else { // there is already a real box instead of the fakeSubgetsBox one
+                    targetbox.getFather().setFocus(true);
+                }
+            }
+        } );
+        return true;
+    }
+    
+        /**
+     * Set the focus to the next SubgestBox in order.
+     * If there is not any, stay in the current one and return false.
+     * @param currentBox - the SubgestBox relative to which is the "next" determined
+     * @return false if the currentBox is the last one (and therefore nothing has changed),
+     *         true otherwise
+     */
+    public boolean goToNextBox(PosteditBox currentBox) {
+        int currentIndex = synchronizer.getIndexOf(currentBox.getSubgestBox().getChunk());
+        //final int nextIndex = (currentIndex < targetBoxes.size()-1) ? (currentIndex + 1) : currentIndex;
+        final int nextIndex = currentIndex + 1;
+        if (nextIndex >= posteditBoxes.size()) {
+            return false;
+        }
+        Scheduler.get().scheduleDeferred( new Scheduler.ScheduledCommand() {
+            @Override
+            public void execute() {
+                PosteditBox.FakePosteditBox targetbox = posteditBoxes.get(nextIndex);
+                if (targetbox.isAttached()) {
+                    targetbox.setFocus(true);
+                }
+                else { // there is already a real box instead of the fakeSubgetsBox one
                     targetbox.getFather().setFocus(true);
                 }
             }
@@ -996,7 +1100,7 @@ public class TranslationWorkspace extends Composite {
                 if (targetbox.isAttached()) {
                     targetbox.setFocus(true);
                 }
-                else { // there is already a real box instead of the fake one
+                else { // there is already a real box instead of the fakeSubgetsBox one
                     targetbox.getFather().setFocus(true);
                 }
             }
@@ -1004,6 +1108,35 @@ public class TranslationWorkspace extends Composite {
         return true;
     }
 
+        /**
+     * Set the focus to the previous SubgestBox in order.
+     * If there is not any, stay in the current one and return false.
+     * @param currentBox - the SubgestBox relative to which is the "previous" determined
+     * @return false if the currentBox is the first one (and therefore nothing has changed),
+     *         true otherwise
+     */
+    public boolean goToPreviousBox(PosteditBox currentBox) {
+        int currentIndex = synchronizer.getIndexOf(currentBox.getSubgestBox().getChunk());
+        //final int prevIndex = (currentIndex > 0) ? (currentIndex - 1) : currentIndex;
+        final int prevIndex = currentIndex - 1;
+        if (prevIndex <0) {
+            return false;
+        }
+        Scheduler.get().scheduleDeferred( new Scheduler.ScheduledCommand() {
+            @Override
+            public void execute() {
+                PosteditBox.FakePosteditBox targetbox = posteditBoxes.get(prevIndex);
+                if (targetbox.isAttached()) {
+                    targetbox.setFocus(true);
+                }
+                else { // there is already a real box instead of the fakePosteditBox one
+                    targetbox.getFather().setFocus(true);
+                }
+            }
+        } );
+        return true;
+    }
+    
     /**
      * Scrolls the page so that the subgestbox isvisible to the user.
      */
@@ -1011,6 +1144,18 @@ public class TranslationWorkspace extends Composite {
         Window.scrollTo(
                 Window.getScrollLeft(),
                 getScrollOffsetY(subbox.getElement())
+                        - getVideoHeight()
+                        - (Window.getClientHeight() - getVideoHeight()) * 2 / 5
+        );
+    }
+    
+    /**
+     * Scrolls the page so that the subgestbox isvisible to the user.
+     */
+    public void ensureVisible(PosteditBox posteditBox) {
+        Window.scrollTo(
+                Window.getScrollLeft(),
+                getScrollOffsetY(posteditBox.getElement())
                         - getVideoHeight()
                         - (Window.getClientHeight() - getVideoHeight()) * 2 / 5
         );
