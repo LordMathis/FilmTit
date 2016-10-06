@@ -1,10 +1,10 @@
 FilmTit
 ===
 
-This is an old, unmaintained project that we made (in 6 people) for school assignment in 2012.
+Movie subtitles web based editor
 
-It was supposed to do translation memory + machine translation from a fixed pair of languages - English-to-Czech.
+Forked from runn1ng/FilmTit
 
-It's surprisingly still working here - http://ufallab.ms.mff.cuni.cz:12480/ - without being maintained whatsoever.
+Continuation of the project is part of my bachelor's thesis at Charles University in Prague. In the end the project should support simultaneus editing for multiple users, automatic postediting and global replacements.
 
-If you find something here helpful here, good for you. 
+Old unmantained version is running [here](http://ufallab.ms.mff.cuni.cz:12480/)
