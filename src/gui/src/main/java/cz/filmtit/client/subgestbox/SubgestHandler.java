@@ -25,6 +25,7 @@ import com.google.gwt.user.client.ui.SimplePanel;
 
 import cz.filmtit.client.Gui;
 import cz.filmtit.client.callables.LockTranslationResult;
+import cz.filmtit.client.callables.ReloadTranslationResults;
 import cz.filmtit.client.callables.UnlockTranslationResult;
 import cz.filmtit.client.pages.TranslationWorkspace;
 
@@ -32,7 +33,7 @@ import cz.filmtit.client.pages.TranslationWorkspace;
  * Universal event-handler for all {@link SubgestBox} instances in one
  * {@link TranslationWorkspace} instance.
  */
-public class SubgestHandler implements FocusHandler, KeyDownHandler, KeyUpHandler, BlurHandler, ClickHandler, ChangeHandler {
+public class SubgestHandler implements FocusHandler, KeyDownHandler, KeyUpHandler, ClickHandler, ChangeHandler {
 
     private TranslationWorkspace workspace;
 
@@ -48,25 +49,41 @@ public class SubgestHandler implements FocusHandler, KeyDownHandler, KeyUpHandle
 
     @Override
     public void onFocus(FocusEvent event) {
+
+        SubgestBox unlockedSubgestBox = workspace.getUnlockedSubgestBox();
+
+        if (unlockedSubgestBox != null) {
+            unlockedSubgestBox.removeStyleDependentName("unlocked");
+            unlockedSubgestBox.setEnabled(true);
+
+            PosteditBox unlockedPosteditBox = unlockedSubgestBox.getPosteditBox();
+            if (unlockedPosteditBox != null) {
+                unlockedPosteditBox.removeStyleDependentName("unlocked");
+                unlockedPosteditBox.setEnabled(true);
+            }
+        }
+        
+        new ReloadTranslationResults(workspace.getCurrentDocument().getId(), workspace);
+
         if (event.getSource() instanceof SubgestBox) { // should be
             final SubgestBox subbox = (SubgestBox) event.getSource();
 
             if (workspace.getLockedSubgestBox() == null) {
                 new LockTranslationResult(subbox, workspace);
-            } else if (workspace.getLockedSubgestBox() != subbox){
+            } else if (workspace.getLockedSubgestBox() != subbox) {
                 SubgestBox toSaveAndUnlock = workspace.getLockedSubgestBox();
                 toSaveAndUnlock.getTranslationResult().setUserTranslation(toSaveAndUnlock.getTextWithNewlines());
-                
+
                 // submitting only when the contents have changed
                 if (toSaveAndUnlock.textChanged()) {
                     workspace.submitUserTranslation(toSaveAndUnlock, subbox);
                     toSaveAndUnlock.updateLastText();
                 } else {
                     new UnlockTranslationResult(toSaveAndUnlock, workspace, subbox);
-                }                
+                }
 
             }
-            
+
             subbox.loadSuggestions(); // if not already loaded - the check is inside
 
             // hide the suggestion widget corresponding to the SubgestBox
@@ -93,12 +110,43 @@ public class SubgestHandler implements FocusHandler, KeyDownHandler, KeyUpHandle
             }
 
             subbox.updateVerticalSize();
+        } else if (event.getSource() instanceof PosteditBox) {
+            final PosteditBox posteditBox = (PosteditBox) event.getSource();
+
+            if (workspace.getLockedSubgestBox() == null) {
+                new LockTranslationResult(posteditBox.getSubgestBox(), workspace);
+            } else if (workspace.getLockedSubgestBox() != posteditBox.getSubgestBox()) {
+                SubgestBox toSaveAndUnlock = workspace.getLockedSubgestBox();
+                toSaveAndUnlock.getTranslationResult().setUserTranslation(toSaveAndUnlock.getTextWithNewlines());
+
+                // submitting only when the contents have changed
+                if (toSaveAndUnlock.textChanged()) {
+                    workspace.submitUserTranslation(toSaveAndUnlock, posteditBox.getSubgestBox());
+                    toSaveAndUnlock.updateLastText();
+                } else {
+                    new UnlockTranslationResult(toSaveAndUnlock, workspace, posteditBox.getSubgestBox());
+                }
+
+            }
+
+            workspace.deactivateSuggestionWidget();
+            workspace.ensureVisible(posteditBox);
+
+            if (Window.Navigator.getUserAgent().matches(".*Firefox.*")) {
+                // In Firefox - resetting focus needed:
+                Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+                    @Override
+                    public void execute() {
+                        posteditBox.setFocus(true);
+                    }
+                });
+            }
         }
     }
 
     @Override
     public void onKeyDown(KeyDownEvent event) {
-        if (event.getSource() instanceof SubgestBox) { // should be
+        if (event.getSource() instanceof SubgestBox) {
             // pressing the Down arrow - setting focus to the suggestions:
             if (isThisKeyEvent(event, KeyCodes.KEY_DOWN)) {
                 event.preventDefault(); // default is to scroll down the page or to move to the next line in the textarea
@@ -123,6 +171,29 @@ public class SubgestHandler implements FocusHandler, KeyDownHandler, KeyUpHandle
                 }
             }
 
+        } else if (event.getSource() instanceof PosteditBox) {
+            if (isThisKeyEvent(event, KeyCodes.KEY_DOWN)) {
+                event.preventDefault(); // default is to scroll down the page or to move to the next line in the textarea
+                PosteditBox posteditBox = (PosteditBox) event.getSource();
+                /*Focusable suggestionsList = ((Focusable) ((SimplePanel) subbox.getSuggestionWidget()).getWidget());
+                Gui.log("setting focus to suggestions");
+                suggestionsList.setFocus(true);*/
+            } // pressing Esc:
+            else if (isThisKeyEvent(event, KeyCodes.KEY_ESCAPE)) {
+                // hide the suggestion widget corresponding to the SubgestBox
+                //   which previously had focus (PopupPanel does not hide on keyboard events)
+                workspace.deactivateSuggestionWidget();
+            } // pressing Tab:
+            else if (isThisKeyEvent(event, KeyCodes.KEY_TAB)) {
+                event.preventDefault(); // e.g. in Chrome, default is to insert TAB character in the textarea
+                workspace.deactivateSuggestionWidget();
+                PosteditBox posteditBox = (PosteditBox) event.getSource();
+                if (event.isShiftKeyDown()) {
+                    workspace.goToPreviousBox(posteditBox);
+                } else {
+                    workspace.goToNextBox(posteditBox);
+                }
+            }
         }
     }
 
@@ -142,13 +213,6 @@ public class SubgestHandler implements FocusHandler, KeyDownHandler, KeyUpHandle
     }
 
     @Override
-    public void onBlur(BlurEvent event) {
-        if (event.getSource() instanceof SubgestBox) { // should be
-            SubgestBox subbox = (SubgestBox) event.getSource();
-        }
-    }
-
-    @Override
     public void onKeyUp(KeyUpEvent event) {
         if (event.getSource() instanceof SubgestBox) { // should be
             final SubgestBox subbox = (SubgestBox) event.getSource();
@@ -159,22 +223,30 @@ public class SubgestHandler implements FocusHandler, KeyDownHandler, KeyUpHandle
                     subbox.updateVerticalSize();
                 }
             });
-            
+
             workspace.getTimer().schedule(60000);
+        } else if (event.getSource() instanceof PosteditBox) {
+            final PosteditBox posteditBox = (PosteditBox) event.getSource();
+
+            Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+                @Override
+                public void execute() {
+                    posteditBox.updateVerticalSize();
+                }
+            });
         }
     }
 
     @Override
     public void onClick(ClickEvent event) {
-        //workspace.alert("SubgestBox Clicked");
 
-        final SubgestBox subbox = (SubgestBox) event.getSource();
-        // new LockTranslationResult(subbox, workspace);
+        if (event.getSource() instanceof SubgestBox) {
+            final SubgestBox subbox = (SubgestBox) event.getSource();
+            long time = subbox.getChunk().getStartTimeLongNonZero();
 
-        long time = subbox.getChunk().getStartTimeLongNonZero();
-
-        if (workspace.getVideoPlayer() != null) {
-            workspace.getVideoPlayer().maybePlayWindow(time);
+            if (workspace.getVideoPlayer() != null) {
+                workspace.getVideoPlayer().maybePlayWindow(time);
+            }
         }
     }
 

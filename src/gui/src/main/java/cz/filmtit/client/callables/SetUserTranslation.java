@@ -19,6 +19,7 @@ package cz.filmtit.client.callables;
 import cz.filmtit.client.*;
 
 import cz.filmtit.client.pages.TranslationWorkspace;
+import cz.filmtit.client.subgestbox.PosteditBox;
 import cz.filmtit.client.subgestbox.SubgestBox;
 import cz.filmtit.share.*;
 
@@ -61,19 +62,15 @@ public class SetUserTranslation extends Callable<Void> implements Storable {
         Gui.log(LevelLogEnum.Notice, "SetUserTranslation", "Set User Translation " + userTranslation);
 
         workspace.setLockedSubgestBox(null);
-        workspace.setPrevLockedSubgestBox(toUnlockBox);
         toUnlockBox.setFocus(false);
-        toUnlockBox.removeStyleDependentName("locked");
-
-        /*
-
-        if (toUnlock && toLockNext) {
-            new UnlockTranslationResult(toUnlockBox, workspace, toLockBox);
-        } else if (toUnlock) {
-            new UnlockTranslationResult(toUnlockBox, workspace);
-        }
         
-         */
+        // remove styling from SubgestBoxes and PosteditBoxes
+        toUnlockBox.removeStyleDependentName("locked");
+        PosteditBox posteditUnlockBox = toUnlockBox.getPosteditBox();
+        if (posteditUnlockBox != null) {
+            posteditUnlockBox.removeStyleDependentName("locked");
+        }
+
         // Setting user translation also unlocks the translation result so we only need to lock a new one
         if (toLockNext) {
             new LockTranslationResult(toLockBox, workspace);

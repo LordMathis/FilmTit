@@ -72,12 +72,34 @@ public class SubgestBox extends RichTextArea implements Comparable<SubgestBox> {
     private Widget suggestionWidget;
     private boolean loadedSuggestions = false;
     String lastText = "";
+    private PosteditBox posteditBox;
 
     private void replaceFakeWithReal() {
-        workspace.replaceFake(chunk, substitute, this);
+        workspace.replaceFakeSubgestBox(chunk, getSubstitute(), this);
     }
 
     private FakeSubgestBox substitute = null;
+
+    /**
+     * @return the posteditBox
+     */
+    public PosteditBox getPosteditBox() {
+        return posteditBox;
+    }
+
+    /**
+     * @param posteditBox the posteditBox to set
+     */
+    public void setPosteditBox(PosteditBox posteditBox) {
+        this.posteditBox = posteditBox;
+    }
+
+    /**
+     * @return the substitute
+     */
+    public FakeSubgestBox getSubstitute() {
+        return substitute;
+    }
 
     /**
      * Lightweight input area serving as a substitute for the SubgestBox before
@@ -177,6 +199,8 @@ public class SubgestBox extends RichTextArea implements Comparable<SubgestBox> {
         if (this.workspace == null) {
             Gui.log("workspace for subgestbox is null!!!");
         }
+        
+        this.posteditBox = null;
 
         this.setHeight("36px");
         this.setHTML(subgestBoxHTML(""));
@@ -184,7 +208,6 @@ public class SubgestBox extends RichTextArea implements Comparable<SubgestBox> {
         this.addFocusHandler(this.workspace.subgestHandler);
         this.addKeyDownHandler(this.workspace.subgestHandler);
         this.addKeyUpHandler(this.workspace.subgestHandler);
-        this.addBlurHandler(this.workspace.subgestHandler);
         this.addClickHandler(this.workspace.subgestHandler);
 
         this.setTabIndex(tabIndex);
@@ -216,8 +239,8 @@ public class SubgestBox extends RichTextArea implements Comparable<SubgestBox> {
         String userTranslation = translationResult.getUserTranslation();
 
         if (userTranslation != null && !userTranslation.equals("")) {
-            substitute.setText(userTranslation);
-            substitute.updateVerticalSize();
+            getSubstitute().setText(userTranslation);
+            getSubstitute().updateVerticalSize();
             this.setHTML(subgestBoxHTML(userTranslation));
             updateLastText();
         }
