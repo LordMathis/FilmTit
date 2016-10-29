@@ -25,6 +25,7 @@ import com.google.gwt.user.client.ui.SimplePanel;
 
 import cz.filmtit.client.Gui;
 import cz.filmtit.client.callables.LockTranslationResult;
+import cz.filmtit.client.callables.ReloadTranslationResults;
 import cz.filmtit.client.callables.UnlockTranslationResult;
 import cz.filmtit.client.pages.TranslationWorkspace;
 
@@ -48,6 +49,22 @@ public class SubgestHandler implements FocusHandler, KeyDownHandler, KeyUpHandle
 
     @Override
     public void onFocus(FocusEvent event) {
+
+        SubgestBox unlockedSubgestBox = workspace.getUnlockedSubgestBox();
+
+        if (unlockedSubgestBox != null) {
+            unlockedSubgestBox.removeStyleDependentName("unlocked");
+            unlockedSubgestBox.setEnabled(true);
+
+            PosteditBox unlockedPosteditBox = unlockedSubgestBox.getPosteditBox();
+            if (unlockedPosteditBox != null) {
+                unlockedPosteditBox.removeStyleDependentName("unlocked");
+                unlockedPosteditBox.setEnabled(true);
+            }
+        }
+        
+        new ReloadTranslationResults(workspace.getCurrentDocument().getId(), workspace);
+
         if (event.getSource() instanceof SubgestBox) { // should be
             final SubgestBox subbox = (SubgestBox) event.getSource();
 
@@ -129,7 +146,7 @@ public class SubgestHandler implements FocusHandler, KeyDownHandler, KeyUpHandle
 
     @Override
     public void onKeyDown(KeyDownEvent event) {
-        if (event.getSource() instanceof SubgestBox) { 
+        if (event.getSource() instanceof SubgestBox) {
             // pressing the Down arrow - setting focus to the suggestions:
             if (isThisKeyEvent(event, KeyCodes.KEY_DOWN)) {
                 event.preventDefault(); // default is to scroll down the page or to move to the next line in the textarea

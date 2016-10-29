@@ -74,7 +74,8 @@ public class PosteditBox extends RichTextArea implements Comparable<PosteditBox>
 
     @Override
     public int compareTo(PosteditBox o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return this.getTranslationResult().compareTo(o.getTranslationResult());
+
     }
 
     public void replaceFakeWithReal() {
@@ -105,6 +106,20 @@ public class PosteditBox extends RichTextArea implements Comparable<PosteditBox>
      */
     public FakePosteditBox getSubstitute() {
         return substitute;
+    }
+
+    /**
+     * @return the translationResult
+     */
+    public TranslationResult getTranslationResult() {
+        return translationResult;
+    }
+
+    /**
+     * @param translationResult the translationResult to set
+     */
+    public void setTranslationResult(TranslationResult translationResult) {
+        this.translationResult = translationResult;
     }
 
     public class FakePosteditBox extends TextArea implements Comparable<FakePosteditBox> {

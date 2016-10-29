@@ -40,7 +40,6 @@ public class UnlockTranslationResult extends Callable<Void> {
 
         if (!workspace.getUnlockTranslationResultCalls().containsKey(tResult.getSourceChunk())) {
             workspace.getUnlockTranslationResultCalls().put(tResult.getSourceChunk(), this);
-            Gui.log(LevelLogEnum.Error, "UnlockTranslationResult", String.valueOf(tResult.getChunkId()));
             enqueue();
         }
     }
@@ -58,19 +57,18 @@ public class UnlockTranslationResult extends Callable<Void> {
 
         if (!workspace.getUnlockTranslationResultCalls().containsKey(tResult.getSourceChunk())) {
             workspace.getUnlockTranslationResultCalls().put(tResult.getSourceChunk(), this);
-            Gui.log(LevelLogEnum.Error, "UnlockTranslationResult", String.valueOf(tResult.getChunkId()));
             enqueue();
         }
     }
 
     @Override
     public void onSuccessAfterLog(Void result) {
-        Gui.log(LevelLogEnum.Error, "UnlockTranslationResult", "Unlocked Translation Result id: " + String.valueOf(tResult.getChunkId()));
+        Gui.log(LevelLogEnum.DebugNotice, "UnlockTranslationResult", "Unlocked Translation Result id: " + String.valueOf(tResult.getChunkId()));
 
         workspace.getUnlockTranslationResultCalls().remove(tResult.getSourceChunk());
 
         workspace.setLockedSubgestBox(null);
-        workspace.setPrevLockedSubgestBox(subgestBox);
+        workspace.setUnlockedSubgestBox(subgestBox);
         subgestBox.setFocus(false);
         subgestBox.removeStyleDependentName("locked");
 
@@ -91,7 +89,6 @@ public class UnlockTranslationResult extends Callable<Void> {
 
     @Override
     protected void call() {
-        Gui.log(LevelLogEnum.Error, "UnlockTranslationResult", String.valueOf(subgestBox.getChunk().getId() + " | " + workspace.getUnlockTranslationResultCalls().size()));
         filmTitService.unlockTranslationResult(tResult.getSourceChunk().getChunkIndex(),
                 tResult.getDocumentId(), Gui.getSessionID(), this);
 

@@ -50,6 +50,7 @@ public class LockTranslationResult extends Callable<Void> {
 
     @Override
     protected void onFinalError(String message) {
+        
         subgestBox.addStyleDependentName("unlocked");
         subgestBox.setEnabled(false);
 
@@ -60,13 +61,13 @@ public class LockTranslationResult extends Callable<Void> {
         }
 
         workspace.getLockTranslationResultCalls().remove(tResult.getSourceChunk());
-        workspace.setPrevLockedSubgestBox(subgestBox);
+        workspace.setUnlockedSubgestBox(subgestBox);
 
     }
 
     @Override
     public void onSuccessAfterLog(Void result) {
-        Gui.log(LevelLogEnum.Error, "LockTranslationResult", "Locked Translation Result id: " + String.valueOf(tResult.getChunkId()) + " SessionId: " + Gui.getSessionID());
+        Gui.log(LevelLogEnum.DebugNotice, "LockTranslationResult", "Locked Translation Result id: " + String.valueOf(tResult.getChunkId()));
 
         workspace.getLockTranslationResultCalls().remove(tResult.getSourceChunk());
 
@@ -78,36 +79,17 @@ public class LockTranslationResult extends Callable<Void> {
         }
 
         workspace.setLockedSubgestBox(subgestBox);
-        SubgestBox prevLockedSubgestBox = workspace.getPrevLockedSubgestBox();
-
-        if (prevLockedSubgestBox != null) {
-            prevLockedSubgestBox.removeStyleDependentName("unlocked");
-            prevLockedSubgestBox.setEnabled(true);
-
-            PosteditBox prevPosteditBox = prevLockedSubgestBox.getPosteditBox();
-            if (prevPosteditBox != null) {
-                prevPosteditBox.removeStyleDependentName("unlocked");
-                prevPosteditBox.setEnabled(true);
-            }
-        }
-
         workspace.getTimer().schedule(60000);
 
         subgestBox.addStyleDependentName("locked");
         if (posteditBox != null) {
             posteditBox.addStyleDependentName("locked");
         }
-
-        new ReloadTranslationResults(workspace.getCurrentDocument().getId(), workspace);
-
     }
 
     @Override
     protected void call() {
-
-        Gui.log(LevelLogEnum.Error, "LockTranslationResult", String.valueOf(subgestBox.getChunk().getId() + " | " + workspace.getLockTranslationResultCalls().size()));
         filmTitService.lockTranslationResult(tResult, Gui.getSessionID(), this);
-
     }
 
 }
