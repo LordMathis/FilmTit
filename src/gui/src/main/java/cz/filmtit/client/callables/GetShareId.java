@@ -7,7 +7,6 @@ package cz.filmtit.client.callables;
 
 import cz.filmtit.client.Callable;
 import static cz.filmtit.client.Callable.filmTitService;
-import cz.filmtit.client.Gui;
 import cz.filmtit.client.dialogs.ShareDialog;
 import cz.filmtit.share.Document;
 
@@ -15,7 +14,7 @@ import cz.filmtit.share.Document;
  *
  * @author matus
  */
-public class GetShareId extends Callable<Long> {
+public class GetShareId extends Callable<String> {
 
     private ShareDialog shareDialog;
     private Document doc;
@@ -28,8 +27,8 @@ public class GetShareId extends Callable<Long> {
     }
 
     @Override
-    public void onSuccessAfterLog(Long result) {
-        shareDialog.shareIdBox.setText(result.toString());
+    public void onSuccessAfterLog(String result) {
+        shareDialog.shareIdBox.setText(result);
     }
 
     @Override

@@ -547,7 +547,7 @@ public interface FilmTitService extends RemoteService {
     
     
     
-    Long getShareId(Document doc);
+    String getShareId(Document doc);
     
     Void addDocument(String shareId, User user) throws InvalidShareIdException;
     
