@@ -68,7 +68,10 @@ public class USDocument extends DatabaseObject {
      */
     private volatile List<DocumentUsers> documentUsers;
     
-    private volatile Long shareId;
+    /**
+     * Document id to be shared with other users
+     */
+    private volatile String shareId;
 
     /**
      * A constructor used when a new document is created. It wraps the shared
@@ -501,14 +504,14 @@ public class USDocument extends DatabaseObject {
     /**
      * @return the shareId
      */
-    public Long getShareId() {
+    public String getShareId() {
         return shareId;
     }
 
     /**
      * @param shareId the shareId to set
      */
-    public void setShareId(Long shareId) {
+    public void setShareId(String shareId) {
         if (this.shareId == shareId) {
             return;
         }

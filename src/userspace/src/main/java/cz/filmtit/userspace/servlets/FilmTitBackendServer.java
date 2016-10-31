@@ -45,6 +45,7 @@ import java.net.URLDecoder;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.hibernate.Query;
 
 
@@ -82,14 +83,23 @@ public class FilmTitBackendServer extends RemoteServiceServlet implements
     protected static USHibernateUtil usHibernateUtil = USHibernateUtil.getInstance();
 
     @Override
-    public synchronized Long getShareId(Document doc) {
+    public synchronized String getShareId(Document doc) {
         org.hibernate.Session session = usHibernateUtil.getSessionWithActiveTransaction();
         USDocument document = (USDocument) session.load(USDocument.class, doc.getId());
         
-        Long shareId = document.getShareId();
+        String shareId = document.getShareId();
         
         if (shareId == null) {
-            shareId = doc.getId() * doc.getId() + 2 * doc.getId();
+            
+            int count;
+            do {
+                shareId = RandomStringUtils.random(8, true, true);
+                Query query = session.createQuery("FROM USDocument d WHERE d.shareId = :shareId");
+                query.setParameter("shareId", shareId);
+                count = query.list().size();
+            } while (count != 0);
+            
+            //shareId = doc.getId() * doc.getId() + 2 * doc.getId();
             document.setShareId(shareId);
         }
         
@@ -104,9 +114,8 @@ public class FilmTitBackendServer extends RemoteServiceServlet implements
         org.hibernate.Session session = usHibernateUtil.getSessionWithActiveTransaction();
         
         Query query = session.createQuery("FROM USDocument d WHERE d.shareId = :shareId");
+        query.setParameter("shareId", shareId);
         
-        long parsed = Long.parseLong(shareId);
-        query.setParameter("shareId", parsed);
         List list = query.list();
         
         if (list == null || list.isEmpty()) {
