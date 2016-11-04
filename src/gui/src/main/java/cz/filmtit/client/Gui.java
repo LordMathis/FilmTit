@@ -73,14 +73,7 @@ public class Gui implements EntryPoint {
     public static PageHandler getPageHandler() {
         return pageHandler;
     }
-    
-    /**
-     * Returns the panel in which the VLC player should be displayed.
-     */
-    public static HTMLPanel getPanelForVLC() {
-        return guiStructure.getPanelForVLC();
-    }
-    
+        
     /**
      * Returns the panel in which the VLC player should be displayed.
      */

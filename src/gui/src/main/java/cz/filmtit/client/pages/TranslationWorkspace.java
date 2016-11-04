@@ -187,6 +187,9 @@ public class TranslationWorkspace extends Composite {
     // UiBinder fields
 
     @UiField
+    HTMLPanel panelForVideo;
+    
+    @UiField
     ScrollPanel scrollPanel;
     
     @UiField
@@ -650,8 +653,10 @@ public class TranslationWorkspace extends Composite {
 
         videoPlayerFixedPanel = new HTMLPanel("");
         videoFixedWrapper = new HTMLPanel("");
+        
+        videoPlayer = new VideoWidget(videoFixedWrapper, synchronizer, currentWorkspace);
 
-        videoPlayer = VideoWidget.initVideoWidget(videoPlayerFixedPanel, table, videoFixedWrapper, synchronizer, this);
+        //videoPlayer = VideoWidget.initVideoWidget(videoFixedWrapper, synchronizer, this);
 
         Scheduler.get().scheduleIncremental(new ShowOriginalCommand(original));
         Scheduler.get().scheduleIncremental(new ShowUserTranslatedCommand(translated));
