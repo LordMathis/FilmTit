@@ -188,7 +188,7 @@ public class TranslationWorkspace extends Composite {
     // UiBinder fields
     @UiField
     SimplePanel panelForVideo;
-    
+
     @UiField
     ScrollPanel scrollPanel;
 
@@ -363,7 +363,7 @@ public class TranslationWorkspace extends Composite {
         } catch (PluginVersionException ex) {
             Logger.getLogger(TranslationWorkspace.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
         switch (documentOrigin) {
             case NEW:
                 // wait for everything to load and for selectSource to return
@@ -442,9 +442,11 @@ public class TranslationWorkspace extends Composite {
                     new UnlockTranslationResult(lockedSubgestBox, currentWorkspace);
                 }
 
-                unlockedSubgestBox.addStyleDependentName("unlocked");
-                if (posteditOn) {
-                    unlockedSubgestBox.getPosteditBox().addStyleDependentName("unlocked");
+                if (unlockedSubgestBox != null) {
+                    unlockedSubgestBox.addStyleDependentName("unlocked");
+                    if (posteditOn) {
+                        unlockedSubgestBox.getPosteditBox().addStyleDependentName("unlocked");
+                    }
                 }
 
                 this.cancel();
