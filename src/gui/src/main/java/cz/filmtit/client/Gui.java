@@ -25,6 +25,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.web.bindery.event.shared.UmbrellaException;
 
 import cz.filmtit.client.PageHandler.Page;
@@ -77,7 +78,7 @@ public class Gui implements EntryPoint {
     /**
      * Returns the panel in which the VLC player should be displayed.
      */
-    public static HTMLPanel getPanelForVideo() {
+    public static SimplePanel getPanelForVideo() {
         return guiStructure.getPanelForVideo();
     }
 

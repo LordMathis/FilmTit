@@ -41,12 +41,9 @@
             </b:Nav>
 
         </b:Navbar>
-
-        <g:HTMLPanel ui:field="panelForVLC">
-        </g:HTMLPanel>
         
-        <g:HTMLPanel ui:field="panelForVideo">
-        </g:HTMLPanel>
+        <g:SimplePanel ui:field="panelForVideo">
+        </g:SimplePanel>
 
 
         <g:HTMLPanel styleName="content">

@@ -14,9 +14,11 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with FilmTit.  If not, see <http://www.gnu.org/licenses/>.*/
-
 package cz.filmtit.client.pages;
 
+import com.bramosystems.oss.player.core.client.LoadException;
+import com.bramosystems.oss.player.core.client.PluginNotFoundException;
+import com.bramosystems.oss.player.core.client.PluginVersionException;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.RepeatingCommand;
@@ -41,26 +43,28 @@ import cz.filmtit.client.widgets.VideoWidget;
 import cz.filmtit.share.*;
 import cz.filmtit.share.parsing.Parser;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * The main page of the application where the actual translations take place.
+ *
  * @author rur, namesny
  *
  */
 public class TranslationWorkspace extends Composite {
 
     // Variable definitions    
-    
     /**
      * GWT UiBinder for TranslationWorkspace
      */
     private static TranslationWorkspaceUiBinder uiBinder = GWT.create(TranslationWorkspaceUiBinder.class);
-    
+
     /**
      * Document currently opened in this TranslationWorkspace
      */
-    private Document currentDocument;      
-    
+    private Document currentDocument;
+
     /**
      * True if postedit API is on
      */
@@ -74,23 +78,18 @@ public class TranslationWorkspace extends Composite {
     /**
      * Panel for VideoWidget
      */
-    private HTMLPanel videoPlayerFixedPanel = null;
-    
-    /**
-     * Wrapper for videoPlayerFixedPanel and labels
-     */
     private HTMLPanel videoFixedWrapper = null;
-    
+
     /**
      * Currently locked SubgestBox
      */
     private SubgestBox lockedSubgestBox;
-    
+
     /**
      * SubgestBox that was previously locked but is now unlocked
      */
     private SubgestBox unlockedSubgestBox;
-    
+
     /**
      * Timer that automatically unlocks subgestBox after 60s of inactivity
      */
@@ -102,12 +101,14 @@ public class TranslationWorkspace extends Composite {
     public SubgestHandler subgestHandler;
 
     /**
-     * List of Fake SubgestBoxes which are more lightweight and will be replaced by real SubgestBoxes
+     * List of Fake SubgestBoxes which are more lightweight and will be replaced
+     * by real SubgestBoxes
      */
     private List<SubgestBox.FakeSubgestBox> targetBoxes;
-    
+
     /**
-     * List of Fake PosteditBoxes which are more lightweight and will be replaced by real PosteditBoxes
+     * List of Fake PosteditBoxes which are more lightweight and will be
+     * replaced by real PosteditBoxes
      */
     private List<PosteditBox.FakePosteditBox> posteditBoxes;
 
@@ -118,16 +119,16 @@ public class TranslationWorkspace extends Composite {
 
     /**
      * column numbers in the subtitle-table
-     */ 
-    private static final int TIMES_COLNUMBER      = 0; // subtitle timing
+     */
+    private static final int TIMES_COLNUMBER = 0; // subtitle timing
     private static final int SOURCETEXT_COLNUMBER = 2; // source text
-    private static final int TARGETBOX_COLNUMBER  = 4; // translated text
+    private static final int TARGETBOX_COLNUMBER = 4; // translated text
     private static final int POSTEDIT_COLNUMBER = 6; // postedit column
     // DIALOGMARK indicates that two subtitle chunks will be displayed at the same time
     private static final int SOURCE_DIALOGMARK_COLNUMBER = 1;
     private static final int TARGET_DIALOGMARK_COLNUMBER = 3;
     private static final int POSTEDIT_DIALOGMARK_COLNUMBER = 5;
-    
+
     /**
      * True if user selected MediaSource
      */
@@ -137,73 +138,70 @@ public class TranslationWorkspace extends Composite {
      * Video Player Widget
      */
     private VideoWidget videoPlayer;
-    
+
     /**
-     * List of RPC calls to unlock a TranslationResult
-     * For one TranslationResult there can be only one call
+     * List of RPC calls to unlock a TranslationResult For one TranslationResult
+     * there can be only one call
      */
     private Map<TimedChunk, UnlockTranslationResult> unlockTranslationResultCalls = new HashMap<TimedChunk, UnlockTranslationResult>();
-    
+
     /**
-     * List of RPC calls to lock TranslationResult
-     * For one TranslationResult there can be only one call
+     * List of RPC calls to lock TranslationResult For one TranslationResult
+     * there can be only one call
      */
     private Map<TimedChunk, LockTranslationResult> lockTranslationResultCalls = new HashMap<TimedChunk, LockTranslationResult>();
-    
+
     /**
      * Current SendChunksCommand
      */
     private SendChunksCommand sendChunksCommand;
-    
+
     /**
-     * Indicates that the user moved away from this workspace
-     * and that the loading of TranslationResults should be stopped
+     * Indicates that the user moved away from this workspace and that the
+     * loading of TranslationResults should be stopped
      */
     private boolean stopLoading = false;
-    
+
     /**
-     * True if TranslationWorkspace has started receiving Translation Result from backend
+     * True if TranslationWorkspace has started receiving Translation Result
+     * from backend
      */
     private boolean translationStarted = false;
-    
+
     /**
      * List of RPC calls to get TranslationResults from Translation Memory
      */
     private Map<Integer, GetTranslationResults> sentGetTranslationsResultsCalls;
-    
+
     /**
      * Last processed index of subtitle chunks
      */
     private int lastIndex = 0;
-       
+
     /**
      * Handles the subtitles of the current document.
      */
     SubtitleSynchronizer synchronizer;
-    
-    private Map<ChunkIndex, Label> timeLabels;
-           
-        
-    // UiBinder fields
 
+    private Map<ChunkIndex, Label> timeLabels;
+
+    // UiBinder fields
     @UiField
-    HTMLPanel panelForVideo;
+    SimplePanel panelForVideo;
     
     @UiField
     ScrollPanel scrollPanel;
-    
+
     @UiField
     SimplePanel emptyPanel;
-    
+
     @UiField
     FlexTable table;
-    
+
     @UiField
     HorizontalPanel translationHPanel;
-              
-            
+
     // Getters and Setters
-    
     /**
      * @return the lockedSubgestBox
      */
@@ -327,18 +325,18 @@ public class TranslationWorkspace extends Composite {
      * UiBinder Interface
      */
     interface TranslationWorkspaceUiBinder extends UiBinder<Widget, TranslationWorkspace> {
-    }       
+    }
 
     ///////////////////////////////////////
     //                                   //
     //      Initialization               //
     //                                   //
     ///////////////////////////////////////
-    
     /**
      * Creates and shows the workspace.
      */
     public TranslationWorkspace(Document doc, DocumentOrigin documentOrigin) {
+
         initWidget(uiBinder.createAndBindUi(this));
 
         // Variables initialization
@@ -349,12 +347,23 @@ public class TranslationWorkspace extends Composite {
         currentDocument = doc;
         targetBoxes = new ArrayList<SubgestBox.FakeSubgestBox>();
         posteditBoxes = new ArrayList<PosteditBox.FakePosteditBox>();
-        timeLabels= new HashMap<ChunkIndex, Label>();
+        timeLabels = new HashMap<ChunkIndex, Label>();
 
         // Gui initialization
         Gui.getPageHandler().setPageUrl(Page.TranslationWorkspace);
         Gui.getGuiStructure().activateMenuItem(Page.TranslationWorkspace);
 
+        try {
+            videoPlayer = new VideoWidget(synchronizer, currentWorkspace, null);
+            panelForVideo.add(videoPlayer);
+        } catch (LoadException ex) {
+            Logger.getLogger(TranslationWorkspace.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (PluginNotFoundException ex) {
+            Logger.getLogger(TranslationWorkspace.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (PluginVersionException ex) {
+            Logger.getLogger(TranslationWorkspace.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
         switch (documentOrigin) {
             case NEW:
                 // wait for everything to load and for selectSource to return
@@ -442,32 +451,28 @@ public class TranslationWorkspace extends Composite {
             }
         };
     }
-    
-        
+
     ///////////////////////////////////////
     //                                   //
     //      Un-initialization            //
     //                                   //
     ///////////////////////////////////////
-    
     @Override
     public void onUnload() {
         setStopLoading(true);
         sourceSelected = false;
         translationStarted = false;
         Gui.getGuiStructure().contentPanel.removeStyleName("parsing");
-        if (videoPlayerFixedPanel != null){
-            Gui.getPanelForVideo().remove(videoPlayerFixedPanel);
-        }
+        /*if (videoFixedWrapper != null) {
+            Gui.getPanelForVideo().remove(videoFixedWrapper);
+        }*/
     }
-   
 
     ///////////////////////////////////////
     //                                   //
     //      Member methods               //
     //                                   //
     ///////////////////////////////////////
-    
     public void addGetTranslationsResultsCall(int id, GetTranslationResults call) {
         sentGetTranslationsResultsCalls.put(id, call);
     }
@@ -515,6 +520,7 @@ public class TranslationWorkspace extends Composite {
 
     /**
      * Fills new TranslationResults received from backend
+     *
      * @param translations = new translations
      */
     public void fillTranslationResults(List<TranslationResult> translations) {
@@ -648,22 +654,15 @@ public class TranslationWorkspace extends Composite {
         synchronizer.putTranslationResult(transResult);
         //reverseTimeMap.put((double)(transresult.getSourceChunk().getStartTimeLong()), transresult);
     }
-    
+
     private void dealWithChunks(List<TimedChunk> original, List<TranslationResult> translated, List<TimedChunk> untranslated) {
-
-        videoPlayerFixedPanel = new HTMLPanel("");
-        videoFixedWrapper = new HTMLPanel("");
-        
-        videoPlayer = new VideoWidget(videoFixedWrapper, synchronizer, currentWorkspace);
-
-        //videoPlayer = VideoWidget.initVideoWidget(videoFixedWrapper, synchronizer, this);
 
         Scheduler.get().scheduleIncremental(new ShowOriginalCommand(original));
         Scheduler.get().scheduleIncremental(new ShowUserTranslatedCommand(translated));
         prepareSendChunkCommand(untranslated);
         startShowingTranslationsIfReady();
     }
-     
+
     /**
      * Shows the source chunks.
      *
@@ -792,7 +791,6 @@ public class TranslationWorkspace extends Composite {
         table.setWidget(id + 1, POSTEDIT_COLNUMBER, real);
         real.setFocus(true);
     }
-
 
     /**
      * Add the given TranslationResult to the current listing interface.
@@ -996,7 +994,7 @@ public class TranslationWorkspace extends Composite {
     }
 
     private int getVideoHeight() {
-        return videoPlayerFixedPanel.getOffsetHeight();
+        return videoFixedWrapper.getOffsetHeight();
     }
 
     /**
@@ -1014,14 +1012,12 @@ public class TranslationWorkspace extends Composite {
             setActiveSuggestionWidget(null);
         }
     }
-    
+
     ////////////////////////////
     //                        //
     //   Native Methods       //
     //                        //
     ////////////////////////////
-    
-    
     public native void alert(String message)/*-{
         $wnd.alert(message);
             
@@ -1047,14 +1043,13 @@ public class TranslationWorkspace extends Composite {
     //   Inner Classes        //
     //                        //
     ////////////////////////////
-    
     /**
      * The document can be either newly created or loaded from the database.
      */
     public enum DocumentOrigin {
         NEW, FROM_DB
     }
-    
+
     /**
      * Requests TranslationResults for the chunks, sending them in groups to
      * compromise between responsiveness and effectiveness.
@@ -1154,11 +1149,12 @@ public class TranslationWorkspace extends Composite {
             return false;
         }
     }
-    
+
     /**
-     * Shows user translated subtitle chunks 
+     * Shows user translated subtitle chunks
      */
     private class ShowUserTranslatedCommand implements RepeatingCommand {
+
         LinkedList<TranslationResult> resultsToDisplay = new LinkedList<TranslationResult>();
 
         public ShowUserTranslatedCommand(List<TranslationResult> chunks) {
@@ -1167,18 +1163,18 @@ public class TranslationWorkspace extends Composite {
 
         @Override
         public boolean execute() {
-             if (stopLoading) {
+            if (stopLoading) {
                 return false;
-             }
+            }
 
-             if (!resultsToDisplay.isEmpty()) {
-                 TranslationResult result = resultsToDisplay.removeFirst();
-                 showResult(result);
-                 return true;
-             }
-             return false;
+            if (!resultsToDisplay.isEmpty()) {
+                TranslationResult result = resultsToDisplay.removeFirst();
+                showResult(result);
+                return true;
+            }
+            return false;
         }
-     }   
+    }
 
     /**
      * Used to change the source of a chunk. Rough and probably TODO now.
@@ -1219,7 +1215,7 @@ public class TranslationWorkspace extends Composite {
             }
         }
     }
- 
+
     /**
      * Used to change the time of a chunk. Also changes of all chunks with the
      * same id (i.e. which are parts of the same chunk actually). Very rough and

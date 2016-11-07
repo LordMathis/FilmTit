@@ -293,12 +293,12 @@ public class GuiStructure extends Composite {
 	
     
     @UiField
-        HTMLPanel panelForVideo;
+        SimplePanel panelForVideo;
     
        /**
      * @return the panelForVideo
      */
-    public HTMLPanel getPanelForVideo() {
+    public SimplePanel getPanelForVideo() {
         return panelForVideo;
     }
     

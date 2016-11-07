@@ -50,14 +50,12 @@ public class LoadDocumentFromDB extends cz.filmtit.client.Callable<Document> {
     public void onSuccessAfterLog(final Document doc) {
 
         // prepare empty TranslationWorkspace
-        String moviePath = doc.getMoviePath();
+        //String moviePath = doc.getMoviePath();
         final TranslationWorkspace workspace = new TranslationWorkspace(doc, DocumentOrigin.FROM_DB);
 
         // prepare the TranslationResults
         final List<TranslationResult> results = doc.getSortedTranslationResults();
         Gui.log("There are " + results.size() + " TranslationResults in the document");
-        //int i = 0;
-        //for (TranslationResult t: results) {t.getSourceChunk().setIndex(i);}
 
         // show the TranslationResults
         Scheduler.get().scheduleDeferred(new ScheduledCommand() {

@@ -156,39 +156,11 @@ public class DocumentCreator extends Composite {
             filePasteControlGroup.setVisible(true);
         }
 
-        /*       btnApplet.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                
-                
-                //FileLoadWidget.setDocumentCreator(DocumentCreator.this);
-                FileLoadWidget loadWidget = new FileLoadWidget(DocumentCreator.this);
-                bottomControlGroup.add(loadWidget);
-                btnApplet.setLoadingText("Loading....");
-                btnApplet.state().loading();
-           }
-        });*/
         Gui.getGuiStructure().contentPanel.setWidget(this);
 
         Gui.getPageHandler().setCurrentDocumentCreator(this);
     }
 
-    /*@Override
-	public void onSettingsReceived(User user) {
-		useMT.setValue(user.getUseMoses());
-        reactivate();
-	}
-	
-	protected boolean getUseMT() {
-	    return useMT.getValue();
-	}*/
- /*public void addressSet(FileLoadWidget widget, String address) {
-       
-		moviePath.setText(address);
-		btnApplet.state().reset();
-        
-
-    }*/
     @UiField
     FormActions bottomControlGroup;
     
@@ -254,15 +226,6 @@ public class DocumentCreator extends Composite {
     @UiField
     Label lblCreateProgress;
 
-    /*private void deactivate() {
-        btnCreateDocument.setEnabled(false);
-    }
-    
-    private void reactivate() {
-        btnCreateDocument.setEnabled(true); 
-    } */
- /*  @UiField
-    Button btnApplet;*/
     private String getMoviePathOrNull() {
         /*  if (moviePath.getText()==null || moviePath.getText().equals("")) {
             return null;
