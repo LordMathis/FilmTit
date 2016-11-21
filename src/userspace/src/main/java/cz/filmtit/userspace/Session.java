@@ -122,6 +122,11 @@ public class Session {
         return null;
     }
 
+    public Void setPostedit(boolean posteditOn) {
+        user.setPostedit(posteditOn);
+        return null;
+    }
+
     /**
      * Type for describing the stae of the session. <b>active</b> means the
      * session is running, <b>loggedOut</b>

@@ -24,7 +24,6 @@
     <name>FilmTit</name>
 
     <modules>
-        <!--<module>applet</module>-->
         <module>userspace</module>
         <module>share</module>
         <module>core</module>
@@ -78,11 +77,11 @@
                 <version>2.6</version>
                 <configuration>
                     <argLine>-Xmx2G -Xms512m</argLine>
-                 <!--   <useFile>true</useFile>  -->
+                    <!--   <useFile>true</useFile>  -->
 
                     <!-- Please note that Jenkins needs Surefire
-                         XML reports in order for detection to work.
-                         Keep this property set to false. -->
+                    XML reports in order for detection to work.
+                    Keep this property set to false. -->
                     <!-- <disableXmlReport>false</disableXmlReport>-->
 
                     <includes>
@@ -137,28 +136,10 @@
 
     <repositories>
 
-        <!-- OpenNLP -->
-        <!--repository>
-            <id>opennlp.sf.net</id>
-            <!url>http://opennlp.sourceforge.net/maven2</url>
-        </repository-->
-
-
-        <!-- Repository for JDBC tool -->
-        <repository>
-            <id>twitter.com</id>
-            <url>http://www.lag.net/nest</url>
-        </repository>
-
-        <repository>
+       <!-- <repository>
             <id>scala-tools.org</id>
             <name>Scala-Tools Maven2 Repository</name>
             <url>http://scala-tools.org/repo-releases</url>
-        </repository>
-
-    <!--    <repository>
-            <id>maven.iscpif.fr</id>
-            <url>http://maven.iscpif.fr/public</url>
         </repository> -->
 
         <repository>
@@ -172,22 +153,31 @@
             <name>GWT-Bootstrap SNAPSHOTS</name>
             <url>http://gwtbootstrap.github.com/maven/snapshots</url>
         </repository>
+        
         <repository>
             <id>JBoss Repository</id>
             <url>https://repository.jboss.org/nexus/content/repositories/releases</url>
             <name>JBoss Repository</name>
         </repository>
+        
         <repository>
             <id>maven2-repository.dev.java.net</id>
             <name>Java.net Repository for Maven</name>
             <url>http://download.java.net/maven/2/</url>
             <layout>default</layout>
         </repository>
+        
+        <repository>
+            <id>bramosystems-releases</id>
+            <name>Bramosystems Release Repository</name>
+            <url>http://downloads.bramosystems.com/maven2/releases</url>
+        </repository>
+        
     </repositories>
 
     <dependencies>
-    <dependency>
-        <groupId>org.hibernate</groupId>
+        <dependency>
+            <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator-annotation-processor</artifactId>
             <version>4.1.0.Final</version>
         </dependency>
@@ -202,33 +192,19 @@
             <groupId>com.cybozu.labs</groupId>
             <artifactId>langdetect</artifactId>
             <version>1.1-20120112</version>
-        </dependency>
-
-            
+        </dependency>           
 
         <dependency>
             <groupId>org.apache.xmlrpc</groupId>
             <artifactId>xmlrpc-client</artifactId>
             <version>3.1.3</version>
-        </dependency>
-
-                
+        </dependency>              
 
         <dependency>
             <groupId>org.openid4java</groupId>
             <artifactId>openid4java</artifactId>
             <version>0.9.4.339</version>
-
-    </dependency>
-
-                        
-        <!-- for RPC -->
-        <!--<dependency>
-            <groupId>javax.validation</groupId>
-            <artifactId>validation-api</artifactId>
-            <version>1.0.0.GA</version>
-            <scope>test</scope>
-        </dependency>-->
+        </dependency>
 
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -310,7 +286,7 @@
             <version>20090211</version>
         </dependency>
 
-         <dependency>
+        <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
             <version>1.2.16</version>
@@ -323,9 +299,9 @@
         </dependency>
 
         <dependency>
-        	<groupId>org.slf4j</groupId>
-        	<artifactId>slf4j-log4j12</artifactId>
-        	<version>1.6.4</version>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.6.4</version>
         </dependency>
 
         <dependency>
@@ -375,15 +351,15 @@
         </dependency>
 
         <dependency>
-        	<groupId>net.liftweb</groupId>
-        	<artifactId>lift-json_2.9.1</artifactId>
-        	<version>2.4</version>
+            <groupId>net.liftweb</groupId>
+            <artifactId>lift-json_2.9.1</artifactId>
+            <version>2.4</version>
         </dependency>
 
         <dependency>
-        	<groupId>nz.ac.waikato.cms.weka</groupId>
-        	<artifactId>weka-stable</artifactId>
-        	<version>3.6.7</version>
+            <groupId>nz.ac.waikato.cms.weka</groupId>
+            <artifactId>weka-stable</artifactId>
+            <version>3.6.7</version>
         </dependency>
 
         <dependency>
@@ -391,14 +367,14 @@
             <artifactId>commons-validator</artifactId>
             <version>1.4.0</version>
         </dependency>
+        
 
-
-  <!-- Java Mail API -->
-	<dependency>
-		<groupId>javax.mail</groupId>
-		<artifactId>mail</artifactId>
-		<version>1.4.3</version>
-	</dependency>
+        <!-- Java Mail API -->
+        <dependency>
+            <groupId>javax.mail</groupId>
+            <artifactId>mail</artifactId>
+            <version>1.4.3</version>
+        </dependency>
 
     </dependencies>
 

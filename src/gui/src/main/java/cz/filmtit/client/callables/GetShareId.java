@@ -7,7 +7,7 @@ package cz.filmtit.client.callables;
 
 import cz.filmtit.client.Callable;
 import static cz.filmtit.client.Callable.filmTitService;
-import cz.filmtit.client.dialogs.ShareDialog;
+import cz.filmtit.client.dialogs.SettingsDialog;
 import cz.filmtit.share.Document;
 
 /**
@@ -16,10 +16,10 @@ import cz.filmtit.share.Document;
  */
 public class GetShareId extends Callable<String> {
 
-    private ShareDialog shareDialog;
+    private SettingsDialog shareDialog;
     private Document doc;
 
-    public GetShareId(Document doc, ShareDialog shareDialog) {
+    public GetShareId(Document doc, SettingsDialog shareDialog) {
         super();
         this.shareDialog = shareDialog;
         this.doc = doc;

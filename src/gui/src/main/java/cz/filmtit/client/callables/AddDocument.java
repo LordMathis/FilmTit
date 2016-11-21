@@ -6,6 +6,7 @@
 package cz.filmtit.client.callables;
 
 import cz.filmtit.client.Callable;
+import cz.filmtit.client.Gui;
 import cz.filmtit.client.dialogs.AddDocumentDialog;
 import cz.filmtit.share.User;
 
@@ -30,6 +31,7 @@ public class AddDocument extends Callable<Void> {
     @Override
     public void onSuccessAfterLog(Void result) {
         dialog.close();
+        Gui.getPageHandler().refresh();
     }
 
     @Override

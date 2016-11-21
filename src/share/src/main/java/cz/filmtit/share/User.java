@@ -14,7 +14,6 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with FilmTit.  If not, see <http://www.gnu.org/licenses/>.*/
-
 package cz.filmtit.share;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
@@ -24,13 +23,14 @@ import java.util.List;
 
 /**
  * Represents a user of the application. Contains it settings and a list of
- * documents the user owns. The authentication details as OpenId identifier
- * or password are User Space specific and therefore are not part of the
- * shared class.
+ * documents the user owns. The authentication details as OpenId identifier or
+ * password are User Space specific and therefore are not part of the shared
+ * class.
  *
  * @author Jindřich Libovický
  */
 public class User implements Serializable, IsSerializable {
+
     /**
      * Database ID of the user
      */
@@ -52,9 +52,14 @@ public class User implements Serializable, IsSerializable {
      */
     private volatile int maximumNumberOfSuggestions;
     /**
-     * Flag if the Moses translation should be included into translation suggestions.
+     * Flag if the Moses translation should be included into translation
+     * suggestions.
      */
     private volatile boolean useMoses;
+    /**
+     *
+     */
+    private volatile boolean posteditOn;
 
     /**
      * List of documents the user owsn.
@@ -63,6 +68,7 @@ public class User implements Serializable, IsSerializable {
 
     /**
      * Gets the database ID of the user.
+     *
      * @return Database ID of the user.
      */
     public long getId() {
@@ -70,11 +76,15 @@ public class User implements Serializable, IsSerializable {
     }
 
     /**
-     * Sets the database ID of the user if it has not been set before. Otherwise throws an excpetion.
-     * @param id  Database ID assigned to the user object.
+     * Sets the database ID of the user if it has not been set before. Otherwise
+     * throws an excpetion.
+     *
+     * @param id Database ID assigned to the user object.
      */
     public void setId(long id) {
-        if (this.id == id) { return; }
+        if (this.id == id) {
+            return;
+        }
         if (this.id != Long.MIN_VALUE) {
             throw new UnsupportedOperationException("Once the document ID is set, it cannot be changed.");
         }
@@ -83,6 +93,7 @@ public class User implements Serializable, IsSerializable {
 
     /**
      * Gets the user name.
+     *
      * @return User name
      */
     public String getName() {
@@ -91,6 +102,7 @@ public class User implements Serializable, IsSerializable {
 
     /**
      * Sets the user name
+     *
      * @param name User name
      */
     public void setName(String name) {
@@ -99,6 +111,7 @@ public class User implements Serializable, IsSerializable {
 
     /**
      * Gets the list of documents owned by the user.
+     *
      * @return List of documents owned by the user.
      */
     public List<Document> getOwnedDocuments() {
@@ -107,6 +120,7 @@ public class User implements Serializable, IsSerializable {
 
     /**
      * Gets user's email
+     *
      * @return User's email
      */
     public String getEmail() {
@@ -115,6 +129,7 @@ public class User implements Serializable, IsSerializable {
 
     /**
      * Sets user's email
+     *
      * @param emailString User's email
      */
     public void setEmail(String emailString) {
@@ -123,6 +138,7 @@ public class User implements Serializable, IsSerializable {
 
     /**
      * Gets a flag if the user want to be logged in permanently.
+     *
      * @return Flag if the user want to be logged in permanently.
      */
     public boolean isPermanentlyLoggedIn() {
@@ -131,14 +147,31 @@ public class User implements Serializable, IsSerializable {
 
     /**
      * Sets the flag if the user want to be logged in permanently.
-     * @param permanentlyLoggedIn Flag if the user want to be logged in permanently.
+     *
+     * @param permanentlyLoggedIn Flag if the user want to be logged in
+     * permanently.
      */
     public void setPermanentlyLoggedIn(boolean permanentlyLoggedIn) {
         this.permanentlyLoggedIn = permanentlyLoggedIn;
     }
 
     /**
+     * @return the posteditOn
+     */
+    public boolean isPosteditOn() {
+        return posteditOn;
+    }
+
+    /**
+     * @param posteditOn the posteditOn to set
+     */
+    public void setPosteditOn(boolean posteditOn) {
+        this.posteditOn = posteditOn;
+    }
+
+    /**
      * Gets maximum number of translation suggestions provided to one chunk.
+     *
      * @return Maximum number of translation suggestions provided to one chunk
      */
     public int getMaximumNumberOfSuggestions() {
@@ -147,6 +180,7 @@ public class User implements Serializable, IsSerializable {
 
     /**
      * Sets maximum number of translation suggestions provided to one chunk.
+     *
      * @return Maximum number of translation suggestions provided to one chunk
      */
     public void setMaximumNumberOfSuggestions(int maximumNumberOfSuggestions) {
@@ -155,6 +189,7 @@ public class User implements Serializable, IsSerializable {
 
     /**
      * Gets the flag if the user wants to use Moses translation.
+     *
      * @return Flag if the Moses translation should be used.
      */
     public boolean getUseMoses() {
@@ -163,6 +198,7 @@ public class User implements Serializable, IsSerializable {
 
     /**
      * Sets the flag if the user wants to use Moses translation.
+     *
      * @param useMoses Flag if the Moses translation should be used.
      */
     public void setUseMoses(boolean useMoses) {
@@ -170,8 +206,9 @@ public class User implements Serializable, IsSerializable {
     }
 
     /**
-     * Gets a surface clone of the object that does not contain
-     * the map of the owned document.
+     * Gets a surface clone of the object that does not contain the map of the
+     * owned document.
+     *
      * @return Clone without owned documents.
      */
     public User getCloneWithoutDocuments() {
@@ -181,12 +218,13 @@ public class User implements Serializable, IsSerializable {
         clone.name = name;
         clone.email = email;
         clone.permanentlyLoggedIn = permanentlyLoggedIn;
+        clone.posteditOn = posteditOn;
         clone.maximumNumberOfSuggestions = maximumNumberOfSuggestions;
         clone.useMoses = useMoses;
 
         return clone;
     }
-    
+
     public User() {
         //nothing
     }

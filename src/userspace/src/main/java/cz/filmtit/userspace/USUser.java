@@ -62,6 +62,7 @@ public class USUser extends DatabaseObject {
 
         setUseMoses(true);
         setPermanentlyLoggedId(false);
+        setPostedit(false);
         setMaximumNumberOfSuggestions(ConfigurationSingleton.conf().maximumSuggestionsCount());
 
         ownedDocuments = Collections.synchronizedMap(new HashMap<Long, USDocument>());
@@ -82,6 +83,7 @@ public class USUser extends DatabaseObject {
 
         setUseMoses(true);
         setPermanentlyLoggedId(false);
+        setPostedit(false);
         setMaximumNumberOfSuggestions(ConfigurationSingleton.conf().maximumSuggestionsCount());
 
         ownedDocuments = Collections.synchronizedMap(new HashMap<Long, USDocument>());
@@ -263,6 +265,14 @@ public class USUser extends DatabaseObject {
      */
     public void setPermanentlyLoggedId(boolean permanentlyLoggedId) {
         getUser().setPermanentlyLoggedIn(permanentlyLoggedId);
+    }
+    
+    /**
+     * Sets the flag if user has turned Postedit API on
+     * @param posteditOn 
+     */
+    public void setPostedit(boolean posteditOn) {
+        getUser().setPosteditOn(posteditOn);
     }
 
     /**

@@ -108,7 +108,7 @@ public class DocumentCreator extends Composite {
             fileUpload.addChangeHandler(new ChangeHandler() {
                 @Override
                 public void onChange(ChangeEvent event) {
-                    //log(fileUpload.getFilename());
+
                     lblUploadProgress.setVisible(true);
                     lblUploadProgress.setText("Uploading the file...");
                     FileList fl = fileUpload.getFiles();
@@ -168,6 +168,7 @@ public class DocumentCreator extends Composite {
         btnCreateDocument.setEnabled(false);
         lblCreateProgress.setVisible(true);
         lblCreateProgress.setText("Creating the document...");
+        
 
         new CreateDocument(
                 getDocumentTitle(),
@@ -216,11 +217,10 @@ public class DocumentCreator extends Composite {
     ControlGroup filePasteControlGroup;
     @UiField
     TextArea txtFilePaste;
-    
 
-    /*@UiField
-    CheckBox useMT;
-     */
+    @UiField
+    CheckBox posteditCheckBox;
+       
     @UiField
     Button btnCreateDocument;
     @UiField
@@ -267,13 +267,4 @@ public class DocumentCreator extends Composite {
         lblCreateProgress.setVisible(false);
     }
 
-    /*public String getChosenSubFormat() {
-        if (rdbFormatSrt.getValue()) {
-            return "srt";
-        }
-        else if (rdbFormatSub.getValue()) {
-            return "sub";
-        }
-        else return "srt";	// default value
-    }*/
 }

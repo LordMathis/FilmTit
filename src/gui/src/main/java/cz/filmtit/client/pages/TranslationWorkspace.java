@@ -340,7 +340,7 @@ public class TranslationWorkspace extends Composite {
         initWidget(uiBinder.createAndBindUi(this));
 
         // Variables initialization
-        posteditOn = true;
+        posteditOn = Gui.getUser().isPosteditOn();
         synchronizer = new SubtitleSynchronizer();
         sentGetTranslationsResultsCalls = new HashMap<Integer, GetTranslationResults>();
         currentWorkspace = this;
@@ -348,21 +348,12 @@ public class TranslationWorkspace extends Composite {
         targetBoxes = new ArrayList<SubgestBox.FakeSubgestBox>();
         posteditBoxes = new ArrayList<PosteditBox.FakePosteditBox>();
         timeLabels = new HashMap<ChunkIndex, Label>();
+        
+        Gui.log(LevelLogEnum.Error, "TranslationWorkspace - postedit check", String.valueOf(posteditOn));
 
         // Gui initialization
         Gui.getPageHandler().setPageUrl(Page.TranslationWorkspace);
         Gui.getGuiStructure().activateMenuItem(Page.TranslationWorkspace);
-
-        try {
-            videoPlayer = new VideoWidget(synchronizer, currentWorkspace, null);
-            panelForVideo.add(videoPlayer);
-        } catch (LoadException ex) {
-            Logger.getLogger(TranslationWorkspace.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (PluginNotFoundException ex) {
-            Logger.getLogger(TranslationWorkspace.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (PluginVersionException ex) {
-            Logger.getLogger(TranslationWorkspace.class.getName()).log(Level.SEVERE, null, ex);
-        }
 
         switch (documentOrigin) {
             case NEW:

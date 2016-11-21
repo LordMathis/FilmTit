@@ -1,0 +1,39 @@
+<!--
+Uncomment this for XHTML entities
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+-->
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+             xmlns:g="urn:import:com.google.gwt.user.client.ui"
+             xmlns:b="urn:import:com.github.gwtbootstrap.client.ui"
+             xmlns:my="urn:import:cz.filmtit.client.dialogs">
+
+    <g:HTMLPanel>
+        <my:CustomModal ui:field="dialogBox" title="Document Settings" backdrop="STATIC" keyboard="true">
+
+            <b:ControlGroup>
+                <b:ControlLabel>Share Document</b:ControlLabel>
+                <b:Controls>                    
+                    <b:TextBox ui:field="shareIdBox"/>                    
+                </b:Controls>
+            </b:ControlGroup>
+                            
+            <b:ControlGroup>
+                <b:ControlLabel>Select Video Source</b:ControlLabel>
+                <b:Controls>
+                    <b:Label>Paste in Youtube URL</b:Label>
+                    <b:TextBox ui:field="ytURL"/>
+                    <br/>
+                    <b:Label>Or Select Local File</b:Label>
+                    <b:Button ui:field="btnLocalFile">Browse</b:Button>
+                </b:Controls>
+            </b:ControlGroup>
+            
+            <b:ControlGroup>
+                <b:Controls>
+                    <b:Button ui:field="btnConfirm">Confirm</b:Button>
+                </b:Controls>
+            </b:ControlGroup>
+            
+        </my:CustomModal>
+    </g:HTMLPanel>
+</ui:UiBinder>

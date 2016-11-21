@@ -72,7 +72,7 @@ public interface FilmTitService extends RemoteService {
      * exist a session of given ID.
      */
     List<Document> getListOfDocuments(String sessionID)
-            throws InvalidSessionIdException;      
+            throws InvalidSessionIdException;
 
     /**
      * Returns the document with the given id, with source chunks but without
@@ -279,12 +279,13 @@ public interface FilmTitService extends RemoteService {
      */
     List<TranslationResult> getTranslationResults(String sessionID, List<TimedChunk> chunks)
             throws InvalidSessionIdException, InvalidDocumentIdException;
-    
+
     /**
      * Reloads translation results from database
+     *
      * @param documentId
      * @return
-     * @throws InvalidDocumentIdException 
+     * @throws InvalidDocumentIdException
      */
     Document reloadTranslationResults(Long documentId) throws InvalidDocumentIdException;
 
@@ -543,15 +544,15 @@ public interface FilmTitService extends RemoteService {
      * user was looged in that time
      */
     Void logGuiMessage(LevelLogEnum level, String context, String message, String sessionID);
-    
-    
-    
-    
+
     String getShareId(Document doc);
-    
+
     Void addDocument(String shareId, User user) throws InvalidShareIdException;
-    
+
     Void lockTranslationResult(TranslationResult tResult, String sessionID) throws InvalidSessionIdException, AlreadyLockedException;
-    
+
     Void unlockTranslationResult(ChunkIndex chunkIndex, Long documentId, String sessionID) throws InvalidSessionIdException;
+
+    Void setPostedit(String sessionID, boolean posteditOn)
+            throws InvalidSessionIdException;
 }

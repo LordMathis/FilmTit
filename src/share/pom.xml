@@ -24,7 +24,7 @@
         <testSourceDirectory>src/test/java</testSourceDirectory>
 
         <plugins>
-    <!--this is needed for GWT-->
+            <!--this is needed for GWT-->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>gwt-maven-plugin</artifactId>
@@ -35,7 +35,7 @@
                         <phase>generate-sources</phase>
                         <goals>
                             <goal>generateAsync</goal>
-                         </goals>
+                        </goals>
                     </execution>
                     <execution>
                         <phase>compile</phase>
@@ -48,7 +48,7 @@
                 <configuration>
                     <inplace>true</inplace>
                 </configuration>
-              </plugin>
+            </plugin>
         </plugins>
     </build>
 </project>

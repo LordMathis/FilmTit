@@ -47,12 +47,13 @@
                     <b:ControlLabel>Stay logged in:</b:ControlLabel>
                     <b:Controls>
                         <b:CheckBox ui:field="setPermalogin"></b:CheckBox>
-                        <!--
-                        <b:ListBox ui:field="lsbPermalogin">
-                            <g:item id="standardLogin" value="false">1 hour (standard login)</g:item>
-                            <g:item id="permaLogin" value="true">1 month (permanent login)</g:item>
-                        </b:ListBox>
-                        -->
+                    </b:Controls>
+                </b:ControlGroup>
+                
+                <b:ControlGroup>
+                    <b:ControlLabel>Turn on Postedit API:</b:ControlLabel>
+                    <b:Controls>
+                        <b:CheckBox ui:field="setPostedit"></b:CheckBox>
                     </b:Controls>
                 </b:ControlGroup>
 
