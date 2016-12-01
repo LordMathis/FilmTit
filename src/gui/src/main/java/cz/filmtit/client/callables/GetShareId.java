@@ -28,7 +28,7 @@ public class GetShareId extends Callable<String> {
 
     @Override
     public void onSuccessAfterLog(String result) {
-        shareDialog.shareIdBox.setText(result);
+        shareDialog.getShareIdBox().setText(result);
     }
 
     @Override

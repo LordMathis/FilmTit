@@ -15,6 +15,7 @@
 
 .translationWorkspace {
     padding-bottom: 320px !important;
+    padding-top: 270px;
 }
 
 .parsing {
@@ -24,10 +25,11 @@
 
 .fixedPlayer {
     position:fixed;
-    height:260px;
+    height:270px;
     z-index:2;
     top:40px;
     background: whitesmoke;
+    width: 984px;
 }
 
 
@@ -301,17 +303,6 @@ iframe.gwt-RichTextArea, .pre_subgestbox {
     text-align:left;
     margin-left:3px;
 }
-
-.vlcPlayerDisplayed {
-    float:left;
-}
-
-.fixedPlayerWrapper {
-    width:1000px;
-    margin-left:auto;
-    margin-right:auto;
-}
-
 
 .statusPanel {
     clear: left;

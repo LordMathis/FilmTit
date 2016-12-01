@@ -48,6 +48,7 @@ public class CreateDocument extends Callable<DocumentResponse> implements Receiv
     private String subtext;
     private String subformat;
     private String moviePath;
+    private Boolean posteditOn;
 
     // results to store before MediaSelector returns
     private Dialog mediaSelector;
@@ -62,7 +63,7 @@ public class CreateDocument extends Callable<DocumentResponse> implements Receiv
 
     @Override
     public void onSuccessAfterLog(DocumentResponse result) {
-
+        
         workspace = new TranslationWorkspace(result.document, DocumentOrigin.NEW);
         documentCreator.reactivate();
         documentId = result.document.getId();
@@ -115,7 +116,7 @@ public class CreateDocument extends Callable<DocumentResponse> implements Receiv
      * @param documentCreator the document creator used to create the document
      */
     public CreateDocument(String documentTitle, String movieTitle, String language,
-            String subtext, String subformat, String moviePath, DocumentCreator documentCreator) {
+            String subtext, String subformat, String moviePath, Boolean posteditOn, DocumentCreator documentCreator) {
         super();
 
         this.documentTitle = documentTitle;
@@ -124,6 +125,7 @@ public class CreateDocument extends Callable<DocumentResponse> implements Receiv
         this.subtext = subtext;
         this.subformat = subformat;
         this.moviePath = moviePath;
+        this.posteditOn = posteditOn;
         this.documentCreator = documentCreator;
 
         enqueue();
@@ -132,7 +134,7 @@ public class CreateDocument extends Callable<DocumentResponse> implements Receiv
     @Override
     protected void call() {
         Gui.log("Creating document " + documentTitle + "; its language is " + language);
-        filmTitService.createNewDocument(Gui.getSessionID(), documentTitle, movieTitle, language, moviePath, this);
+        filmTitService.createNewDocument(Gui.getSessionID(), documentTitle, movieTitle, language, moviePath, true, this);
     }
 
 }

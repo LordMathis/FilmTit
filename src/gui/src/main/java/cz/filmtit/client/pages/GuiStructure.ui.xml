@@ -41,10 +41,6 @@
             </b:Nav>
 
         </b:Navbar>
-        
-        <g:SimplePanel ui:field="panelForVideo">
-        </g:SimplePanel>
-
 
         <g:HTMLPanel styleName="content">
 

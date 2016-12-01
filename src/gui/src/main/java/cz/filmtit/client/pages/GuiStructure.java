@@ -292,15 +292,5 @@ public class GuiStructure extends Composite {
 	//public TextArea txtDebug;
 	
     
-    @UiField
-        SimplePanel panelForVideo;
-    
-       /**
-     * @return the panelForVideo
-     */
-    public SimplePanel getPanelForVideo() {
-        return panelForVideo;
-    }
-    
     
 }

@@ -76,11 +76,6 @@ public class TranslationWorkspace extends Composite {
     private static TranslationWorkspace currentWorkspace;
 
     /**
-     * Panel for VideoWidget
-     */
-    private HTMLPanel videoFixedWrapper = null;
-
-    /**
      * Currently locked SubgestBox
      */
     private SubgestBox lockedSubgestBox;
@@ -124,6 +119,7 @@ public class TranslationWorkspace extends Composite {
     private static final int SOURCETEXT_COLNUMBER = 2; // source text
     private static final int TARGETBOX_COLNUMBER = 4; // translated text
     private static final int POSTEDIT_COLNUMBER = 6; // postedit column
+    
     // DIALOGMARK indicates that two subtitle chunks will be displayed at the same time
     private static final int SOURCE_DIALOGMARK_COLNUMBER = 1;
     private static final int TARGET_DIALOGMARK_COLNUMBER = 3;
@@ -349,8 +345,6 @@ public class TranslationWorkspace extends Composite {
         posteditBoxes = new ArrayList<PosteditBox.FakePosteditBox>();
         timeLabels = new HashMap<ChunkIndex, Label>();
         
-        Gui.log(LevelLogEnum.Error, "TranslationWorkspace - postedit check", String.valueOf(posteditOn));
-
         // Gui initialization
         Gui.getPageHandler().setPageUrl(Page.TranslationWorkspace);
         Gui.getGuiStructure().activateMenuItem(Page.TranslationWorkspace);
@@ -368,6 +362,9 @@ public class TranslationWorkspace extends Composite {
                 assert false;
                 break;
         }
+        
+        videoPlayer = new VideoWidget();        
+        panelForVideo.setWidget(videoPlayer);
 
         scrollPanel.setStyleName("scrollPanel");
         // hiding the suggestion popup when scrolling the subtitle panel
@@ -456,9 +453,6 @@ public class TranslationWorkspace extends Composite {
         sourceSelected = false;
         translationStarted = false;
         Gui.getGuiStructure().contentPanel.removeStyleName("parsing");
-        /*if (videoFixedWrapper != null) {
-            Gui.getPanelForVideo().remove(videoFixedWrapper);
-        }*/
     }
 
     ///////////////////////////////////////
@@ -987,7 +981,7 @@ public class TranslationWorkspace extends Composite {
     }
 
     private int getVideoHeight() {
-        return videoFixedWrapper.getOffsetHeight();
+        return panelForVideo.getOffsetHeight();
     }
 
     /**

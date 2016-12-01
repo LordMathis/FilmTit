@@ -22,7 +22,7 @@ import cz.filmtit.core.ConfigurationSingleton;
 import cz.filmtit.core.model.TranslationMemory;
 import cz.filmtit.core.tests.TestUtil;
 import cz.filmtit.share.Document;
-import cz.filmtit.userspace.DocumentUsers;
+import cz.filmtit.userspace.USDocumentUsers;
 import cz.filmtit.share.TimedChunk;
 import cz.filmtit.userspace.USDocument;
 import cz.filmtit.userspace.USHibernateUtil;
@@ -37,6 +37,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static junit.framework.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -130,7 +132,7 @@ public class TestUSTranslationResult {
     @Test
     public void testGenerateMTSuggestions() {
         USUser user = new USUser("name");
-        USDocument document = new USDocument(new Document("Hannah and Her Sisters", "en", ""), user, new ArrayList<DocumentUsers>());
+        USDocument document = new USDocument(new Document("Hannah and Her Sisters", "en"), user, new ArrayList<USDocumentUsers>());
         document.setOwner(new USUser("user"));
 
         USTranslationResult usTranslationResult = new USTranslationResult(new TimedChunk("001", "002", 1,
@@ -149,8 +151,8 @@ public class TestUSTranslationResult {
         dbSession.createQuery("delete from USTranslationResult").executeUpdate();
 
         USUser testUser = new USUser("user");
-        Document doc = new Document("Movie title", "en", "");
-        USDocument testDoc = new USDocument(doc, testUser, new ArrayList<DocumentUsers>());
+        Document doc = new Document("Movie title", "en");
+        USDocument testDoc = new USDocument(doc, testUser, new ArrayList<USDocumentUsers>());
         testDoc.setOwner(testUser);
         testDoc.saveToDatabase(dbSession);
         dbSession.getTransaction().commit();

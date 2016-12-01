@@ -5,34 +5,61 @@ Uncomment this for XHTML entities
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
              xmlns:g="urn:import:com.google.gwt.user.client.ui"
              xmlns:b="urn:import:com.github.gwtbootstrap.client.ui"
+             xmlns:f='urn:import:org.vectomatic.file'
              xmlns:my="urn:import:cz.filmtit.client.dialogs">
 
     <g:HTMLPanel>
         <my:CustomModal ui:field="dialogBox" title="Document Settings" backdrop="STATIC" keyboard="true">
 
-            <b:ControlGroup>
-                <b:ControlLabel>Share Document</b:ControlLabel>
-                <b:Controls>                    
-                    <b:TextBox ui:field="shareIdBox"/>                    
-                </b:Controls>
-            </b:ControlGroup>
-                            
-            <b:ControlGroup>
-                <b:ControlLabel>Select Video Source</b:ControlLabel>
-                <b:Controls>
-                    <b:Label>Paste in Youtube URL</b:Label>
-                    <b:TextBox ui:field="ytURL"/>
-                    <br/>
-                    <b:Label>Or Select Local File</b:Label>
-                    <b:Button ui:field="btnLocalFile">Browse</b:Button>
-                </b:Controls>
-            </b:ControlGroup>
+            <b:Form type="HORIZONTAL" ui:field="settingsForm">
             
-            <b:ControlGroup>
-                <b:Controls>
-                    <b:Button ui:field="btnConfirm">Confirm</b:Button>
-                </b:Controls>
-            </b:ControlGroup>
+                <b:Fieldset>
+                    <b:Legend>Document Settings</b:Legend>
+
+                    <b:ControlGroup>
+                        <b:ControlLabel>Share Document</b:ControlLabel>
+                        <b:Controls>
+                            <b:TextBox ui:field="shareIdBox"></b:TextBox>
+                        </b:Controls>
+                    </b:ControlGroup>
+
+                    <b:ControlGroup>
+                        <b:ControlLabel>Turn on Postedit API:</b:ControlLabel>
+                        <b:Controls>
+                            <b:CheckBox ui:field="setPostedit"></b:CheckBox>
+                        </b:Controls>
+                    </b:ControlGroup>
+
+                </b:Fieldset>
+
+                <b:Fieldset>
+                    <b:Legend>Video Source</b:Legend>
+
+                    <b:ControlGroup>
+                        <b:ControlLabel>Youtube URL</b:ControlLabel>
+                        <b:Controls>
+                            <b:TextBox ui:field="ytURL"></b:TextBox>
+                        </b:Controls>
+                    </b:ControlGroup>
+
+                    <b:ControlGroup>
+                        <b:ControlLabel>Local File</b:ControlLabel>
+                        <b:Controls>
+                            <f:FileUploadExt ui:field="fileUpload" />
+                        </b:Controls>
+                    </b:ControlGroup>
+                
+                </b:Fieldset>
+
+                <b:Fieldset>
+                    <b:FormActions ui:field="bottomControlGroup">
+                        <b:Controls>
+                            <b:Button ui:field="btnCancel">Cancel</b:Button>
+                            <b:SubmitButton type="PRIMARY" ui:field="btnSave">Save</b:SubmitButton>
+                        </b:Controls>
+                    </b:FormActions>
+                </b:Fieldset>
+            </b:Form>
             
         </my:CustomModal>
     </g:HTMLPanel>

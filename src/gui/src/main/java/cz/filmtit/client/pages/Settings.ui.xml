@@ -50,13 +50,6 @@
                     </b:Controls>
                 </b:ControlGroup>
                 
-                <b:ControlGroup>
-                    <b:ControlLabel>Turn on Postedit API:</b:ControlLabel>
-                    <b:Controls>
-                        <b:CheckBox ui:field="setPostedit"></b:CheckBox>
-                    </b:Controls>
-                </b:ControlGroup>
-
             </b:Fieldset>
 
             <b:Fieldset>

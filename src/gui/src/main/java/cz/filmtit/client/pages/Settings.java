@@ -85,7 +85,6 @@ public class Settings extends Composite implements ReceivesSettings {
         setPasswordRepeat.setText("");
         setEmail.setText(user.getEmail());
         setPermalogin.setValue(user.isPermanentlyLoggedIn());
-        setPostedit.setValue(user.isPosteditOn());
         setMaxSuggestions.setValue(user.getMaximumNumberOfSuggestions());
         setUseMT.setValue(user.getUseMoses());
     }
@@ -187,11 +186,6 @@ public class Settings extends Composite implements ReceivesSettings {
             );
         }
 
-        if (user.isPosteditOn() != setPostedit.getValue()) {
-            calls.add(
-                    new SetPostedit(setPostedit.getValue(), Settings.this)
-            );
-        }
 
         if (error > 0) {
             alertError.setText(errors.toString());
@@ -219,7 +213,6 @@ public class Settings extends Composite implements ReceivesSettings {
         setPasswordRepeat.setEnabled(false);
         setEmail.setEnabled(false);
         setPermalogin.setEnabled(false);
-        setPostedit.setEnabled(false);
         setMaxSuggestions.setEnabled(false);
         setUseMT.setEnabled(false);
         btnSave.setEnabled(false);
@@ -267,7 +260,6 @@ public class Settings extends Composite implements ReceivesSettings {
         setPasswordRepeat.setEnabled(true);
         setEmail.setEnabled(true);
         setPermalogin.setEnabled(true);
-        setPostedit.setEnabled(true);
         setMaxSuggestions.setEnabled(true);
         setUseMT.setEnabled(true);
         btnSave.setEnabled(true);
@@ -297,9 +289,6 @@ public class Settings extends Composite implements ReceivesSettings {
 
     @UiField
     CheckBox setPermalogin;
-
-    @UiField
-    CheckBox setPostedit;
 
     @UiField
     IntegerBox setMaxSuggestions;

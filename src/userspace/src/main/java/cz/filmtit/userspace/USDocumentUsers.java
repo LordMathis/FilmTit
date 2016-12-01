@@ -11,18 +11,27 @@ import java.io.Serializable;
  *
  * @author matus
  */
-public class DocumentUsers implements Serializable{
-    
+public class USDocumentUsers implements Serializable {
+
     private volatile Long id;
     private volatile Long userId;
     private volatile String moviePath;
-    
-    public DocumentUsers() {
+    private volatile Boolean posteditOn;
+
+    public USDocumentUsers() {
         //nothing;
     }
-    
-    public DocumentUsers(Long userId) {
+
+    public USDocumentUsers(Long userId) {
         this.userId = userId;
+        this.moviePath = "";
+        this.posteditOn = false;
+    }
+
+    public USDocumentUsers(Long userId, String moviePath, Boolean posteditOn) {
+        this.userId = userId;
+        this.moviePath = moviePath;
+        this.posteditOn = posteditOn;
     }
 
     /**
@@ -57,18 +66,28 @@ public class DocumentUsers implements Serializable{
      * @return the moviePath
      */
     public String getMoviePath() {
-        return moviePath;
+        return this.moviePath;
     }
 
     /**
      * @param moviePath the moviePath to set
      */
     public void setMoviePath(String moviePath) {
-        this.moviePath = moviePath;
+        this.posteditOn = posteditOn;
     }
 
+    /**
+     * @return the posteditOn
+     */
+    public Boolean getPosteditOn() {
+        return this.posteditOn;
+    }
 
-    
-    
-    
+    /**
+     * @param posteditOn the posteditOn to set
+     */
+    public void setPosteditOn(Boolean posteditOn) {
+        this.posteditOn = posteditOn;
+    }
+
 }

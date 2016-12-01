@@ -40,6 +40,7 @@ import org.vectomatic.file.FileUploadExt;
 import org.vectomatic.file.events.LoadEndEvent;
 import org.vectomatic.file.events.LoadEndHandler;
 import cz.filmtit.client.callables.CreateDocument;
+import cz.filmtit.client.callables.SaveSettings;
 
 import java.util.Iterator;
 
@@ -169,6 +170,16 @@ public class DocumentCreator extends Composite {
         lblCreateProgress.setVisible(true);
         lblCreateProgress.setText("Creating the document...");
         
+        String moviePath = "";
+        String remoteURL = ytURL.getValue();
+        File localFile = fileUpload.getFiles().getItem(0);
+        
+        if (!remoteURL.isEmpty()) {
+            moviePath = remoteURL;
+        } else if (localFile != null) {
+            moviePath = localFile.createObjectURL();
+        }
+        
 
         new CreateDocument(
                 getDocumentTitle(),
@@ -176,9 +187,11 @@ public class DocumentCreator extends Composite {
                 getChosenLanguage(),
                 subtext,
                 "srt",
-                getMoviePathOrNull(),
+                moviePath,
+                posteditCheckBox.getValue(),
                 this
         );
+        
         // sets TranslationWorkspace.currentDocument and calls TranslationWorkspace.processText() on success       
 
     }
@@ -189,32 +202,30 @@ public class DocumentCreator extends Composite {
     @UiField
     TextBox txtMovieTitle;
 
-    /*   @UiField
-	TextBox moviePath;*/
     @UiField
     ListBox lsbLanguage;
 
-
-    /*@UiField
-    RadioButton rdbFormatSrt;
-    @UiField
-    RadioButton rdbFormatSub;*/
     @UiField
     RadioButton rdbEncodingUtf8;
+    
     @UiField
     RadioButton rdbEncodingWin;
+    
     @UiField
     RadioButton rdbEncodingIso;
 
     @UiField
     ControlGroup fileUploadControlGroup;
+    
     @UiField
     FileUploadExt fileUpload;
+    
     @UiField
     Label lblUploadProgress;
 
     @UiField
     ControlGroup filePasteControlGroup;
+    
     @UiField
     TextArea txtFilePaste;
 
@@ -225,14 +236,13 @@ public class DocumentCreator extends Composite {
     Button btnCreateDocument;
     @UiField
     Label lblCreateProgress;
+    
+    @UiField
+    TextBox ytURL;
+    
+    @UiField
+    FileUploadExt videoUpload;
 
-    private String getMoviePathOrNull() {
-        /*  if (moviePath.getText()==null || moviePath.getText().equals("")) {
-            return null;
-        }
-        return moviePath.getText();*/
-        return null;
-    }
 
     private String getDocumentTitle() {
         return txtTitle.getText();

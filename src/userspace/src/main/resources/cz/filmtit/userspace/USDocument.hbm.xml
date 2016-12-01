@@ -1,33 +1,23 @@
-<?xml version="1.0"?>
-<!DOCTYPE hibernate-mapping PUBLIC
-        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
-
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <hibernate-mapping package="cz.filmtit.userspace">
-
-    <class name="USDocument" table="Documents">
-        <id name="databaseId" type="long" column="Id">
-            <generator class="increment"/>
-        </id>
-
-        <property name="ownerDatabaseId" type="long" column="userId" />
-        <property name="title" type="java.lang.String" column="title" />
-        <many-to-one class="cz.filmtit.share.MediaSource" name="mediaSource" column="mediaSource" lazy="false" cascade="save-update"/>
-        
-        <property name="languageCode" type="java.lang.String" column="language" />
-        <property name="lastChange" type="long" column="lastChange" />
-        <property name="totalChunksCount" type="int" column="totalChunksCount" />
-        <property name="translatedChunksCount" type="int" column="translatedChunksCount" />
-        <property name="toBeDeleted" type="boolean" column="toBeDeleted" />
-        <property name="localMoviePath" type="java.lang.String" column="movieAddress" />
-        <property name="shareId" type="java.lang.String" column="shareId" />
-                                  
-        <list name="documentUsers" cascade="all">
-            <key column="documents_id"/>
-            <list-index column="idx"/>
-            <one-to-many class="cz.filmtit.userspace.DocumentUsers" />            
-        </list>
-        
-    </class>
-
+  <class name="USDocument" table="Documents">
+    <id column="Id" name="databaseId" type="long">
+      <generator class="increment"/>
+    </id>
+    <property column="userId" name="ownerDatabaseId" type="long"/>
+    <property column="title" name="title" type="java.lang.String"/>
+    <many-to-one cascade="save-update" class="cz.filmtit.share.MediaSource" column="mediaSource" lazy="false" name="mediaSource"/>
+    <property column="language" name="languageCode" type="java.lang.String"/>
+    <property column="lastChange" name="lastChange" type="long"/>
+    <property column="totalChunksCount" name="totalChunksCount" type="int"/>
+    <property column="translatedChunksCount" name="translatedChunksCount" type="int"/>
+    <property column="toBeDeleted" name="toBeDeleted" type="boolean"/>
+    <property column="shareId" name="shareId" type="java.lang.String"/>
+    <list cascade="all" name="documentUsers">
+      <key column="documents_id"/>
+      <list-index column="idx"/>
+      <one-to-many class="cz.filmtit.userspace.USDocumentUsers"/>
+    </list>
+  </class>
 </hibernate-mapping>

@@ -235,7 +235,7 @@ public class UserPage extends Composite {
 
         settingsButton.setFieldUpdater(new FieldUpdater<Document, String>() {
             public void update(int index, Document doc, String value) {
-                new SettingsDialog(doc);
+                new SettingsDialog(Gui.getUser(), doc);
             }
         });
 
@@ -317,12 +317,4 @@ public class UserPage extends Composite {
     @UiField
     com.github.gwtbootstrap.client.ui.CellTable<Document> docTable;
 
-    /*   @UiField
-    TabPanel tabPanel;
-
-    @UiField
-    Tab tabDocumentList;
-
-    @UiField
-    Tab tabNewDocument;*/
 }

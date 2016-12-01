@@ -75,12 +75,6 @@ public class Gui implements EntryPoint {
         return pageHandler;
     }
         
-    /**
-     * Returns the panel in which the VLC player should be displayed.
-     */
-    public static SimplePanel getPanelForVideo() {
-        return guiStructure.getPanelForVideo();
-    }
 
 
     // Login state fields

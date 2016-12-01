@@ -37,8 +37,31 @@
                 </b:ControlGroup>
                 
                 <b:ControlGroup>
-                    <b:CheckBox ui:field="posteditCheckBox" text="Turn on Postedit API"/>
+                    <b:ControlLabel>Turn Postedit API on:</b:ControlLabel>
+                    <b:Controls>
+                        <b:CheckBox ui:field="posteditCheckBox"></b:CheckBox>
+                    </b:Controls>
                 </b:ControlGroup>
+                
+            </b:Fieldset>
+            
+            <b:Fieldset>
+                <b:Legend>Select Video Source</b:Legend>
+                
+                <b:ControlGroup>
+                    <b:ControlLabel>Youtube URL</b:ControlLabel>
+                    <b:Controls>
+                        <b:TextBox ui:field="ytURL"></b:TextBox>
+                    </b:Controls>
+                </b:ControlGroup>
+
+                <b:ControlGroup>
+                    <b:ControlLabel>Local File</b:ControlLabel>
+                    <b:Controls>
+                        <lgf:FileUploadExt ui:field="videoUpload" />
+                    </b:Controls>
+                </b:ControlGroup>
+                
             </b:Fieldset>
 
 

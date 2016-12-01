@@ -126,7 +126,7 @@ public class FilmTitBackendServer extends RemoteServiceServlet implements
         } else {
         
             USDocument doc = (USDocument) list.get(0);
-            doc.getDocumentUsers().add(new DocumentUsers(user.getId()));        
+            doc.getDocumentUsers().add(new USDocumentUsers(user.getId()));        
             session.update(doc);
         
         }
@@ -165,6 +165,42 @@ public class FilmTitBackendServer extends RemoteServiceServlet implements
     @Override
     public Void setPostedit(String sessionID, boolean posteditOn) throws InvalidSessionIdException {
         return getSessionIfCan(sessionID).setPostedit(posteditOn);
+    }
+
+    @Override
+    public Void saveSettings(User user, Document doc, String moviePath, Boolean posteditOn) throws InvalidDocumentIdException, InvalidUserIdException {
+                
+        org.hibernate.Session session = usHibernateUtil.getSessionWithActiveTransaction();
+        USDocument usdoc = (USDocument) session.get(USDocument.class, doc.getId());
+        
+        if (usdoc == null) {
+            throw new InvalidDocumentIdException(String.valueOf(doc.getId()));
+        }
+        
+        boolean found = false;
+        List<USDocumentUsers> documentUsers = usdoc.getDocumentUsers();
+        for (USDocumentUsers documentUser : documentUsers) {
+            if (documentUser.getUserId() == user.getId()) {
+                documentUser.setMoviePath(moviePath);
+                documentUser.setPosteditOn(posteditOn);
+                found = true;
+                break;
+            }
+        }
+        
+        if (!found) {
+            throw new InvalidUserIdException("User " + user.getId() + " not found");
+        }
+                
+        session.saveOrUpdate(usdoc);
+        usHibernateUtil.closeAndCommitSession(session);
+        
+        return  null;
+    }
+
+    @Override
+    public DocumentUserSettings loadDocumentSettings(String sessionId, Document doc) throws InvalidDocumentIdException, InvalidUserIdException, InvalidSessionIdException  {
+        return getSessionIfCan(sessionId).loadDocumentSettings(doc.getId());
     }
 
     public enum CheckUserEnum {
@@ -286,9 +322,9 @@ public class FilmTitBackendServer extends RemoteServiceServlet implements
      * @throws InvalidSessionIdException Throws exception when there does not exist a session of given ID.
      */
     @Override
-    public DocumentResponse createNewDocument(String sessionID, String documentTitle, String movieTitle, String language, String moviePath )
+    public DocumentResponse createNewDocument(String sessionID, String documentTitle, String movieTitle, String language, String moviePath, Boolean posteditOn)
             throws InvalidSessionIdException {
-        return getSessionIfCan(sessionID).createNewDocument(documentTitle, movieTitle, language, mediaSourceFactory, moviePath);
+        return getSessionIfCan(sessionID).createNewDocument(documentTitle, movieTitle, language, mediaSourceFactory, moviePath, posteditOn);
     }
 
     /**
