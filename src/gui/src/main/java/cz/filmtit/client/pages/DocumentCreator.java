@@ -174,10 +174,14 @@ public class DocumentCreator extends Composite {
         String remoteURL = ytURL.getValue();
         File localFile = fileUpload.getFiles().getItem(0);
         
+        Boolean isLocalFile = true;
+        
         if (!remoteURL.isEmpty()) {
             moviePath = remoteURL;
+            isLocalFile = false;
         } else if (localFile != null) {
             moviePath = localFile.createObjectURL();
+            isLocalFile = true;
         }
         
 
@@ -189,6 +193,7 @@ public class DocumentCreator extends Composite {
                 "srt",
                 moviePath,
                 posteditCheckBox.getValue(),
+                isLocalFile,
                 this
         );
         

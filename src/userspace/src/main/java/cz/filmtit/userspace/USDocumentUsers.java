@@ -17,6 +17,7 @@ public class USDocumentUsers implements Serializable {
     private volatile Long userId;
     private volatile String moviePath;
     private volatile Boolean posteditOn;
+    private volatile Boolean localFile;
 
     public USDocumentUsers() {
         //nothing;
@@ -25,13 +26,15 @@ public class USDocumentUsers implements Serializable {
     public USDocumentUsers(Long userId) {
         this.userId = userId;
         this.moviePath = "";
+        this.localFile = true;
         this.posteditOn = false;
     }
 
-    public USDocumentUsers(Long userId, String moviePath, Boolean posteditOn) {
+    public USDocumentUsers(Long userId, String moviePath, Boolean posteditOn, Boolean localFile) {
         this.userId = userId;
         this.moviePath = moviePath;
         this.posteditOn = posteditOn;
+        this.localFile = localFile;
     }
 
     /**
@@ -88,6 +91,20 @@ public class USDocumentUsers implements Serializable {
      */
     public void setPosteditOn(Boolean posteditOn) {
         this.posteditOn = posteditOn;
+    }
+
+    /**
+     * @return the localFile
+     */
+    public Boolean getLocalFile() {
+        return localFile;
+    }
+
+    /**
+     * @param localFile the localFile to set
+     */
+    public void setLocalFile(Boolean localFile) {
+        this.localFile = localFile;
     }
 
 }

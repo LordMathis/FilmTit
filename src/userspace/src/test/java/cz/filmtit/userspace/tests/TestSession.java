@@ -81,7 +81,7 @@ public class TestSession {
     public void testDocumentResponse() throws NoSuchFieldException, IllegalAccessException {
         Session session = new Session(getSampleUser());
 
-        DocumentResponse response = session.createNewDocument("Lost S01E01", "Lost", "en", mediaSourceFactory, "", true);
+        DocumentResponse response = session.createNewDocument("Lost S01E01", "Lost", "en", mediaSourceFactory, "", true, true);
 
         assertNotNull(response.mediaSourceSuggestions);
         assertTrue(response.document.getId() != Long.MIN_VALUE);
@@ -106,10 +106,10 @@ public class TestSession {
         USDocument documentToRetrieve = firstGeneratedDocument;
 
         Session session = new Session(sampleUser);
-        Document retrievedDocument = session.loadDocument(documentToRetrieve.getDatabaseId());
+        DocumentResponse retrievedDocument = session.loadDocument(documentToRetrieve.getDatabaseId());
 
         // test if the documents are the same
-        assertEquals(documentToRetrieve.getDatabaseId(), retrievedDocument.getId());
+        assertEquals(documentToRetrieve.getDatabaseId(), retrievedDocument.document.getId());
 
         // get the active documents field by reflection and test if the document was loaded to
         assertTrue(testIfDocumentInActiveList(session, documentToRetrieve.getDatabaseId()));
@@ -122,7 +122,7 @@ public class TestSession {
 
         Session session = new Session(sampleUser);
         // TODO: should me done more elegantly
-        Document retrievedDocument = session.loadDocument(10000006);
+        DocumentResponse retrievedDocument = session.loadDocument(10000006);
     }
 
     @Test
@@ -220,7 +220,7 @@ public class TestSession {
 
         Session session = new Session(sampleUser);
 
-        DocumentResponse response = session.createNewDocument("Lost S01E01", "Lost", "en", mediaSourceFactory, "", true);
+        DocumentResponse response = session.createNewDocument("Lost S01E01", "Lost", "en", mediaSourceFactory, "", true, true);
         Document clientDocument = response.document;
         if (response.mediaSourceSuggestions.size() > 0) {
             session.selectSource(clientDocument.getId(), response.mediaSourceSuggestions.get(0));
@@ -251,7 +251,7 @@ public class TestSession {
     public void testSaveSourceChunks() throws InvalidDocumentIdException, InterruptedException, InvalidChunkIdException, InvalidValueException {
         Session session = new Session(getSampleUser());
 
-        DocumentResponse resp = session.createNewDocument("Lost", "Lost", "en", mediaSourceFactory, "", true);
+        DocumentResponse resp = session.createNewDocument("Lost", "Lost", "en", mediaSourceFactory, "", true, true);
         long documentId = resp.document.getId();
 
         // generate few chunks

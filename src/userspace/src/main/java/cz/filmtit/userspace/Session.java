@@ -102,6 +102,8 @@ public class Session {
     }
 
     public synchronized Void unlockTranslationResult(ChunkIndex chunkIndex, Long documentId) {
+        
+        
         org.hibernate.Session session = usHibernateUtil.getSessionWithActiveTransaction();
 
         Query query = session.createQuery("FROM USTranslationResult t WHERE t.documentDatabaseId = :did AND t.sharedId = :sid AND t.partNumber = :pid");
@@ -112,7 +114,7 @@ public class Session {
         List list = query.list();
 
         USTranslationResult translationResult = (USTranslationResult) list.get(0);
-
+        
         if (translationResult.getLockedByUser() == this.getUserDatabaseId()) {
             translationResult.setLockedByUser(null);
         }
@@ -433,14 +435,12 @@ public class Session {
      * @param moviePath Path the to movie vide on the user's machine.
      * @return An object wrapping a shared document object of given
      */
-    public DocumentResponse createNewDocument(String documentTitle, String movieTitle, String language, MediaSourceFactory mediaSourceFactory, String moviePath, Boolean posteditOn) {
+    public DocumentResponse createNewDocument(String documentTitle, String movieTitle, String language, MediaSourceFactory mediaSourceFactory, String moviePath, Boolean posteditOn, Boolean islocalFile) {
         updateLastOperationTime();
-
+        
         List<USDocumentUsers> documentUsers = new ArrayList<USDocumentUsers>();
         
-        USDocumentUsers docUser = new USDocumentUsers(this.getUserDatabaseId());
-        docUser.setMoviePath(moviePath);
-        docUser.setPosteditOn(posteditOn);
+        USDocumentUsers docUser = new USDocumentUsers(this.getUserDatabaseId(), moviePath, posteditOn, islocalFile);
         documentUsers.add(docUser);
 
         //  usDocument.getDocument().setDocumentUsers(documentUsers);
@@ -452,7 +452,10 @@ public class Session {
         user.addDocument(usDocument);
         logger.info("User " + user.getUserName() + " opened document " + usDocument.getDatabaseId() + " ("
                 + usDocument.getTitle() + ").");
-        return new DocumentResponse(usDocument.getDocument(), suggestions);
+        
+        DocumentUserSettings userSettings = new DocumentUserSettings(this.getUserDatabaseId(), moviePath, posteditOn, islocalFile);
+        
+        return new DocumentResponse(usDocument.getDocument(), suggestions, userSettings);
     }
 
     /**
@@ -493,7 +496,7 @@ public class Session {
         
         for (USDocumentUsers documentUser : documentUsers) {
             if (documentUser.getUserId() == this.getUserDatabaseId()) {
-                return new DocumentUserSettings(this.getUserDatabaseId(), documentUser.getMoviePath(), documentUser.getPosteditOn());
+                return new DocumentUserSettings(this.getUserDatabaseId(), documentUser.getMoviePath(), documentUser.getPosteditOn(), documentUser.getLocalFile());
             }
         }
         
@@ -629,9 +632,22 @@ public class Session {
      * @throws InvalidDocumentIdException It throws an exception if the document
      * with such ID is not owned by the user.
      */
-    public Document loadDocument(long documentID) throws InvalidDocumentIdException {
-        updateLastOperationTime();
-        return getActiveDocument(documentID).getDocument();
+    public DocumentResponse loadDocument(long documentID) throws InvalidDocumentIdException {
+        updateLastOperationTime();       
+        USDocument activeDocument = getActiveDocument(documentID);
+        DocumentUserSettings userSettings = null;
+        
+        List<USDocumentUsers> documentUsers = activeDocument.getDocumentUsers();
+                        
+        for (USDocumentUsers documentUser : documentUsers) {      
+                        
+            if (documentUser.getUserId() == this.getUserDatabaseId()) {
+                userSettings = new DocumentUserSettings(documentUser.getId(), documentUser.getMoviePath(), documentUser.getPosteditOn(), documentUser.getLocalFile());
+                break;
+            }
+        }
+        
+        return new DocumentResponse(activeDocument.getDocument(), null, userSettings);
     }
 
     /**
@@ -1114,7 +1130,7 @@ public class Session {
      */
     public synchronized USDocument getActiveDocument(long documentID) throws InvalidDocumentIdException {
         if (!activeDocuments.containsKey(documentID)) {
-            logger.info("Loading document " + documentID + "to memory.");
+            logger.info("Loading document " + documentID + " to memory.");
             loadDocumentIfNotActive(documentID);
         }
 

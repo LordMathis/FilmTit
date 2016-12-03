@@ -25,13 +25,15 @@ import java.util.List;
  * @author Jindřich Libovický
  */
 public class DocumentResponse implements Serializable, IsSerializable {
-    public DocumentResponse(Document document, List<MediaSource> mediaSourceSuggestions) {
+    public DocumentResponse(Document document, List<MediaSource> mediaSourceSuggestions, DocumentUserSettings userSettings) {
         this.document = document;
         this.mediaSourceSuggestions = mediaSourceSuggestions;
+        this.userSettings = userSettings;
     }
 
     public DocumentResponse(){}
 
     public Document document;
+    public DocumentUserSettings userSettings;
     public List<MediaSource> mediaSourceSuggestions;
 }

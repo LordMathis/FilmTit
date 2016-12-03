@@ -8,5 +8,6 @@
     <property column="userId" name="userId" type="long"/>
     <property column="moviePath" name="moviePath" type="string"/>
     <property column="posteditOn" name="posteditOn" type="boolean"/>
+    <property column="localFile" name="localFile" type="boolean"/>
   </class>
 </hibernate-mapping>

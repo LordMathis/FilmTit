@@ -16,9 +16,6 @@ You should have received a copy of the GNU General Public License
 along with FilmTit.  If not, see <http://www.gnu.org/licenses/>.*/
 package cz.filmtit.client.pages;
 
-import com.bramosystems.oss.player.core.client.LoadException;
-import com.bramosystems.oss.player.core.client.PluginNotFoundException;
-import com.bramosystems.oss.player.core.client.PluginVersionException;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.RepeatingCommand;
@@ -43,8 +40,6 @@ import cz.filmtit.client.widgets.VideoWidget;
 import cz.filmtit.share.*;
 import cz.filmtit.share.parsing.Parser;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * The main page of the application where the actual translations take place.
@@ -119,7 +114,7 @@ public class TranslationWorkspace extends Composite {
     private static final int SOURCETEXT_COLNUMBER = 2; // source text
     private static final int TARGETBOX_COLNUMBER = 4; // translated text
     private static final int POSTEDIT_COLNUMBER = 6; // postedit column
-    
+
     // DIALOGMARK indicates that two subtitle chunks will be displayed at the same time
     private static final int SOURCE_DIALOGMARK_COLNUMBER = 1;
     private static final int TARGET_DIALOGMARK_COLNUMBER = 3;
@@ -180,6 +175,10 @@ public class TranslationWorkspace extends Composite {
     SubtitleSynchronizer synchronizer;
 
     private Map<ChunkIndex, Label> timeLabels;
+
+    private String moviePath;
+
+    private Boolean isLocalFile;
 
     // UiBinder fields
     @UiField
@@ -318,6 +317,48 @@ public class TranslationWorkspace extends Composite {
     }
 
     /**
+     * @return the posteditOn
+     */
+    public boolean isPosteditOn() {
+        return posteditOn;
+    }
+
+    /**
+     * @param posteditOn the posteditOn to set
+     */
+    public void setPosteditOn(boolean posteditOn) {
+        this.posteditOn = posteditOn;
+    }
+
+    /**
+     * @return the moviePath
+     */
+    public String getMoviePath() {
+        return moviePath;
+    }
+
+    /**
+     * @param moviePath the moviePath to set
+     */
+    public void setMoviePath(String moviePath) {
+        this.moviePath = moviePath;
+    }
+
+    /**
+     * @return the isLocalFile
+     */
+    public Boolean getIsLocalFile() {
+        return isLocalFile;
+    }
+
+    /**
+     * @param isLocalFile the isLocalFile to set
+     */
+    public void setIsLocalFile(Boolean isLocalFile) {
+        this.isLocalFile = isLocalFile;
+    }
+
+    /**
      * UiBinder Interface
      */
     interface TranslationWorkspaceUiBinder extends UiBinder<Widget, TranslationWorkspace> {
@@ -331,12 +372,26 @@ public class TranslationWorkspace extends Composite {
     /**
      * Creates and shows the workspace.
      */
-    public TranslationWorkspace(Document doc, DocumentOrigin documentOrigin) {
+    public TranslationWorkspace(Document doc, DocumentOrigin documentOrigin, DocumentUserSettings userSettings) {
 
         initWidget(uiBinder.createAndBindUi(this));
 
+        if (userSettings.isLocalFile() == null) {
+            alert("userSettings.isLocalFile null");
+        }
+
+        if (userSettings.getPosteditOn() == null) {
+            alert("userSettings.posteditOn null");
+        }
+
+        if (userSettings.getMoviePath() == null) {
+            alert("userSettings.moviePath null");
+        }
+
         // Variables initialization
-        posteditOn = Gui.getUser().isPosteditOn();
+        posteditOn = userSettings.getPosteditOn();
+        moviePath = userSettings.getMoviePath();
+        isLocalFile = userSettings.isLocalFile();
         synchronizer = new SubtitleSynchronizer();
         sentGetTranslationsResultsCalls = new HashMap<Integer, GetTranslationResults>();
         currentWorkspace = this;
@@ -344,7 +399,7 @@ public class TranslationWorkspace extends Composite {
         targetBoxes = new ArrayList<SubgestBox.FakeSubgestBox>();
         posteditBoxes = new ArrayList<PosteditBox.FakePosteditBox>();
         timeLabels = new HashMap<ChunkIndex, Label>();
-        
+
         // Gui initialization
         Gui.getPageHandler().setPageUrl(Page.TranslationWorkspace);
         Gui.getGuiStructure().activateMenuItem(Page.TranslationWorkspace);
@@ -362,9 +417,11 @@ public class TranslationWorkspace extends Composite {
                 assert false;
                 break;
         }
-        
-        videoPlayer = new VideoWidget();        
-        panelForVideo.setWidget(videoPlayer);
+
+        if (!getIsLocalFile() && !getMoviePath().isEmpty()) {
+            videoPlayer = new VideoWidget(moviePath);
+            panelForVideo.setWidget(videoPlayer);
+        }
 
         scrollPanel.setStyleName("scrollPanel");
         // hiding the suggestion popup when scrolling the subtitle panel
@@ -432,7 +489,7 @@ public class TranslationWorkspace extends Composite {
 
                 if (unlockedSubgestBox != null) {
                     unlockedSubgestBox.addStyleDependentName("unlocked");
-                    if (posteditOn) {
+                    if (isPosteditOn()) {
                         unlockedSubgestBox.getPosteditBox().addStyleDependentName("unlocked");
                     }
                 }
@@ -701,7 +758,7 @@ public class TranslationWorkspace extends Composite {
         table.setWidget(index + 1, TARGETBOX_COLNUMBER, fakeSubgetsBox);
 
         // initializing posteditbox - fakeSubgetsBox
-        if (posteditOn) {
+        if (isPosteditOn()) {
             PosteditBox posteditBox = new PosteditBox(chunk, this, index + 1);
             PosteditBox.FakePosteditBox fakePosteditBox = posteditBox.new FakePosteditBox(index + 1);
             posteditBoxes.add(fakePosteditBox);
@@ -764,7 +821,7 @@ public class TranslationWorkspace extends Composite {
         table.setWidget(id + 1, TARGETBOX_COLNUMBER, real);
 
         real.setFocus(true);
-        if (posteditOn) {
+        if (isPosteditOn()) {
             replaceFakePosteditBox(chunk, real.getPosteditBox().getSubstitute(), real.getPosteditBox());
         }
     }
@@ -802,7 +859,7 @@ public class TranslationWorkspace extends Composite {
             targetBoxes.get(index).getFather().setTranslationResult(transresult);
             targetBoxes.get(index).removeStyleName("loading");
 
-            if (posteditOn) {
+            if (isPosteditOn()) {
                 posteditBoxes.get(index).removeStyleName("loading");
             }
         }
@@ -829,7 +886,7 @@ public class TranslationWorkspace extends Composite {
             //index is there -> insert result
             int index = synchronizer.getIndexOf(chunkIndex);
             targetBoxes.get(index).removeStyleName("loading");
-            if (posteditOn) {
+            if (isPosteditOn()) {
                 posteditBoxes.get(index).removeStyleName("loading");
             }
         }

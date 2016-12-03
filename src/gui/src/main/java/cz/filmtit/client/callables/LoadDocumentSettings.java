@@ -8,6 +8,7 @@ package cz.filmtit.client.callables;
 import cz.filmtit.client.Callable;
 import cz.filmtit.client.Gui;
 import cz.filmtit.client.dialogs.SettingsDialog;
+import cz.filmtit.client.pages.TranslationWorkspace;
 import cz.filmtit.share.Document;
 import cz.filmtit.share.DocumentUserSettings;
 
@@ -18,6 +19,7 @@ import cz.filmtit.share.DocumentUserSettings;
 public class LoadDocumentSettings extends Callable<DocumentUserSettings> {
 
     SettingsDialog settingsDialog;
+    TranslationWorkspace workspace;
     Document doc;
 
     public LoadDocumentSettings(SettingsDialog settingsDialog, Document doc) {
@@ -26,13 +28,29 @@ public class LoadDocumentSettings extends Callable<DocumentUserSettings> {
         enqueue();
     }
 
+    public LoadDocumentSettings(TranslationWorkspace workspace, Document doc) {
+        this.workspace = workspace;
+        this.doc = doc;
+        enqueue();
+    }
+
     @Override
     public void onSuccessAfterLog(DocumentUserSettings result) {
-                
-        if (result.getPosteditOn() != null) {
+
+        if (settingsDialog != null) {
             settingsDialog.getSetPostedit().setValue(result.getPosteditOn());
+            
+            if (!result.isLocalFile()) {
+                settingsDialog.getYtURL().setValue(result.getMoviePath());
+            }
+            
+            settingsDialog.setEnabled(true);          
+                        
+        } else if (workspace != null) {
+            workspace.setPosteditOn(result.getPosteditOn());
+            workspace.setMoviePath(result.getMoviePath());
+            workspace.setIsLocalFile(result.isLocalFile());
         }
-        settingsDialog.setEnabled(true);
     }
 
     @Override

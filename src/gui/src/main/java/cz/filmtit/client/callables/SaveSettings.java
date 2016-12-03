@@ -22,13 +22,15 @@ public class SaveSettings extends Callable<Void>{
     private Document doc;
     private String moviePath;
     private Boolean posteditOn;
+    private Boolean localFile;
     private SettingsDialog settingsDialog;
     
-    public SaveSettings(User user, Document doc, String moviePath, Boolean postediOn, SettingsDialog settingsDielog) {
+    public SaveSettings(User user, Document doc, String moviePath, Boolean postediOn, Boolean localFile, SettingsDialog settingsDielog) {
         this.user = user;
         this.doc = doc;
         this.moviePath = moviePath;
         this.posteditOn = postediOn;
+        this.localFile = localFile;
         this.settingsDialog = settingsDielog;
         enqueue();
     }
@@ -45,7 +47,7 @@ public class SaveSettings extends Callable<Void>{
 
     @Override
     protected void call() {
-        filmTitService.saveSettings(user, doc, moviePath, posteditOn, this);
+        filmTitService.saveSettings(user, doc, moviePath, posteditOn, localFile, this);
     }
     
 }

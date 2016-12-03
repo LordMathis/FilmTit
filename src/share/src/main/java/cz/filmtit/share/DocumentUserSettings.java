@@ -17,15 +17,17 @@ public class DocumentUserSettings implements Serializable, IsSerializable {
     private volatile Long userId;
     private volatile String moviePath;
     private volatile Boolean posteditOn;
+    private volatile Boolean isLocalFile;
 
     public DocumentUserSettings() {
         // do nothing
     }
     
-    public DocumentUserSettings(Long userId, String moviePath, Boolean posteditOn) {
+    public DocumentUserSettings(Long userId, String moviePath, Boolean posteditOn, Boolean isLocalFile) {
         this.userId = userId;
         this.moviePath = moviePath;
         this.posteditOn = posteditOn;
+        this.isLocalFile = isLocalFile;
     }
     
     /**
@@ -61,6 +63,20 @@ public class DocumentUserSettings implements Serializable, IsSerializable {
      */
     public void setPosteditOn(Boolean posteditOn) {
         this.posteditOn = posteditOn;
+    }
+
+    /**
+     * @return the isLocalFile
+     */
+    public Boolean isLocalFile() {
+        return isLocalFile;
+    }
+
+    /**
+     * @param localFile the isLocalFile to set
+     */
+    public void setLocalFile(Boolean localFile) {
+        this.isLocalFile = localFile;
     }
 
 }

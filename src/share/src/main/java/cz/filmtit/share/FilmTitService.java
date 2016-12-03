@@ -46,7 +46,7 @@ public interface FilmTitService extends RemoteService {
      * @throws InvalidSessionIdException Throws exception when there does not
      * exist a session of given ID.
      */
-    DocumentResponse createNewDocument(String sessionID, String documentTitle, String movieTitle, String language, String moviePath, Boolean posteditOn)
+    DocumentResponse createNewDocument(String sessionID, String documentTitle, String movieTitle, String language, String moviePath, Boolean posteditOn, Boolean localFile)
             throws InvalidSessionIdException;
 
     /**
@@ -85,7 +85,7 @@ public interface FilmTitService extends RemoteService {
      * @throws InvalidDocumentIdException Throws an exception when the user does
      * not have document of given ID.
      */
-    Document loadDocument(String sessionID, long documentID)
+    DocumentResponse loadDocument(String sessionID, long documentID)
             throws InvalidDocumentIdException, InvalidSessionIdException;
 
     /**
@@ -556,7 +556,7 @@ public interface FilmTitService extends RemoteService {
     Void setPostedit(String sessionID, boolean posteditOn)
             throws InvalidSessionIdException;
     
-    Void saveSettings(User user, Document doc, String moviePath, Boolean posteditOn) throws InvalidDocumentIdException, InvalidUserIdException;
+    Void saveSettings(User user, Document doc, String moviePath, Boolean posteditOn, Boolean localFile) throws InvalidDocumentIdException, InvalidUserIdException;
     
     DocumentUserSettings loadDocumentSettings(String sessionId, Document doc) throws InvalidDocumentIdException, InvalidUserIdException, InvalidSessionIdException;
 }

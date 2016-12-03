@@ -28,7 +28,7 @@ public class VideoWidget extends Composite {
 
     YouTubePlayer player;
     
-    public VideoWidget() {
+    public VideoWidget(final String src) {
         
         initWidget(uiBinder.createAndBindUi(this));
         
@@ -40,7 +40,7 @@ public class VideoWidget extends Composite {
                 
                 
                 PlayerConfiguration config = (PlayerConfiguration) PlayerConfiguration.createObject();
-                config.setVideoId("M7lc1UVf-VE");
+                config.setVideoId(src);
                 config.setWidth("400");
                 config.setHeight("260");
                 

@@ -51,17 +51,45 @@ public class SettingsDialog extends Dialog {
     }
 
     /**
-     * @return the setPostedit
+     * @return the posteditOn
      */
     public CheckBox getSetPostedit() {
-        return setPostedit;
+        return posteditOn;
     }
 
     /**
-     * @param setPostedit the setPostedit to set
+     * @param setPostedit the posteditOn to set
      */
     public void setSetPostedit(CheckBox setPostedit) {
-        this.setPostedit = setPostedit;
+        this.posteditOn = setPostedit;
+    }
+
+    /**
+     * @return the ytURL
+     */
+    public TextBox getYtURL() {
+        return ytURL;
+    }
+
+    /**
+     * @param ytURL the ytURL to set
+     */
+    public void setYtURL(TextBox ytURL) {
+        this.ytURL = ytURL;
+    }
+
+    /**
+     * @return the fileUpload
+     */
+    public FileUploadExt getFileUpload() {
+        return fileUpload;
+    }
+
+    /**
+     * @param fileUpload the fileUpload to set
+     */
+    public void setFileUpload(FileUploadExt fileUpload) {
+        this.fileUpload = fileUpload;
     }
 
     interface SettingsDialogUiBinder extends UiBinder<Widget, SettingsDialog> {
@@ -89,7 +117,7 @@ public class SettingsDialog extends Dialog {
     TextBox shareIdBox;
 
     @UiField
-    CheckBox setPostedit;
+    CheckBox posteditOn;
 
     @UiField
     TextBox ytURL;
@@ -111,19 +139,22 @@ public class SettingsDialog extends Dialog {
     @UiHandler("btnSave")
     void confirmSettings(ClickEvent e) {
 
+        Boolean isLocalFile = false;
         String moviePath = "";
-        String remoteURL = ytURL.getValue();
-        File localFile = fileUpload.getFiles().getItem(0);
+        String remoteURL = getYtURL().getValue();
+        File localFile = getFileUpload().getFiles().getItem(0);
 
         if (!remoteURL.isEmpty()) {
             moviePath = remoteURL;
+            isLocalFile = false;
         } else if (localFile != null) {
             moviePath = localFile.createObjectURL();
+            isLocalFile = true;
         }
 
         Boolean posteditOn = getSetPostedit().getValue();
 
-        new SaveSettings(user, doc, moviePath, posteditOn, this);
+        new SaveSettings(user, doc, moviePath, posteditOn, isLocalFile, this);
 
         this.close();
     }
@@ -133,9 +164,9 @@ public class SettingsDialog extends Dialog {
         Gui.log(LevelLogEnum.Error, "SettingsDialog.setEnabled", String.valueOf(b));
 
         shareIdBox.setEnabled(b);
-        setPostedit.setEnabled(b);
-        ytURL.setEnabled(b);
-        fileUpload.setEnabled(b);
+        posteditOn.setEnabled(b);
+        getYtURL().setEnabled(b);
+        getFileUpload().setEnabled(b);
         btnSave.setEnabled(b);
     }
 
