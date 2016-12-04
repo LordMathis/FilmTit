@@ -176,7 +176,7 @@ public class FilmTitBackendServer extends RemoteServiceServlet implements
         if (usdoc == null) {
             throw new InvalidDocumentIdException(String.valueOf(doc.getId()));
         }
-        
+                
         boolean found = false;
         List<USDocumentUsers> documentUsers = usdoc.getDocumentUsers();
         for (USDocumentUsers documentUser : documentUsers) {

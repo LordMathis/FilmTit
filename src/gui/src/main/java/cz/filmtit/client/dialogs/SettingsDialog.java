@@ -160,9 +160,6 @@ public class SettingsDialog extends Dialog {
     }
 
     public void setEnabled(boolean b) {
-
-        Gui.log(LevelLogEnum.Error, "SettingsDialog.setEnabled", String.valueOf(b));
-
         shareIdBox.setEnabled(b);
         posteditOn.setEnabled(b);
         getYtURL().setEnabled(b);

@@ -76,7 +76,7 @@ public class USDocumentUsers implements Serializable {
      * @param moviePath the moviePath to set
      */
     public void setMoviePath(String moviePath) {
-        this.posteditOn = posteditOn;
+        this.moviePath = moviePath;
     }
 
     /**

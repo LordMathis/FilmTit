@@ -36,7 +36,8 @@ import cz.filmtit.client.dialogs.TimeEditDialog;
 import cz.filmtit.client.subgestbox.PosteditBox;
 import cz.filmtit.client.subgestbox.SubgestBox;
 import cz.filmtit.client.subgestbox.SubgestHandler;
-import cz.filmtit.client.widgets.VideoWidget;
+import cz.filmtit.client.widgets.FileVideoWidget;
+import cz.filmtit.client.widgets.YoutubeVideoWidget;
 import cz.filmtit.share.*;
 import cz.filmtit.share.parsing.Parser;
 import java.util.*;
@@ -126,9 +127,14 @@ public class TranslationWorkspace extends Composite {
     private boolean sourceSelected = false;
 
     /**
-     * Video Player Widget
+     * Youtube Video Player Widget
      */
-    private VideoWidget videoPlayer;
+    private YoutubeVideoWidget ytVideoPlayer;
+    
+    /**
+     * Local File Video Player Widget
+     */
+    private FileVideoWidget fileVideoPlayer;
 
     /**
      * List of RPC calls to unlock a TranslationResult For one TranslationResult
@@ -298,8 +304,8 @@ public class TranslationWorkspace extends Composite {
     /**
      * @return the videoPlayer
      */
-    public VideoWidget getVideoPlayer() {
-        return videoPlayer;
+    public YoutubeVideoWidget getVideoPlayer() {
+        return ytVideoPlayer;
     }
 
     /**
@@ -376,18 +382,6 @@ public class TranslationWorkspace extends Composite {
 
         initWidget(uiBinder.createAndBindUi(this));
 
-        if (userSettings.isLocalFile() == null) {
-            alert("userSettings.isLocalFile null");
-        }
-
-        if (userSettings.getPosteditOn() == null) {
-            alert("userSettings.posteditOn null");
-        }
-
-        if (userSettings.getMoviePath() == null) {
-            alert("userSettings.moviePath null");
-        }
-
         // Variables initialization
         posteditOn = userSettings.getPosteditOn();
         moviePath = userSettings.getMoviePath();
@@ -418,9 +412,17 @@ public class TranslationWorkspace extends Composite {
                 break;
         }
 
-        if (!getIsLocalFile() && !getMoviePath().isEmpty()) {
-            videoPlayer = new VideoWidget(moviePath);
-            panelForVideo.setWidget(videoPlayer);
+        
+        if (!getMoviePath().isEmpty()) {
+
+            if (!getIsLocalFile()) {
+                ytVideoPlayer = new YoutubeVideoWidget(moviePath);
+                panelForVideo.setWidget(ytVideoPlayer);
+            } else {
+                fileVideoPlayer = new FileVideoWidget(moviePath);
+                panelForVideo.setWidget(fileVideoPlayer);
+            }
+            
         }
 
         scrollPanel.setStyleName("scrollPanel");
