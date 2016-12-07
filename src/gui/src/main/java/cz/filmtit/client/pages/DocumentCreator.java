@@ -40,7 +40,6 @@ import org.vectomatic.file.FileUploadExt;
 import org.vectomatic.file.events.LoadEndEvent;
 import org.vectomatic.file.events.LoadEndHandler;
 import cz.filmtit.client.callables.CreateDocument;
-import cz.filmtit.client.callables.SaveSettings;
 
 import java.util.Iterator;
 

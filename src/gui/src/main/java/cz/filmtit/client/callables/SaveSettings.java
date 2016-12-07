@@ -47,7 +47,7 @@ public class SaveSettings extends Callable<Void>{
 
     @Override
     protected void call() {
-        filmTitService.saveSettings(user, doc, moviePath, posteditOn, localFile, this);
+        filmTitService.saveSettings(Gui.getSessionID(), doc, moviePath, posteditOn, localFile, this);
     }
     
 }

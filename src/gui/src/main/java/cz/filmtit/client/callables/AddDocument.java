@@ -36,7 +36,7 @@ public class AddDocument extends Callable<Void> {
 
     @Override
     protected void call() {
-        filmTitService.addDocument(shareId, user, this);
+        filmTitService.addDocument(Gui.getSessionID(), shareId, this);
     }
 
 }

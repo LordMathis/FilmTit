@@ -283,11 +283,12 @@ public interface FilmTitService extends RemoteService {
     /**
      * Reloads translation results from database
      *
+     * @param sessioId
      * @param documentId
      * @return
      * @throws InvalidDocumentIdException
      */
-    Document reloadTranslationResults(Long documentId) throws InvalidDocumentIdException;
+    Document reloadTranslationResults(String sessioId, Long documentId) throws InvalidSessionIdException, InvalidDocumentIdException;
 
     /**
      * Stop generating translation results for the given chunks (to be used when
@@ -545,9 +546,9 @@ public interface FilmTitService extends RemoteService {
      */
     Void logGuiMessage(LevelLogEnum level, String context, String message, String sessionID);
 
-    String getShareId(Document doc);
+    String getShareId(String sessionId, Document doc) throws InvalidSessionIdException;
 
-    Void addDocument(String shareId, User user) throws InvalidShareIdException;
+    Void addDocument(String sessionId, String shareId) throws InvalidSessionIdException, InvalidShareIdException;
 
     Void lockTranslationResult(TranslationResult tResult, String sessionID) throws InvalidSessionIdException, AlreadyLockedException;
 
@@ -556,7 +557,7 @@ public interface FilmTitService extends RemoteService {
     Void setPostedit(String sessionID, boolean posteditOn)
             throws InvalidSessionIdException;
     
-    Void saveSettings(User user, Document doc, String moviePath, Boolean posteditOn, Boolean localFile) throws InvalidDocumentIdException, InvalidUserIdException;
+    Void saveSettings(String sessionId, Document doc, String moviePath, Boolean posteditOn, Boolean localFile) throws InvalidSessionIdException, InvalidDocumentIdException, InvalidUserIdException;
     
     DocumentUserSettings loadDocumentSettings(String sessionId, Document doc) throws InvalidDocumentIdException, InvalidUserIdException, InvalidSessionIdException;
 }

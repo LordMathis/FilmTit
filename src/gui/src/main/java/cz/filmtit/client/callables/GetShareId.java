@@ -7,6 +7,7 @@ package cz.filmtit.client.callables;
 
 import cz.filmtit.client.Callable;
 import static cz.filmtit.client.Callable.filmTitService;
+import cz.filmtit.client.Gui;
 import cz.filmtit.client.dialogs.SettingsDialog;
 import cz.filmtit.share.Document;
 
@@ -33,7 +34,7 @@ public class GetShareId extends Callable<String> {
 
     @Override
     protected void call() {
-        filmTitService.getShareId(doc, this);
+        filmTitService.getShareId(Gui.getSessionID(), doc, this);
     }
 
 }

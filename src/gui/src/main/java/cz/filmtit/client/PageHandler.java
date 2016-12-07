@@ -28,8 +28,6 @@ import cz.filmtit.client.pages.Blank;
 import cz.filmtit.client.pages.ChangePassword;
 import cz.filmtit.client.pages.DocumentCreator;
 import cz.filmtit.client.pages.Help;
-import cz.filmtit.client.pages.PlayerInfo;
-import cz.filmtit.client.pages.PlayerDemo;
 import cz.filmtit.client.pages.Settings;
 import cz.filmtit.client.pages.TranslationWorkspace;
 import cz.filmtit.client.pages.UserPage;
@@ -349,12 +347,6 @@ public class PageHandler {
                     break;
                 case AuthenticationValidationWindow:
                     new AuthenticationValidationWindow();
-                    break;
-                case PlayerDemo:
-                    new PlayerDemo();
-                    break;
-                case PlayerInfo:
-                    new PlayerInfo();
                     break;
                 case TranslationWorkspace:
                     if (documentId == -1) {

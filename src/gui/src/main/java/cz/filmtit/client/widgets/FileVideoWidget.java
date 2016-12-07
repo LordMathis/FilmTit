@@ -11,6 +11,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -23,8 +24,12 @@ public class FileVideoWidget extends Composite implements VideoWidget {
 
     interface FileVideoWidgetUiBinder extends UiBinder<Widget, FileVideoWidget> {
     }
-    
-    Video player; 
+
+    Video player;
+
+    Label leftLabel;
+
+    Label rightLabel;
 
     public FileVideoWidget(String src) {
         initWidget(uiBinder.createAndBindUi(this));
@@ -35,8 +40,18 @@ public class FileVideoWidget extends Composite implements VideoWidget {
         player.addSource(src);
         player.setControls(true);
         player.load();
-        
+
+        leftLabel = new Label("Left Label");
+        leftLabel.setWidth("292px");
+        leftLabel.setHeight("100%");
+
+        rightLabel = new Label("Right Label");
+        rightLabel.setWidth("292px");
+        rightLabel.setHeight("100%");
+
+        videoWrapper.add(leftLabel);
         videoWrapper.add(player);
+        videoWrapper.add(rightLabel);
     }
 
     @UiField

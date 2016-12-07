@@ -435,7 +435,7 @@ public class TranslationWorkspace extends Composite {
         });
 
         // Translation table initialization
-        table.setWidth("100%");
+        table.setWidth("984px");
         translationHPanel.setCellWidth(scrollPanel, "100%");
         this.subgestHandler = new SubgestHandler(this);
 
@@ -443,8 +443,8 @@ public class TranslationWorkspace extends Composite {
 
             table.getColumnFormatter().setWidth(TIMES_COLNUMBER, "164px");
             table.getColumnFormatter().setWidth(SOURCETEXT_COLNUMBER, "260px");
-            table.getColumnFormatter().setWidth(TARGETBOX_COLNUMBER, "260px");
-            table.getColumnFormatter().setWidth(POSTEDIT_COLNUMBER, "260px");
+            table.getColumnFormatter().setWidth(TARGETBOX_COLNUMBER, "255px");
+            table.getColumnFormatter().setWidth(POSTEDIT_COLNUMBER, "255px");
             table.getColumnFormatter().setWidth(SOURCE_DIALOGMARK_COLNUMBER, "10px");
             table.getColumnFormatter().setWidth(TARGET_DIALOGMARK_COLNUMBER, "10px");
             table.getColumnFormatter().setWidth(POSTEDIT_DIALOGMARK_COLNUMBER, "10px");
@@ -486,6 +486,7 @@ public class TranslationWorkspace extends Composite {
                     submitUserTranslation(lockedSubgestBox, null);
                     lockedSubgestBox.updateLastText();
                 } else {
+                    Gui.log(LevelLogEnum.Error, "TranslationWorkspace", "timer run out");
                     new UnlockTranslationResult(lockedSubgestBox, currentWorkspace);
                 }
 
@@ -511,6 +512,8 @@ public class TranslationWorkspace extends Composite {
         setStopLoading(true);
         sourceSelected = false;
         translationStarted = false;
+        panelForVideo.setWidget(null);
+        getTimer().cancel();
         Gui.getGuiStructure().contentPanel.removeStyleName("parsing");
     }
 
@@ -794,6 +797,10 @@ public class TranslationWorkspace extends Composite {
         } else {
             table.getRowFormatter().addStyleName(index + 1, "row_group_begin");
         }
+        
+       /* if (posteditOn) {
+            table.getCellFormatter().addStyleName(index + 1, index, moviePath);
+        }*/
 
     }
 
