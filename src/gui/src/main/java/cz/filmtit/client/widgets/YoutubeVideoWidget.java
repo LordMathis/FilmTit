@@ -68,6 +68,8 @@ public class YoutubeVideoWidget extends Composite implements VideoWidget {
             }
         });
     }
+    
+    
 
     @UiField
     HorizontalPanel videoWrapper;

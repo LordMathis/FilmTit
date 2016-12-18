@@ -35,8 +35,6 @@ import rank._
 import org.apache.commons.logging.LogFactory
 import search.external.MosesServerSearcher
 import scala.Some
-
-//import search.external.MyMemorySearcher
 import cz.filmtit.share.{Language, TranslationSource}
 import cz.filmtit.core.Factory._
 import collection.mutable.HashMap
@@ -196,22 +194,9 @@ object Factory {
     }
 
     if (!indexing) {
-       //Third level: Moses 
-      val regexesBefore = Seq(
-         ("""'(\S)""".r, """&apos;$1"""), //replacing apostrophe
-         ("""(\S)&apos;""".r, """$1 &apos;"""), //space before apostrophe
-         ("""\s+n &apos;t""".r , "n &apos;t")  //n't
-      )
-    
-      val regexesAfter = Seq(
-        ("""\s([.!?,])""".r, "$1"), //space before diacritics
-        (""" &apos; """.r, """'""")  //apostrophe back
-      )
+       //Third level: Moses      
       
-      
-      val mosesSearchers = (1 to 30).map { _ =>
-        new MosesServerSearcher(l1, l2,regexesBefore, regexesAfter, configuration.mosesURL)
-      }.toList
+      val mosesSearchers = List( new MosesServerSearcher(l1, l2, configuration.mosesURL) )
 
       levels ::= new BackoffLevel(new TranslationPairSearcherWrapper(mosesSearchers, 30*60), None, 0.5, TranslationSource.EXTERNAL_MT)
     }

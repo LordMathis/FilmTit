@@ -62,7 +62,6 @@ public class USUser extends DatabaseObject {
 
         setUseMoses(true);
         setPermanentlyLoggedId(false);
-        setPostedit(false);
         setMaximumNumberOfSuggestions(ConfigurationSingleton.conf().maximumSuggestionsCount());
 
         ownedDocuments = Collections.synchronizedMap(new HashMap<Long, USDocument>());
@@ -83,7 +82,6 @@ public class USUser extends DatabaseObject {
 
         setUseMoses(true);
         setPermanentlyLoggedId(false);
-        setPostedit(false);
         setMaximumNumberOfSuggestions(ConfigurationSingleton.conf().maximumSuggestionsCount());
 
         ownedDocuments = Collections.synchronizedMap(new HashMap<Long, USDocument>());
@@ -267,14 +265,6 @@ public class USUser extends DatabaseObject {
         getUser().setPermanentlyLoggedIn(permanentlyLoggedId);
     }
     
-    /**
-     * Sets the flag if user has turned Postedit API on
-     * @param posteditOn 
-     */
-    public void setPostedit(boolean posteditOn) {
-        getUser().setPosteditOn(posteditOn);
-    }
-
     /**
      * Gets the maximum number of suggestions user want to receive during a
      * document editing. (Calls the wrapped object.)

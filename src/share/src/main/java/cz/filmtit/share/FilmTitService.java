@@ -553,9 +553,6 @@ public interface FilmTitService extends RemoteService {
     Void lockTranslationResult(TranslationResult tResult, String sessionID) throws InvalidSessionIdException, AlreadyLockedException;
 
     Void unlockTranslationResult(ChunkIndex chunkIndex, Long documentId, String sessionID) throws InvalidSessionIdException;
-
-    Void setPostedit(String sessionID, boolean posteditOn)
-            throws InvalidSessionIdException;
     
     Void saveSettings(String sessionId, Document doc, String moviePath, Boolean posteditOn, Boolean localFile) throws InvalidSessionIdException, InvalidDocumentIdException, InvalidUserIdException;
     

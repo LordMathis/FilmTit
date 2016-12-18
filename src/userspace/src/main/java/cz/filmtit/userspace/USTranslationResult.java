@@ -21,6 +21,7 @@ import cz.filmtit.share.*;
 import org.hibernate.Session;
 
 import java.util.*;
+import org.jboss.logging.Logger;
 
 /**
  * Represents a subtitle chunk together with its timing, selected translation
@@ -311,8 +312,12 @@ public class USTranslationResult extends DatabaseObject implements Comparable<US
      *
      * @param TM An instance of Tranlsation Memory from the core.
      */
-    public synchronized void generateMTSuggestions(TranslationMemory TM) {
+    public synchronized void generateMTSuggestions(TranslationMemory TM, User user) {
         if (TM == null) {
+            return;
+        }
+        
+        if (user == null) {
             return;
         }
 
@@ -321,7 +326,52 @@ public class USTranslationResult extends DatabaseObject implements Comparable<US
         translationResult.setTmSuggestions(null);
 
         Set<TranslationSource> disabledSources = new HashSet<TranslationSource>();
+        if (!user.getUseMoses()) {
+            
+            logger.log(Logger.Level.ERROR, "getUseMoses = " + user.getUseMoses());
+            
+            disabledSources.add(TranslationSource.EXTERNAL_MT);
+        }
+        
+        disabledSources.add(TranslationSource.INTERNAL_EXACT);
+        disabledSources.add(TranslationSource.INTERNAL_FUZZY);
+
+        scala.collection.immutable.List<TranslationPair> TMResults
+                = TM.nBest(translationResult.getSourceChunk(), document.getLanguage(), document.getMediaSource(),
+                        user.getMaximumNumberOfSuggestions(), false, disabledSources);
+        // the retrieved Scala collection must be transformed to a Java collection
+        // otherwise it cannot be iterated by the for loop
+        List<TranslationPair> javaList = new ArrayList<TranslationPair>(
+                scala.collection.JavaConverters.asJavaListConverter(TMResults).asJava());
+        
+        logger.error("USTranslationResult: " + javaList.size());
+
+        // store the collections as synchronized (to have a better feeling from this)
+        translationResult.setTmSuggestions(javaList);
+    }
+    
+        /**
+     * Queries the Translation Memory for the suggestions. If there are some
+     * previous suggestions they are discarded. The suggestion are stored in the
+     * structure wrapped object the way as it is the client. Anyway, they are
+     * discarded as soon as they are sent to the client.
+     *
+     * @param TM An instance of Tranlsation Memory from the core.
+     */
+    public synchronized void generateMTSuggestions(TranslationMemory TM) {
+        if (TM == null) {
+            return;
+        }
+        
+        // TODO: ensure none of the potential previous suggestions is in the server cache collection
+        // dereference of current suggestion will force hibernate to remove them from the db as well
+        translationResult.setTmSuggestions(null);
+
+        Set<TranslationSource> disabledSources = new HashSet<TranslationSource>();
         if (!document.getOwner().getUseMoses()) {
+            
+            logger.log(Logger.Level.ERROR, "getUseMoses = " + document.getOwner().getUseMoses());
+            
             disabledSources.add(TranslationSource.EXTERNAL_MT);
         }
 

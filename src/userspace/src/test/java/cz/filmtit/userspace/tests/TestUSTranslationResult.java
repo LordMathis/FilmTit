@@ -139,7 +139,7 @@ public class TestUSTranslationResult {
                 "Sample chunk", 5, document.getDatabaseId()));
         usTranslationResult.setDocument(document);
 
-        usTranslationResult.generateMTSuggestions(TM);
+        usTranslationResult.generateMTSuggestions(TM, user.getUser());
         assertNotNull(usTranslationResult.getTranslationResult().getTmSuggestions());
     }
 
@@ -164,7 +164,7 @@ public class TestUSTranslationResult {
                 new TimedChunk("0:00", "0:00",0, "Sample text", 0, testDoc.getDatabaseId()));
         testRes.setDocument(testDoc);
 
-        testRes.generateMTSuggestions(TM);
+        testRes.generateMTSuggestions(TM, testUser.getUser());
 
         dbSession.getTransaction().commit();
 

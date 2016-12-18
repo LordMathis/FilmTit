@@ -57,11 +57,6 @@ public class User implements Serializable, IsSerializable {
      */
     private volatile boolean useMoses;
     /**
-     *
-     */
-    private volatile boolean posteditOn;
-
-    /**
      * List of documents the user owsn.
      */
     public List<Document> ownedDocuments;
@@ -156,20 +151,6 @@ public class User implements Serializable, IsSerializable {
     }
 
     /**
-     * @return the posteditOn
-     */
-    public boolean isPosteditOn() {
-        return posteditOn;
-    }
-
-    /**
-     * @param posteditOn the posteditOn to set
-     */
-    public void setPosteditOn(boolean posteditOn) {
-        this.posteditOn = posteditOn;
-    }
-
-    /**
      * Gets maximum number of translation suggestions provided to one chunk.
      *
      * @return Maximum number of translation suggestions provided to one chunk
@@ -218,7 +199,6 @@ public class User implements Serializable, IsSerializable {
         clone.name = name;
         clone.email = email;
         clone.permanentlyLoggedIn = permanentlyLoggedIn;
-        clone.posteditOn = posteditOn;
         clone.maximumNumberOfSuggestions = maximumNumberOfSuggestions;
         clone.useMoses = useMoses;
 

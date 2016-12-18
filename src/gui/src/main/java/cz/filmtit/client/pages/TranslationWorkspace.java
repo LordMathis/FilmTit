@@ -435,7 +435,7 @@ public class TranslationWorkspace extends Composite {
         });
 
         // Translation table initialization
-        table.setWidth("984px");
+        table.setWidth("100%");
         translationHPanel.setCellWidth(scrollPanel, "100%");
         this.subgestHandler = new SubgestHandler(this);
 

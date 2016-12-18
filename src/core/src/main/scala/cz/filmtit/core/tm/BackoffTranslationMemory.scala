@@ -17,17 +17,16 @@ along with FilmTit.  If not, see <http://www.gnu.org/licenses/>.*/
 
 package cz.filmtit.core.tm
 
-import cz.filmtit.core.model.{TranslationPairMerger, TranslationMemory}
+import cz.filmtit.core.model.{ TranslationPairMerger, TranslationMemory }
 import cz.filmtit.core.concurrency.tokenizer.TokenizerWrapper
-
 import org.apache.commons.logging.LogFactory
 import scala.Predef._
-import cz.filmtit.core.model.storage.{MediaStorage, TranslationPairStorage}
+import cz.filmtit.core.model.storage.{ MediaStorage, TranslationPairStorage }
 import cz.filmtit.core.search.postgres.BaseStorage
 import cz.filmtit.core.concurrency.searcher.TranslationPairSearcherWrapper
 import cz.filmtit.share._
 import collection.mutable.ListBuffer
-import exceptions.{SearcherNotAvailableException, LanguageNotSupportedException}
+import exceptions.{ SearcherNotAvailableException, LanguageNotSupportedException }
 
 /**
  * Simple [[cz.filmtit.core.model.TranslationMemory]] implementation with
@@ -39,8 +38,8 @@ import exceptions.{SearcherNotAvailableException, LanguageNotSupportedException}
  */
 
 class BackoffTranslationMemory(
-  val l1:Language,
-  val l2:Language,
+  val l1: Language,
+  val l2: Language,
   val levels: List[BackoffLevel],
   val merger: Option[TranslationPairMerger],
   val tokenizerl1: Option[TokenizerWrapper] = None,
@@ -60,7 +59,7 @@ class BackoffTranslationMemory(
    * @param language the requested language
    * @return
    */
-  def tokenizer(language:Language) = language match {
+  def tokenizer(language: Language) = language match {
     case `l1` => tokenizerl1
     case `l2` => tokenizerl2
     case _ => throw new Exception("Wrong tokenization language")
@@ -68,19 +67,18 @@ class BackoffTranslationMemory(
 
   def nBest(chunk: Chunk, language: Language, mediaSource: MediaSource,
     n: Int = 10, inner: Boolean = false,
-    forbiddenSources: java.util.Set[TranslationSource] = java.util.Collections.emptySet[TranslationSource]
-  ): List[TranslationPair] = {
-
+    forbiddenSources: java.util.Set[TranslationSource] = java.util.Collections.emptySet[TranslationSource]): List[TranslationPair] = {
 
     //If the Chunk is not active (the request was canceled), the query is aborted.
-    if(!chunk.isActive) {
+    if (!chunk.isActive) {
       List[TranslationPair]()
     }
 
     tokenize(chunk, language)
-    LOG.info( "n-best: (%s) %s".format(language, chunk) )
+    LOG.info("n-best: (%s) %s".format(language, chunk))
 
     var results = ListBuffer[TranslationPair]()
+
     for (level: BackoffLevel <- this.levels.filter({ l: BackoffLevel => !forbiddenSources.contains(l.translationType) })) {
 
       val s1 = System.currentTimeMillis
@@ -93,12 +91,14 @@ class BackoffTranslationMemory(
           case None => pairs
         }).filter(pair => pair.getScore >= level.threshold)
 
+        LOG.info(results)
+        
         val s3 = System.currentTimeMillis
 
-        LOG.info( level.toString + ": retrieved %d candidates (%dms), ranking: %dms, total: %dms, Chunk: %s"
-          .format(pairs.size, s2 - s1, s3 - s2, s3 - s1, chunk) )
+        LOG.info(level.toString + ": retrieved %d candidates (%dms), ranking: %dms, total: %dms, Chunk: %s"
+          .format(pairs.size, s2 - s1, s3 - s2, s3 - s1, chunk))
 
-        if ( results.size >= n ) {
+        if (results.size >= n) {
           return merge(results.sorted, n)
         }
       } catch {
@@ -111,9 +111,7 @@ class BackoffTranslationMemory(
   }
 
   def firstBest(chunk: Chunk, language: Language, mediaSource: MediaSource,
-                forbiddenSources: java.util.Set[TranslationSource] = java.util.Collections.emptySet[TranslationSource]):
-  Option[TranslationPair] = nBest(chunk, language, mediaSource).headOption
-
+    forbiddenSources: java.util.Set[TranslationSource] = java.util.Collections.emptySet[TranslationSource]): Option[TranslationPair] = nBest(chunk, language, mediaSource).headOption
 
   def merge(results: Seq[TranslationPair], n: Int): List[TranslationPair] = {
     merger match {
@@ -122,12 +120,11 @@ class BackoffTranslationMemory(
     }
   }
 
-
   def add(pairs: Array[TranslationPair]) {
 
-    LOG.info( "Tokenizing..." )
-    pairs.foreach{ p => tokenizeForImport(p) }
-    LOG.info( "Done." )
+    LOG.info("Tokenizing...")
+    pairs.foreach { p => tokenizeForImport(p) }
+    LOG.info("Done.")
 
     searchers.head match {
       case s: TranslationPairStorage => s.add(pairs)
@@ -143,7 +140,7 @@ class BackoffTranslationMemory(
   }
 
   def finishImport() {
-    LOG.info( "Finishing import..." )
+    LOG.info("Finishing import...")
     searchers.head match {
       case s: TranslationPairStorage => s.finishImport()
       case s: TranslationPairSearcherWrapper => {
@@ -159,15 +156,20 @@ class BackoffTranslationMemory(
   def warmup() {
     LOG.info("Warming up...")
     searchers.foreach(_ match {
-       case s: TranslationPairStorage => s.warmup()
-       case s: TranslationPairSearcherWrapper => {
-         s.searchers.head match {
-           case s: TranslationPairStorage => s.warmup()
-           case _ =>
-         }
-       }
-       case _ =>
-      })
+      case s: TranslationPairStorage => s.warmup()
+      case s: TranslationPairSearcherWrapper => {
+        s.searchers.head match {
+          case s: TranslationPairStorage => s.warmup()
+          case _ =>
+        }
+      }
+      case _ =>
+    })
+
+    for (s <- searchers) {
+      LOG.info("WARMING UP " + s.toString())
+    }
+
   }
 
   def reindex() {
@@ -223,16 +225,16 @@ class BackoffTranslationMemory(
     })
   }
 
-  def tokenize(chunk:Chunk, language:Language) {
+  def tokenize(chunk: Chunk, language: Language) {
     if (!chunk.isTokenized) {
-       //foreach means "do if not None"
-        tokenizer(language).foreach {_.tokenize(chunk)}
+      //foreach means "do if not None"
+      tokenizer(language).foreach { _.tokenize(chunk) }
     }
   }
 
-  private def tokenizeForImport(pair:TranslationPair) {
-    tokenizer(l1).foreach{ t: TokenizerWrapper => pair.getChunkL1.setTokens( t.tokenizers(0).tokenize(pair.getChunkL1.getSurfaceForm)) }
-    tokenizer(l2).foreach{ t: TokenizerWrapper => pair.getChunkL2.setTokens( t.tokenizers(0).tokenize(pair.getChunkL2.getSurfaceForm)) }
+  private def tokenizeForImport(pair: TranslationPair) {
+    tokenizer(l1).foreach { t: TokenizerWrapper => pair.getChunkL1.setTokens(t.tokenizers(0).tokenize(pair.getChunkL1.getSurfaceForm)) }
+    tokenizer(l2).foreach { t: TokenizerWrapper => pair.getChunkL2.setTokens(t.tokenizers(0).tokenize(pair.getChunkL2.getSurfaceForm)) }
   }
 
   def searchers = levels.map(_.searcher)

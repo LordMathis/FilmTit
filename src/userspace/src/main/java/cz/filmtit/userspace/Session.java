@@ -126,11 +126,6 @@ public class Session {
         return null;
     }
 
-    public Void setPostedit(boolean posteditOn) {
-        user.setPostedit(posteditOn);
-        return null;
-    }
-
     /**
      * Type for describing the stae of the session. <b>active</b> means the
      * session is running, <b>loggedOut</b>
@@ -808,7 +803,7 @@ public class Session {
         ChunkIndex index = chunk.getChunkIndex();
         USTranslationResult usTranslationResult = document.getTranslationResultForIndex(index);
 
-        usTranslationResult.generateMTSuggestions(TM);
+        usTranslationResult.generateMTSuggestions(TM, this.getUser().getUser());
         return usTranslationResult.getResultCloneAndRemoveSuggestions();
     }
 
@@ -1020,7 +1015,7 @@ public class Session {
         saveTranslationResult(document, usTranslationResult);
 
         // generate suggestions
-        usTranslationResult.generateMTSuggestions(TM);
+        usTranslationResult.generateMTSuggestions(TM, this.getUser().getUser());
         return usTranslationResult.getResultCloneAndRemoveSuggestions();
     }
 

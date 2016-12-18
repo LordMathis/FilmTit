@@ -107,11 +107,6 @@ public class FilmTitBackendServer extends RemoteServiceServlet implements
     }
 
     @Override
-    public Void setPostedit(String sessionID, boolean posteditOn) throws InvalidSessionIdException {
-        return getSessionIfCan(sessionID).setPostedit(posteditOn);
-    }
-
-    @Override
     public Void saveSettings(String sessionId, Document doc, String moviePath, Boolean posteditOn, Boolean localFile) throws InvalidDocumentIdException, InvalidUserIdException, InvalidSessionIdException {
         return getSessionIfCan(sessionId).saveSettings(doc, moviePath, posteditOn, localFile);
     }
