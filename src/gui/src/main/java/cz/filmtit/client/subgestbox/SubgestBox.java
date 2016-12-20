@@ -391,8 +391,6 @@ public class SubgestBox extends RichTextArea implements Comparable<SubgestBox> {
      */
     public void showSuggestions() {
 
-        Gui.log(LevelLogEnum.Error, "SubgestBox.showSuggestions", String.valueOf(this.getSuggestions().size()));
-
         if (this.getSuggestions().size() > 0) {
 
             Gui.log(LevelLogEnum.Error, "SubgestBox", "showSuggestions");

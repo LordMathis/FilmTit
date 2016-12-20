@@ -339,13 +339,12 @@ public class USTranslationResult extends DatabaseObject implements Comparable<US
         scala.collection.immutable.List<TranslationPair> TMResults
                 = TM.nBest(translationResult.getSourceChunk(), document.getLanguage(), document.getMediaSource(),
                         user.getMaximumNumberOfSuggestions(), false, disabledSources);
+        
         // the retrieved Scala collection must be transformed to a Java collection
         // otherwise it cannot be iterated by the for loop
         List<TranslationPair> javaList = new ArrayList<TranslationPair>(
                 scala.collection.JavaConverters.asJavaListConverter(TMResults).asJava());
         
-        logger.error("USTranslationResult: " + javaList.size());
-
         // store the collections as synchronized (to have a better feeling from this)
         translationResult.setTmSuggestions(javaList);
     }

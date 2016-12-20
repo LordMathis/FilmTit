@@ -109,6 +109,11 @@ public class SubgestHandler implements FocusHandler, KeyDownHandler, KeyUpHandle
                     }
                 });
             }
+            
+            int position = (int) (subbox.getChunk().getStartTimeLong() / 1000);
+            if (workspace.getVideoPlayer() != null) {
+                workspace.getVideoPlayer().playPart(position);
+            }
 
             subbox.updateVerticalSize();
         } else if (event.getSource() instanceof PosteditBox) {

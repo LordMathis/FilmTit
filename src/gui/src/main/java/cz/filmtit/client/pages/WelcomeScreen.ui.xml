@@ -6,34 +6,34 @@
         <g:FlowPanel>
 
             <b:FluidContainer ui:field="container">
-            			<b:Hero>
-            				<b:Heading size="1">Welcome to FilmTit</b:Heading>
+                <b:Hero>
+                    <b:Heading size="1">Welcome to FilmTit</b:Heading>
 
-            				<b:Paragraph>Helping you translate your subtitle files.</b:Paragraph>
-            			</b:Hero>
+                    <b:Paragraph>Helping you translate your subtitle files.</b:Paragraph>
+                </b:Hero>
 
-                        <b:FluidRow>
-            				<b:Column size="4">
-            					<b:Heading size="6">Have an account?</b:Heading>
-            					<b:Paragraph>Just login with your FilmTit or Google account and start translating...</b:Paragraph>
-            					<b:Button type="PRIMARY" ui:field="login">Login »</b:Button>
-            				</b:Column>
+                <b:FluidRow>
+                    <b:Column size="4">
+                        <b:Heading size="6">Have an account?</b:Heading>
+                        <b:Paragraph>Just login with your FilmTit or Google account and start translating...</b:Paragraph>
+                        <b:Button type="PRIMARY" ui:field="login">Login »</b:Button>
+                    </b:Column>
 
-                            <b:Column size="4">
-                                <b:Heading size="6">Create an account</b:Heading>
-                                <b:Paragraph>If you do not have an account yet, create one for free.</b:Paragraph>
-                                <b:Button ui:field="register">Register »</b:Button>
-                            </b:Column>
+                    <b:Column size="4">
+                        <b:Heading size="6">Create an account</b:Heading>
+                        <b:Paragraph>If you do not have an account yet, create one for free.</b:Paragraph>
+                        <b:Button ui:field="register">Register »</b:Button>
+                    </b:Column>
 
-                            <b:Column size="4">
-                                <b:Heading size="6">About FilmTit</b:Heading>
-                                <b:Paragraph>Filmtit is an easy way to quickly translate SRT movie subtitle files.</b:Paragraph>
-                                <b:Button ui:field="about">Read more »</b:Button>
-                                <b:Paragraph>&nbsp;</b:Paragraph>
-                                <b:Paragraph>Subtitle data provided by <a href="http://www.opensubtitles.org">www.opensubtitles.org</a></b:Paragraph>
-                            </b:Column>
+                    <b:Column size="4">
+                        <b:Heading size="6">About FilmTit</b:Heading>
+                        <b:Paragraph>Filmtit is an easy way to quickly translate SRT movie subtitle files.</b:Paragraph>
+                        <b:Button ui:field="about">Read more »</b:Button>
+                        <b:Paragraph>&nbsp;</b:Paragraph>
+                        <b:Paragraph>Subtitle data provided by <a href="http://www.opensubtitles.org">www.opensubtitles.org</a></b:Paragraph>
+                    </b:Column>
 
-            			</b:FluidRow>
+                </b:FluidRow>
 
             </b:FluidContainer>
 

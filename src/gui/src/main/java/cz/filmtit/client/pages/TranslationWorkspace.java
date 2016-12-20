@@ -416,7 +416,7 @@ public class TranslationWorkspace extends Composite {
         if (!getMoviePath().isEmpty()) {
 
             if (!getIsLocalFile()) {
-                ytVideoPlayer = new YoutubeVideoWidget(moviePath);
+                ytVideoPlayer = new YoutubeVideoWidget(moviePath, synchronizer);
                 panelForVideo.setWidget(ytVideoPlayer);
             } else {
                 fileVideoPlayer = new FileVideoWidget(moviePath);

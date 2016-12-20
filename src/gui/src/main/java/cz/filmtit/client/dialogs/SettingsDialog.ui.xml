@@ -46,6 +46,7 @@ Uncomment this for XHTML entities
                         <b:ControlLabel>Local File</b:ControlLabel>
                         <b:Controls>
                             <f:FileUploadExt ui:field="fileUpload" />
+                            <b:Label type="WARNING">Local file will not be saved across sessions</b:Label>
                         </b:Controls>
                     </b:ControlGroup>
                 

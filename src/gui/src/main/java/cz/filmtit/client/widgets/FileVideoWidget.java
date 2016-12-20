@@ -22,6 +22,11 @@ public class FileVideoWidget extends Composite implements VideoWidget {
 
     private static FileVideoWidgetUiBinder uiBinder = GWT.create(FileVideoWidgetUiBinder.class);
 
+    @Override
+    public void playPart(int position) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
     interface FileVideoWidgetUiBinder extends UiBinder<Widget, FileVideoWidget> {
     }
 

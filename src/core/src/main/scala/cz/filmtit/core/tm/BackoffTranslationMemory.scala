@@ -75,7 +75,7 @@ class BackoffTranslationMemory(
     }
 
     tokenize(chunk, language)
-    LOG.info("n-best: (%s) %s".format(language, chunk))
+    //LOG.info("n-best: (%s) %s".format(language, chunk))
 
     var results = ListBuffer[TranslationPair]()
 
@@ -91,12 +91,12 @@ class BackoffTranslationMemory(
           case None => pairs
         }).filter(pair => pair.getScore >= level.threshold)
 
-        LOG.info(results)
+        //LOG.info(results)
         
         val s3 = System.currentTimeMillis
 
-        LOG.info(level.toString + ": retrieved %d candidates (%dms), ranking: %dms, total: %dms, Chunk: %s"
-          .format(pairs.size, s2 - s1, s3 - s2, s3 - s1, chunk))
+        /*LOG.info(level.toString + ": retrieved %d candidates (%dms), ranking: %dms, total: %dms, Chunk: %s"
+          .format(pairs.size, s2 - s1, s3 - s2, s3 - s1, chunk))*/
 
         if (results.size >= n) {
           return merge(results.sorted, n)
