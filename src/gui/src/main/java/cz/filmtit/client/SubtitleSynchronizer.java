@@ -44,12 +44,10 @@ public class SubtitleSynchronizer {
      * @return translation results that start between two time points
      */
     public Collection<TranslationResult> getTranslationResultsByTime(double start, double end) {
-        ChunkTimePosition posStart = new ChunkTimePosition(start, 0);
-        ChunkTimePosition posEnd = new ChunkTimePosition(end, 100);
+        ChunkTimePosition posStart = new ChunkTimePosition(Math.min(start, end), 0);
+        ChunkTimePosition posEnd = new ChunkTimePosition(Math.max(start, end), 100);
         Collection<TranslationResult> values = resultsByTime.subMap(posStart, posEnd).values();
-        
-        Gui.log(LevelLogEnum.Error, "getTranslationResultsByTime", start + " : " + end + " | " + values.size());
-        
+                
         return values;
     }
 
