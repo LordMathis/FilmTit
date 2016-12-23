@@ -6,6 +6,7 @@
 package cz.filmtit.client.callables;
 
 import cz.filmtit.client.Callable;
+import cz.filmtit.client.Gui;
 import cz.filmtit.client.pages.TranslationWorkspace;
 import cz.filmtit.share.Document;
 import cz.filmtit.share.TranslationResult;
@@ -39,7 +40,7 @@ public class ReloadTranslationResults extends Callable<Document>{
 
     @Override
     protected void call() {
-        filmTitService.reloadTranslationResults(documentId, this);
+        filmTitService.reloadTranslationResults(Gui.getSessionID(), documentId, this);
     }
     
 }

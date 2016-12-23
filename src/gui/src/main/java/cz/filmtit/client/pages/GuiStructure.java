@@ -291,25 +291,6 @@ public class GuiStructure extends Composite {
 	//@UiField
 	//public TextArea txtDebug;
 	
-    @UiField
-	HTMLPanel panelForVLC;
-    
-    @UiField
-        HTMLPanel panelForVideo;
-
-    /**
-     * Returns the panel in which the VLC player is to be shown.
-     */
-    public HTMLPanel getPanelForVLC() {
-        return panelForVLC;
-    }
-    
-       /**
-     * @return the panelForVideo
-     */
-    public HTMLPanel getPanelForVideo() {
-        return panelForVideo;
-    }
     
     
 }

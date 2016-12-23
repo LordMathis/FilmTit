@@ -264,7 +264,7 @@ public class USUser extends DatabaseObject {
     public void setPermanentlyLoggedId(boolean permanentlyLoggedId) {
         getUser().setPermanentlyLoggedIn(permanentlyLoggedId);
     }
-
+    
     /**
      * Gets the maximum number of suggestions user want to receive during a
      * document editing. (Calls the wrapped object.)

@@ -22,7 +22,6 @@ import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Focusable;
 import com.google.gwt.user.client.ui.SimplePanel;
-
 import cz.filmtit.client.Gui;
 import cz.filmtit.client.callables.LockTranslationResult;
 import cz.filmtit.client.callables.ReloadTranslationResults;
@@ -63,11 +62,13 @@ public class SubgestHandler implements FocusHandler, KeyDownHandler, KeyUpHandle
             }
         }
         
+        
         new ReloadTranslationResults(workspace.getCurrentDocument().getId(), workspace);
 
-        if (event.getSource() instanceof SubgestBox) { // should be
+        if (event.getSource() instanceof SubgestBox) { 
             final SubgestBox subbox = (SubgestBox) event.getSource();
-
+            
+            
             if (workspace.getLockedSubgestBox() == null) {
                 new LockTranslationResult(subbox, workspace);
             } else if (workspace.getLockedSubgestBox() != subbox) {
@@ -107,6 +108,11 @@ public class SubgestHandler implements FocusHandler, KeyDownHandler, KeyUpHandle
                         subbox.setFocus(true);
                     }
                 });
+            }
+            
+            int position = (int) (subbox.getChunk().getStartTimeLong() / 1000);
+            if (workspace.getVideoPlayer() != null) {
+                workspace.getVideoPlayer().playPart(position);
             }
 
             subbox.updateVerticalSize();
@@ -245,7 +251,7 @@ public class SubgestHandler implements FocusHandler, KeyDownHandler, KeyUpHandle
             long time = subbox.getChunk().getStartTimeLongNonZero();
 
             if (workspace.getVideoPlayer() != null) {
-                workspace.getVideoPlayer().maybePlayWindow(time);
+                //workspace.getVideoPlayer().maybePlayWindow(time);
             }
         }
     }

@@ -48,6 +48,8 @@ public class CreateDocument extends Callable<DocumentResponse> implements Receiv
     private String subtext;
     private String subformat;
     private String moviePath;
+    private Boolean posteditOn;
+    private Boolean isLocalFile;
 
     // results to store before MediaSelector returns
     private Dialog mediaSelector;
@@ -62,8 +64,8 @@ public class CreateDocument extends Callable<DocumentResponse> implements Receiv
 
     @Override
     public void onSuccessAfterLog(DocumentResponse result) {
-
-        workspace = new TranslationWorkspace(result.document, DocumentOrigin.NEW);
+        
+        workspace = new TranslationWorkspace(result.document, DocumentOrigin.NEW, result.userSettings);
         documentCreator.reactivate();
         documentId = result.document.getId();
         mediaSelector = new MediaSelector(result.mediaSourceSuggestions, this);
@@ -115,7 +117,7 @@ public class CreateDocument extends Callable<DocumentResponse> implements Receiv
      * @param documentCreator the document creator used to create the document
      */
     public CreateDocument(String documentTitle, String movieTitle, String language,
-            String subtext, String subformat, String moviePath, DocumentCreator documentCreator) {
+            String subtext, String subformat, String moviePath, Boolean posteditOn, Boolean isLocalFile, DocumentCreator documentCreator) {
         super();
 
         this.documentTitle = documentTitle;
@@ -124,6 +126,8 @@ public class CreateDocument extends Callable<DocumentResponse> implements Receiv
         this.subtext = subtext;
         this.subformat = subformat;
         this.moviePath = moviePath;
+        this.posteditOn = posteditOn;
+        this.isLocalFile = isLocalFile;
         this.documentCreator = documentCreator;
 
         enqueue();
@@ -132,7 +136,7 @@ public class CreateDocument extends Callable<DocumentResponse> implements Receiv
     @Override
     protected void call() {
         Gui.log("Creating document " + documentTitle + "; its language is " + language);
-        filmTitService.createNewDocument(Gui.getSessionID(), documentTitle, movieTitle, language, moviePath, this);
+        filmTitService.createNewDocument(Gui.getSessionID(), documentTitle, movieTitle, language, moviePath, posteditOn, isLocalFile, this);
     }
 
 }

@@ -46,10 +46,13 @@ public class SubtitleSynchronizer {
     public Collection<TranslationResult> getTranslationResultsByTime(double start, double end) {
         ChunkTimePosition posStart = new ChunkTimePosition(start, 0);
         ChunkTimePosition posEnd = new ChunkTimePosition(end, 100);
-
-        return resultsByTime.subMap(posStart, posEnd).values();
+        Collection<TranslationResult> values = resultsByTime.subMap(posStart, posEnd).values();
+        
+        Gui.log(LevelLogEnum.Error, "getTranslationResultsByTime", start + " : " + end + " | " + values.size());
+        
+        return values;
     }
-    
+
     /**
      * Return all chunks with the given id,
      * order by their partNumbers.
@@ -181,6 +184,10 @@ public class SubtitleSynchronizer {
      */
     public int getIndexOf(TranslationResult tr) {
         return getIndexOf(tr.getSourceChunk());
+    }
+
+    public void getTranslationResultByTime(float newTime, float f) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
  

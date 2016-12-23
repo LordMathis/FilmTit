@@ -37,7 +37,7 @@ import java.util.*;
  * @author rur
  *
  */
-public class LoadDocumentFromDB extends cz.filmtit.client.Callable<Document> {
+public class LoadDocumentFromDB extends cz.filmtit.client.Callable<DocumentResponse> {
 
     private long documentId;
 
@@ -47,17 +47,18 @@ public class LoadDocumentFromDB extends cz.filmtit.client.Callable<Document> {
     }
 
     @Override
-    public void onSuccessAfterLog(final Document doc) {
+    public void onSuccessAfterLog(final DocumentResponse response) {
+        
+        if (response.userSettings.getMoviePath() == null) {
+            Gui.log(LevelLogEnum.Error, "LoadDocumentFromDB", "DocumentResponse.userSettings.getMoviePath() null");
+        }
 
         // prepare empty TranslationWorkspace
-        String moviePath = doc.getMoviePath();
-        final TranslationWorkspace workspace = new TranslationWorkspace(doc, DocumentOrigin.FROM_DB);
+        final TranslationWorkspace workspace = new TranslationWorkspace(response.document, DocumentOrigin.FROM_DB, response.userSettings);
 
         // prepare the TranslationResults
-        final List<TranslationResult> results = doc.getSortedTranslationResults();
+        final List<TranslationResult> results = response.document.getSortedTranslationResults();
         Gui.log("There are " + results.size() + " TranslationResults in the document");
-        //int i = 0;
-        //for (TranslationResult t: results) {t.getSourceChunk().setIndex(i);}
 
         // show the TranslationResults
         Scheduler.get().scheduleDeferred(new ScheduledCommand() {

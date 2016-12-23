@@ -146,7 +146,7 @@ public class GetTranslationResults extends Callable<List<TranslationResult>> {
 
         // + 5s for each chunk
         callTimeOut += 5000 * chunks.size();
-        //enqueue();
+        enqueue();
     }
 
     @Override

@@ -45,8 +45,6 @@ import java.net.URLDecoder;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.apache.commons.lang3.RandomStringUtils;
-import org.hibernate.Query;
 
 
 public class FilmTitBackendServer extends RemoteServiceServlet implements
@@ -83,56 +81,13 @@ public class FilmTitBackendServer extends RemoteServiceServlet implements
     protected static USHibernateUtil usHibernateUtil = USHibernateUtil.getInstance();
 
     @Override
-    public synchronized String getShareId(Document doc) {
-        org.hibernate.Session session = usHibernateUtil.getSessionWithActiveTransaction();
-        USDocument document = (USDocument) session.load(USDocument.class, doc.getId());
-        
-        String shareId = document.getShareId();
-        
-        if (shareId == null) {
-            
-            int count;
-            do {
-                shareId = RandomStringUtils.random(8, true, true);
-                Query query = session.createQuery("FROM USDocument d WHERE d.shareId = :shareId");
-                query.setParameter("shareId", shareId);
-                count = query.list().size();
-            } while (count != 0);
-            
-            //shareId = doc.getId() * doc.getId() + 2 * doc.getId();
-            document.setShareId(shareId);
-        }
-        
-        session.saveOrUpdate(document);
-        usHibernateUtil.closeAndCommitSession(session);
-        
-        return shareId;        
+    public synchronized String getShareId(String sessionId, Document doc) throws InvalidSessionIdException {
+        return getSessionIfCan(sessionId).getShareId(doc);
     }
 
     @Override
-    public synchronized Void addDocument(String shareId, User user) throws InvalidShareIdException{
-        org.hibernate.Session session = usHibernateUtil.getSessionWithActiveTransaction();
-        
-        Query query = session.createQuery("FROM USDocument d WHERE d.shareId = :shareId");
-        query.setParameter("shareId", shareId);
-        
-        List list = query.list();
-        
-        if (list == null || list.isEmpty()) {
-            
-            session.close();
-            throw new InvalidShareIdException(shareId);
-            
-        } else {
-        
-            USDocument doc = (USDocument) list.get(0);
-            doc.getDocumentUsers().add(new DocumentUsers(user.getId()));        
-            session.update(doc);
-        
-        }
-        
-        usHibernateUtil.closeAndCommitSession(session);        
-        return null;
+    public synchronized Void addDocument(String sessionId, String shareId) throws InvalidShareIdException, InvalidSessionIdException{
+        return getSessionIfCan(sessionId).addDocument(shareId);
         
     }
 
@@ -147,19 +102,18 @@ public class FilmTitBackendServer extends RemoteServiceServlet implements
     }
 
     @Override
-    public synchronized Document reloadTranslationResults(Long documentId) throws InvalidDocumentIdException {
-        
-        org.hibernate.Session session = usHibernateUtil.getSessionWithActiveTransaction();
-        USDocument usdoc = (USDocument) session.get(USDocument.class, documentId);        
-        usHibernateUtil.closeAndCommitSession(session);
-        
-        if (usdoc == null) {
-            throw new InvalidDocumentIdException(documentId.toString());
-        }
-        
-        usdoc.loadChunksFromDb();
-        
-        return usdoc.getDocument();
+    public synchronized Document reloadTranslationResults(String sessionId, Long documentId) throws InvalidDocumentIdException, InvalidSessionIdException {
+        return getSessionIfCan(sessionId).reloadTranslationResult(documentId);
+    }
+
+    @Override
+    public Void saveSettings(String sessionId, Document doc, String moviePath, Boolean posteditOn, Boolean localFile) throws InvalidDocumentIdException, InvalidUserIdException, InvalidSessionIdException {
+        return getSessionIfCan(sessionId).saveSettings(doc, moviePath, posteditOn, localFile);
+    }
+
+    @Override
+    public DocumentUserSettings loadDocumentSettings(String sessionId, Document doc) throws InvalidDocumentIdException, InvalidUserIdException, InvalidSessionIdException  {
+        return getSessionIfCan(sessionId).loadDocumentSettings(doc.getId());
     }
 
     public enum CheckUserEnum {
@@ -281,9 +235,9 @@ public class FilmTitBackendServer extends RemoteServiceServlet implements
      * @throws InvalidSessionIdException Throws exception when there does not exist a session of given ID.
      */
     @Override
-    public DocumentResponse createNewDocument(String sessionID, String documentTitle, String movieTitle, String language, String moviePath)
+    public DocumentResponse createNewDocument(String sessionID, String documentTitle, String movieTitle, String language, String moviePath, Boolean posteditOn, Boolean localFile)
             throws InvalidSessionIdException {
-        return getSessionIfCan(sessionID).createNewDocument(documentTitle, movieTitle, language, mediaSourceFactory, moviePath);
+        return getSessionIfCan(sessionID).createNewDocument(documentTitle, movieTitle, language, mediaSourceFactory, moviePath, posteditOn, localFile);
     }
 
     /**
@@ -321,7 +275,7 @@ public class FilmTitBackendServer extends RemoteServiceServlet implements
      * @throws InvalidDocumentIdException Throws an exception when the user does not have document of given ID.
      */
     @Override
-    public Document loadDocument(String sessionID, long documentID)
+    public DocumentResponse loadDocument(String sessionID, long documentID)
             throws InvalidDocumentIdException, InvalidSessionIdException {
         return getSessionIfCan(sessionID).loadDocument(documentID);
     }

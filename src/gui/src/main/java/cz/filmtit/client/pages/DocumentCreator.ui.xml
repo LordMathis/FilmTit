@@ -35,22 +35,38 @@
                         </b:ListBox>
                     </b:Controls>
                 </b:ControlGroup>
+                
+                <b:ControlGroup>
+                    <b:ControlLabel>Turn Postedit API on:</b:ControlLabel>
+                    <b:Controls>
+                        <b:CheckBox ui:field="posteditCheckBox"></b:CheckBox>
+                    </b:Controls>
+                </b:ControlGroup>
+                
+            </b:Fieldset>
+            
+            <b:Fieldset>
+                <b:Legend>Select Video Source</b:Legend>
+                
+                <b:ControlGroup>
+                    <b:ControlLabel>Youtube URL</b:ControlLabel>
+                    <b:Controls>
+                        <b:TextBox ui:field="ytURL"></b:TextBox>
+                    </b:Controls>
+                </b:ControlGroup>
 
-
+                <b:ControlGroup>
+                    <b:ControlLabel>Local File</b:ControlLabel>
+                    <b:Controls>
+                        <lgf:FileUploadExt ui:field="videoUpload" />
+                    </b:Controls>
+                </b:ControlGroup>
+                
             </b:Fieldset>
 
 
             <b:Fieldset>
                 <b:Legend>Load subtitles file</b:Legend>
-
-                <!--b:ControlGroup>
-                    <b:ControlLabel>Subtitle file format:</b:ControlLabel>
-                    <b:Controls>
-                        <b:RadioButton ui:field="rdbFormatSrt" name="file format"
-                                       value="true">.srt</b:RadioButton>
-                        <b:RadioButton ui:field="rdbFormatSub" name="file format">.sub</b:RadioButton>
-                    </b:Controls>
-                </b:ControlGroup-->
 
                 <b:ControlGroup>
                     <b:ControlLabel>Choose file encoding:</b:ControlLabel>
@@ -76,34 +92,7 @@
                     </b:Controls>
                 </b:ControlGroup>
             </b:Fieldset>
-
-
-          <!--  <b:Fieldset>
-                <b:Legend>Movie playback</b:Legend>
-                <b:NavLink ui:field="playerInfo" targetHistoryToken="PlayerInfo" styleName="playerInfoLink">Read this before using the playback</b:NavLink>
-
-                <b:ControlGroup>
-                    <b:ControlLabel title="Select a file using the Load button, or input the filepath into the box manually">Movie address on the disk:</b:ControlLabel>
-                    <b:Controls>
-                        <b:TextBox ui:field="moviePath" title="Select a file using the Load button, or input the filepath into this box manually"></b:TextBox>
-                        <b:Button ui:field="btnApplet">Load</b:Button>
-                    </b:Controls>
-                </b:ControlGroup>
-            </b:Fieldset> -->
-
-
-            <!--b:Fieldset>
-                <b:Legend>Machine translation</b:Legend>
-                
-
-                <b:ControlGroup>
-                    <b:Controls>
-                        <b:CheckBox ui:field="useMT">Include machine translation</b:CheckBox>
-                    </b:Controls>
-                </b:ControlGroup>
-            </b:Fieldset-->
-            
-
+                      
             <b:Fieldset>
                 <b:FormActions ui:field="bottomControlGroup">
                     <b:Controls>

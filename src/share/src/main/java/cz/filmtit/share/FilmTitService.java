@@ -46,7 +46,7 @@ public interface FilmTitService extends RemoteService {
      * @throws InvalidSessionIdException Throws exception when there does not
      * exist a session of given ID.
      */
-    DocumentResponse createNewDocument(String sessionID, String documentTitle, String movieTitle, String language, String moviePath)
+    DocumentResponse createNewDocument(String sessionID, String documentTitle, String movieTitle, String language, String moviePath, Boolean posteditOn, Boolean localFile)
             throws InvalidSessionIdException;
 
     /**
@@ -72,7 +72,7 @@ public interface FilmTitService extends RemoteService {
      * exist a session of given ID.
      */
     List<Document> getListOfDocuments(String sessionID)
-            throws InvalidSessionIdException;      
+            throws InvalidSessionIdException;
 
     /**
      * Returns the document with the given id, with source chunks but without
@@ -85,7 +85,7 @@ public interface FilmTitService extends RemoteService {
      * @throws InvalidDocumentIdException Throws an exception when the user does
      * not have document of given ID.
      */
-    Document loadDocument(String sessionID, long documentID)
+    DocumentResponse loadDocument(String sessionID, long documentID)
             throws InvalidDocumentIdException, InvalidSessionIdException;
 
     /**
@@ -279,14 +279,16 @@ public interface FilmTitService extends RemoteService {
      */
     List<TranslationResult> getTranslationResults(String sessionID, List<TimedChunk> chunks)
             throws InvalidSessionIdException, InvalidDocumentIdException;
-    
+
     /**
      * Reloads translation results from database
+     *
+     * @param sessioId
      * @param documentId
      * @return
-     * @throws InvalidDocumentIdException 
+     * @throws InvalidDocumentIdException
      */
-    Document reloadTranslationResults(Long documentId) throws InvalidDocumentIdException;
+    Document reloadTranslationResults(String sessioId, Long documentId) throws InvalidSessionIdException, InvalidDocumentIdException;
 
     /**
      * Stop generating translation results for the given chunks (to be used when
@@ -543,15 +545,16 @@ public interface FilmTitService extends RemoteService {
      * user was looged in that time
      */
     Void logGuiMessage(LevelLogEnum level, String context, String message, String sessionID);
-    
-    
-    
-    
-    String getShareId(Document doc);
-    
-    Void addDocument(String shareId, User user) throws InvalidShareIdException;
-    
+
+    String getShareId(String sessionId, Document doc) throws InvalidSessionIdException;
+
+    Void addDocument(String sessionId, String shareId) throws InvalidSessionIdException, InvalidShareIdException;
+
     Void lockTranslationResult(TranslationResult tResult, String sessionID) throws InvalidSessionIdException, AlreadyLockedException;
-    
+
     Void unlockTranslationResult(ChunkIndex chunkIndex, Long documentId, String sessionID) throws InvalidSessionIdException;
+    
+    Void saveSettings(String sessionId, Document doc, String moviePath, Boolean posteditOn, Boolean localFile) throws InvalidSessionIdException, InvalidDocumentIdException, InvalidUserIdException;
+    
+    DocumentUserSettings loadDocumentSettings(String sessionId, Document doc) throws InvalidDocumentIdException, InvalidUserIdException, InvalidSessionIdException;
 }

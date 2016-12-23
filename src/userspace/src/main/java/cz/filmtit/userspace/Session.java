@@ -22,6 +22,8 @@ import cz.filmtit.share.*;
 import cz.filmtit.share.exceptions.AlreadyLockedException;
 import cz.filmtit.share.exceptions.InvalidChunkIdException;
 import cz.filmtit.share.exceptions.InvalidDocumentIdException;
+import cz.filmtit.share.exceptions.InvalidShareIdException;
+import cz.filmtit.share.exceptions.InvalidUserIdException;
 import cz.filmtit.share.exceptions.InvalidValueException;
 import cz.filmtit.userspace.servlets.FilmTitBackendServer;
 import cz.filmtit.userspace.servlets.FilmTitBackendServer.CheckUserEnum;
@@ -30,6 +32,7 @@ import org.jboss.logging.Logger;
 
 import java.util.*;
 import java.util.regex.Pattern;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.hibernate.Query;
 
 /**
@@ -101,6 +104,7 @@ public class Session {
     }
 
     public synchronized Void unlockTranslationResult(ChunkIndex chunkIndex, Long documentId) {
+
         org.hibernate.Session session = usHibernateUtil.getSessionWithActiveTransaction();
 
         Query query = session.createQuery("FROM USTranslationResult t WHERE t.documentDatabaseId = :did AND t.sharedId = :sid AND t.partNumber = :pid");
@@ -427,13 +431,16 @@ public class Session {
      * @param moviePath Path the to movie vide on the user's machine.
      * @return An object wrapping a shared document object of given
      */
-    public DocumentResponse createNewDocument(String documentTitle, String movieTitle, String language, MediaSourceFactory mediaSourceFactory, String moviePath) {
+    public DocumentResponse createNewDocument(String documentTitle, String movieTitle, String language, MediaSourceFactory mediaSourceFactory, String moviePath, Boolean posteditOn, Boolean islocalFile) {
         updateLastOperationTime();
 
-        List<DocumentUsers> documentUsers = new ArrayList<DocumentUsers>();
+        List<USDocumentUsers> documentUsers = new ArrayList<USDocumentUsers>();
+
+        USDocumentUsers docUser = new USDocumentUsers(this.getUserDatabaseId(), moviePath, posteditOn, islocalFile);
+        documentUsers.add(docUser);
 
         //  usDocument.getDocument().setDocumentUsers(documentUsers);
-        USDocument usDocument = new USDocument(new Document(documentTitle, language, moviePath), user, documentUsers);
+        USDocument usDocument = new USDocument(new Document(documentTitle, language), user, documentUsers);
         List<MediaSource> suggestions = mediaSourceFactory.getSuggestions(movieTitle);
 
         activeDocuments.put(usDocument.getDatabaseId(), usDocument);
@@ -441,7 +448,10 @@ public class Session {
         user.addDocument(usDocument);
         logger.info("User " + user.getUserName() + " opened document " + usDocument.getDatabaseId() + " ("
                 + usDocument.getTitle() + ").");
-        return new DocumentResponse(usDocument.getDocument(), suggestions);
+
+        DocumentUserSettings userSettings = new DocumentUserSettings(this.getUserDatabaseId(), moviePath, posteditOn, islocalFile);
+
+        return new DocumentResponse(usDocument.getDocument(), suggestions, userSettings);
     }
 
     /**
@@ -466,6 +476,27 @@ public class Session {
         // take care of the database and the translation results in separate thread not to delay the RPC response
         new DeleteDocumentRunner(document).run();
         return null;
+    }
+
+    public DocumentUserSettings loadDocumentSettings(long documentId) throws InvalidUserIdException, InvalidDocumentIdException {
+        updateLastOperationTime();
+
+        org.hibernate.Session session = usHibernateUtil.getSessionWithActiveTransaction();
+        USDocument usdoc = (USDocument) session.get(USDocument.class, documentId);
+
+        if (usdoc == null) {
+            throw new InvalidDocumentIdException("Document " + documentId + "does not exist");
+        }
+
+        List<USDocumentUsers> documentUsers = usdoc.getDocumentUsers();
+
+        for (USDocumentUsers documentUser : documentUsers) {
+            if (documentUser.getUserId() == this.getUserDatabaseId()) {
+                return new DocumentUserSettings(this.getUserDatabaseId(), documentUser.getMoviePath(), documentUser.getPosteditOn(), documentUser.getLocalFile());
+            }
+        }
+
+        throw new InvalidUserIdException("User " + this.getUserDatabaseId() + "does not have access to document" + documentId);
     }
 
     /**
@@ -579,10 +610,6 @@ public class Session {
         updateLastOperationTime();
         List<Document> result = new ArrayList<Document>();
 
-        for (USDocument usDocument : user.getOwnedDocuments().values()) {
-            result.add(usDocument.getDocument().documentWithoutResults());
-        }
-
         for (USDocument accessibleDocument : user.getAccessibleDocuments()) {
             result.add(accessibleDocument.getDocument().documentWithoutResults());
         }
@@ -601,9 +628,22 @@ public class Session {
      * @throws InvalidDocumentIdException It throws an exception if the document
      * with such ID is not owned by the user.
      */
-    public Document loadDocument(long documentID) throws InvalidDocumentIdException {
+    public DocumentResponse loadDocument(long documentID) throws InvalidDocumentIdException {
         updateLastOperationTime();
-        return getActiveDocument(documentID).getDocument();
+        USDocument activeDocument = getActiveDocument(documentID);
+        DocumentUserSettings userSettings = null;
+
+        List<USDocumentUsers> documentUsers = activeDocument.getDocumentUsers();
+
+        for (USDocumentUsers documentUser : documentUsers) {
+
+            if (documentUser.getUserId() == this.getUserDatabaseId()) {
+                userSettings = new DocumentUserSettings(documentUser.getId(), documentUser.getMoviePath(), documentUser.getPosteditOn(), documentUser.getLocalFile());
+                break;
+            }
+        }
+
+        return new DocumentResponse(activeDocument.getDocument(), null, userSettings);
     }
 
     /**
@@ -763,7 +803,7 @@ public class Session {
         ChunkIndex index = chunk.getChunkIndex();
         USTranslationResult usTranslationResult = document.getTranslationResultForIndex(index);
 
-        usTranslationResult.generateMTSuggestions(TM);
+        usTranslationResult.generateMTSuggestions(TM, this.getUser().getUser());
         return usTranslationResult.getResultCloneAndRemoveSuggestions();
     }
 
@@ -975,7 +1015,7 @@ public class Session {
         saveTranslationResult(document, usTranslationResult);
 
         // generate suggestions
-        usTranslationResult.generateMTSuggestions(TM);
+        usTranslationResult.generateMTSuggestions(TM, this.getUser().getUser());
         return usTranslationResult.getResultCloneAndRemoveSuggestions();
     }
 
@@ -1039,9 +1079,115 @@ public class Session {
      *
      */
     public void saveTranslationResult(USDocument document, USTranslationResult result) {
+        updateLastOperationTime();
         ArrayList<USTranslationResult> al = new ArrayList<USTranslationResult>(1);
         al.add(result);
         saveTranslationResults(document, al);
+    }
+
+    /**
+     * Retrieves Document shareId or creates one if it doesn't exist yet
+     *
+     * @param doc
+     * @return
+     */
+    public synchronized String getShareId(Document doc) {
+        updateLastOperationTime();
+        org.hibernate.Session session = usHibernateUtil.getSessionWithActiveTransaction();
+        USDocument document = (USDocument) session.load(USDocument.class, doc.getId());
+
+        String shareId = document.getShareId();
+
+        if (shareId == null) {
+
+            int count;
+            do {
+                shareId = RandomStringUtils.random(8, true, true);
+                Query query = session.createQuery("FROM USDocument d WHERE d.shareId = :shareId");
+                query.setParameter("shareId", shareId);
+                count = query.list().size();
+            } while (count != 0);
+
+            //shareId = doc.getId() * doc.getId() + 2 * doc.getId();
+            document.setShareId(shareId);
+        }
+
+        session.saveOrUpdate(document);
+        usHibernateUtil.closeAndCommitSession(session);
+
+        return shareId;
+    }
+
+    public synchronized Void addDocument(String shareId) throws InvalidShareIdException {
+        updateLastOperationTime();
+
+        org.hibernate.Session session = usHibernateUtil.getSessionWithActiveTransaction();
+
+        Query query = session.createQuery("FROM USDocument d WHERE d.shareId = :shareId");
+        query.setParameter("shareId", shareId);
+
+        List list = query.list();
+
+        if (list == null || list.isEmpty()) {
+
+            session.close();
+            throw new InvalidShareIdException(shareId);
+
+        } else {
+
+            USDocument doc = (USDocument) list.get(0);
+            doc.getDocumentUsers().add(new USDocumentUsers(this.getUserDatabaseId()));
+            session.update(doc);
+
+        }
+
+        usHibernateUtil.closeAndCommitSession(session);
+        return null;
+    }
+
+    public synchronized Document reloadTranslationResult(Long documentId) throws InvalidDocumentIdException {
+
+        updateLastOperationTime();
+
+        org.hibernate.Session session = usHibernateUtil.getSessionWithActiveTransaction();
+        USDocument usdoc = (USDocument) session.get(USDocument.class, documentId);
+        usHibernateUtil.closeAndCommitSession(session);
+
+        if (usdoc == null) {
+            throw new InvalidDocumentIdException(documentId.toString());
+        }
+
+        usdoc.loadChunksFromDb();
+
+        return usdoc.getDocument();
+    }
+    
+    public synchronized Void saveSettings(Document doc, String moviePath, Boolean posteditOn, Boolean localFile) throws InvalidDocumentIdException {
+        updateLastOperationTime();
+        
+        org.hibernate.Session session = usHibernateUtil.getSessionWithActiveTransaction();
+        USDocument usdoc = (USDocument) session.get(USDocument.class, doc.getId());
+        
+        if (usdoc == null) {
+            throw new InvalidDocumentIdException(String.valueOf(doc.getId()));
+        }
+                
+        boolean found = false;
+        List<USDocumentUsers> documentUsers = usdoc.getDocumentUsers();
+        for (USDocumentUsers documentUser : documentUsers) {
+            if (documentUser.getUserId() == this.getUserDatabaseId()) {
+                documentUser.setMoviePath(moviePath);
+                documentUser.setPosteditOn(posteditOn);
+                documentUser.setLocalFile(localFile);
+                found = true;
+                break;
+            }
+        }
+                
+        session.saveOrUpdate(usdoc);
+        usHibernateUtil.closeAndCommitSession(session);
+        
+        return  null;
     }
 
     /**
@@ -1086,7 +1232,7 @@ public class Session {
      */
     public synchronized USDocument getActiveDocument(long documentID) throws InvalidDocumentIdException {
         if (!activeDocuments.containsKey(documentID)) {
-            logger.info("Loading document " + documentID + "to memory.");
+            logger.info("Loading document " + documentID + " to memory.");
             loadDocumentIfNotActive(documentID);
         }
 

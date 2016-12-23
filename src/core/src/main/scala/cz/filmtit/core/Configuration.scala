@@ -44,7 +44,7 @@ class Configuration(configurationFile: InputStream) {
 
   private val XMLFile = XML.load(configurationFile)
   
-  val mosesURL:java.net.URL = new java.net.URL("""http://"""+(XMLFile \ "mosesURL").text+"/RPC2")
+  val mosesURL:java.net.URL = new java.net.URL((XMLFile \ "mosesURL").text)
 
 
   //Languages:

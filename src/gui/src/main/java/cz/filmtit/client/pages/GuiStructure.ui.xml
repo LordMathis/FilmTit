@@ -42,13 +42,6 @@
 
         </b:Navbar>
 
-        <g:HTMLPanel ui:field="panelForVLC">
-        </g:HTMLPanel>
-        
-        <g:HTMLPanel ui:field="panelForVideo">
-        </g:HTMLPanel>
-
-
         <g:HTMLPanel styleName="content">
 
             <b:Row>

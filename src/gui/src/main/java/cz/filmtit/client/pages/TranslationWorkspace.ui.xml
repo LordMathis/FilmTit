@@ -6,11 +6,9 @@
 
     <g:HTMLPanel>
 
-    <!--this is a little hack to have the player both fixed and on nice position on right - - >
-    <! - - g:HTMLPanel styleName="fixedPlayer" width="100%" height="300px" ui:field="playerFixedPanel">
-    
-                    <! - -this is purposedly empty - - >
-        </g:HTMLPanel-->
+        <!--this is a little hack to have the player both fixed and on nice position on right -->
+        <g:SimplePanel styleName="fixedPlayer" ui:field="panelForVideo">  
+        </g:SimplePanel> 
 
 
         <g:HTMLPanel styleName="translationWorkspace">

@@ -66,7 +66,7 @@ public class USDocument extends DatabaseObject {
     /**
      * List of users who can access this docunment
      */
-    private volatile List<DocumentUsers> documentUsers;
+    private volatile List<USDocumentUsers> documentUsers;
     
     /**
      * Document id to be shared with other users
@@ -81,7 +81,7 @@ public class USDocument extends DatabaseObject {
      * @param document Shared document object.
      * @param user Owner of the document.
      */
-    public USDocument(Document document, USUser user, List<DocumentUsers> documentUsers) {
+    public USDocument(Document document, USUser user, List<USDocumentUsers> documentUsers) {
         this.document = document;
         document.setLastChange(new Date().getTime()); // current time, not be 1970 by default
         translationResults = Collections.synchronizedSortedMap(new TreeMap<ChunkIndex, USTranslationResult>());
@@ -103,27 +103,6 @@ public class USDocument extends DatabaseObject {
         document = new Document();
         translationResults = Collections.synchronizedSortedMap(new TreeMap<ChunkIndex, USTranslationResult>());
         ownerDatabaseId = 0;
-    }
-
-    /**
-     * Gets the path of the video on the user's local machine which was used
-     * last time the client run. It is private because it is used by Hibernate
-     * only.
-     *
-     * @return
-     */
-    private String getLocalMoviePath() {
-        return document.getMoviePath();
-    }
-
-    /**
-     * Sets the path to the video on the user's local machine. It is private
-     * beacause it is use by Hibernate only.
-     *
-     * @param moviePath Local path to a video file.
-     */
-    private void setLocalMoviePath(String moviePath) {
-        document.setMoviePath(moviePath);
     }
 
     /**
@@ -490,14 +469,14 @@ public class USDocument extends DatabaseObject {
     /**
      * @return the documentUsers
      */
-    public List<DocumentUsers> getDocumentUsers() {
+    public List<USDocumentUsers> getDocumentUsers() {
         return documentUsers;
     }
 
     /**
      * @param documentUsers the documentUsers to set
      */
-    public void setDocumentUsers(List<DocumentUsers> documentUsers) {
+    public void setDocumentUsers(List<USDocumentUsers> documentUsers) {
         this.documentUsers = documentUsers;
     }
 

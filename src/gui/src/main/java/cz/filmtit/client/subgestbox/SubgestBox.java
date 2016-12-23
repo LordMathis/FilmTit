@@ -199,7 +199,7 @@ public class SubgestBox extends RichTextArea implements Comparable<SubgestBox> {
         if (this.workspace == null) {
             Gui.log("workspace for subgestbox is null!!!");
         }
-        
+
         this.posteditBox = null;
 
         this.setHeight("36px");
@@ -390,7 +390,11 @@ public class SubgestBox extends RichTextArea implements Comparable<SubgestBox> {
      * TranslationResult.
      */
     public void showSuggestions() {
+
         if (this.getSuggestions().size() > 0) {
+
+            Gui.log(LevelLogEnum.Error, "SubgestBox", "showSuggestions");
+
             // showing the suggestions always below this SubgestBox:
             final UIObject relativeObject = this;
             suggestPanel.setPopupPositionAndShow(new PopupPanel.PositionCallback() {

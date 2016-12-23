@@ -45,7 +45,7 @@ import cz.filmtit.client.callables.DeleteDocument;
 import cz.filmtit.client.callables.GetListOfDocuments;
 import cz.filmtit.client.dialogs.AddDocumentDialog;
 import cz.filmtit.client.dialogs.DownloadDialog;
-import cz.filmtit.client.dialogs.ShareDialog;
+import cz.filmtit.client.dialogs.SettingsDialog;
 import cz.filmtit.share.Document;
 import cz.filmtit.share.LevelLogEnum;
 
@@ -226,16 +226,16 @@ public class UserPage extends Composite {
         });
         
         // share button
-        com.google.gwt.user.cellview.client.Column<Document, String> shareButton = new com.google.gwt.user.cellview.client.Column<Document, String>(buttonCell) {
+        com.google.gwt.user.cellview.client.Column<Document, String> settingsButton = new com.google.gwt.user.cellview.client.Column<Document, String>(buttonCell) {
             @Override
             public String getValue(Document doc) {
-                return "Share";
+                return "Settings";
             }
         };
 
-        shareButton.setFieldUpdater(new FieldUpdater<Document, String>() {
+        settingsButton.setFieldUpdater(new FieldUpdater<Document, String>() {
             public void update(int index, Document doc, String value) {
-                new ShareDialog(doc);
+                new SettingsDialog(Gui.getUser(), doc);
             }
         });
 
@@ -261,7 +261,7 @@ public class UserPage extends Composite {
         docTable.addColumn(doneClm, "Translated");
         docTable.addColumn(lastEditedClm, "Last edited");
         docTable.addColumn(buttonClm, "Edit");
-        docTable.addColumn(shareButton, "Share");
+        docTable.addColumn(settingsButton, "Settings");
         docTable.addColumn(exportSubtitlesButton, "Export");
         docTable.addColumn(deleteButton, "Delete");
 
@@ -275,6 +275,7 @@ public class UserPage extends Composite {
     void editDocument(Document document) {
         
         Gui.getPageHandler().setDocumentId(document.getId());
+        
         Gui.getPageHandler().loadPage(Page.TranslationWorkspace);
     }
 
@@ -316,12 +317,4 @@ public class UserPage extends Composite {
     @UiField
     com.github.gwtbootstrap.client.ui.CellTable<Document> docTable;
 
-    /*   @UiField
-    TabPanel tabPanel;
-
-    @UiField
-    Tab tabDocumentList;
-
-    @UiField
-    Tab tabNewDocument;*/
 }

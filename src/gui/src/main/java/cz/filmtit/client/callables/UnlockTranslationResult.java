@@ -46,7 +46,7 @@ public class UnlockTranslationResult extends Callable<Void> {
 
     public UnlockTranslationResult(SubgestBox subgestBox, TranslationWorkspace workspace, SubgestBox toLockBox) {
         super();
-
+        
         retries = 0;
         this.tResult = subgestBox.getTranslationResult();
         this.subgestBox = subgestBox;
