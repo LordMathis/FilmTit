@@ -13,8 +13,8 @@ import cz.filmtit.client.SubtitleSynchronizer;
 import cz.filmtit.share.ChunkStringGenerator;
 import cz.filmtit.share.LevelLogEnum;
 import cz.filmtit.share.TranslationResult;
-import java.text.DecimalFormat;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import open.pandurang.gwt.youtube.client.ApiReadyEvent;
@@ -36,57 +36,67 @@ public class YoutubeVideoWidget extends Composite implements VideoWidget {
     }
 
     /**
-     *
+     * Youtube player
      */
     YouTubePlayer player;
 
     /**
-     *
+     * displays source language subtitles
      */
     Label leftLabel;
 
     /**
-     *
+     * displays target language subtitles
      */
     Label rightLabel;
 
     /**
-     *
+     * Time of a video currently playing
      */
     float currentTime;
 
     /**
-     *
+     * timer that handles changing subtitles in labels
      */
     Timer timer;
 
     /**
-     *
+     * holds the currently displayed subtitle chunks
      */
     SubtitleSynchronizer synchronizer;
 
     /**
-     *
+     * holds currently loaded subtitle chunks
      */
     Collection<TranslationResult> currentLoaded;
 
     /**
+     * wrapper panel which holds the ui
+     */
+    @UiField
+    HorizontalPanel videoWrapper;
+
+    /**
+     * Creates Youtube video player widget
      *
-     * @param src
+     * @param src Youtube video id
      */
     public YoutubeVideoWidget(final String src, SubtitleSynchronizer synchronizer) {
 
         initWidget(uiBinder.createAndBindUi(this));
 
-        leftLabel = new Label("Left Label");
+        leftLabel = new Label();
         leftLabel.setWidth("292px");
         leftLabel.setHeight("100%");
 
-        rightLabel = new Label("Right Label");
+        rightLabel = new Label();
         rightLabel.setWidth("292px");
         rightLabel.setHeight("100%");
 
         this.synchronizer = synchronizer;
+
+        currentTime = 0;
+        currentLoaded = new HashSet<TranslationResult>();
 
         timer = new Timer() {
             @Override
@@ -126,46 +136,61 @@ public class YoutubeVideoWidget extends Composite implements VideoWidget {
         });
     }
 
+    /**
+     * plays video at given time
+     *
+     * @param position positions at which to play video
+     */
     @Override
     public void playPart(int position) {
         player.getPlayer().seekTo(position - 1, true);
         player.getPlayer().playVideo();
     }
 
+    /**
+     * updates subtitle labels when the video is playing
+     */
     private void updateLabels() {
 
         float newTime = player.getPlayer().getCurrentTime() * 1000;
         if (newTime != currentTime) {
 
-            currentLoaded = synchronizer.getTranslationResultsByTime(currentTime, newTime + 1000);
+            cleanList(currentTime);
+            Collection<TranslationResult> translationResultsByTime = synchronizer.getTranslationResultsByTime(currentTime, newTime + 1000);
+            if (translationResultsByTime != null) {
+                currentLoaded.addAll(translationResultsByTime);
+            }
 
-            //Gui.log(LevelLogEnum.Error, "YoutubeVideoWidget.updateLabels()", currentLoaded.toString());
             List<TranslationResult> correct = getCorrect(currentLoaded, newTime);
 
-            String source = null;
-            String target = null;
+            String source = "";
+            String target = "";
 
             if (correct != null) {
                 source = ChunkStringGenerator.listWithSameTimeToString(correct, ChunkStringGenerator.SOURCE_SIDE);
                 target = ChunkStringGenerator.listWithSameTimeToString(correct, ChunkStringGenerator.TARGET_SIDE);
+
             }
 
-            if (source != null && !source.isEmpty()) {
-                leftLabel.setText(source);
-            }
-            if (target != null && !target.isEmpty()) {
-                rightLabel.setText(target);
-            }
+            leftLabel.setText(source);
+            rightLabel.setText(target);
+
             currentTime = newTime;
         }
     }
 
+    /**
+     * gets correct subtitle chunks at given time
+     *
+     * @param subset subset of subtitle chunks to get correct from
+     * @param time time of subtitles
+     * @return
+     */
     public List<TranslationResult> getCorrect(Collection<TranslationResult> subset, double time) {
         //subset should be already sorted by starting times
         List<TranslationResult> res = null;
         Long correctTime = null;
 
-        //Gui.log(LevelLogEnum.Error, "YoutubeVideoWidget.getCorrect1()", subset.toString());
         for (TranslationResult tr : subset) {
             if (tr == null) {
                 Gui.log(LevelLogEnum.Error, "YoutubeVideoWidget", "TranslationResult null!");
@@ -189,11 +214,24 @@ public class YoutubeVideoWidget extends Composite implements VideoWidget {
             }
         }
 
-        //Gui.log(LevelLogEnum.Error, "YoutubeVideoWidget.getCorrect2()", r);
         return res;
     }
 
-    @UiField
-    HorizontalPanel videoWrapper;
+    /**
+     * removes subtitle chunks with wrong time from currentLoaded
+     * @param currentTime
+     */
+    private void cleanList(float currentTime) {
+
+        if (currentLoaded == null) {
+            return;
+        }
+
+        for (TranslationResult translationResult : currentLoaded) {
+            if (translationResult.getSourceChunk().getEndTimeLong() < currentTime) {
+                currentLoaded.remove(translationResult);
+            }
+        }
+    }
 
 }

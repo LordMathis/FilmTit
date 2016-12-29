@@ -33,6 +33,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 
 import cz.filmtit.client.Gui;
+import cz.filmtit.client.YoutubeUrlParser;
 import org.vectomatic.file.File;
 import org.vectomatic.file.FileList;
 import org.vectomatic.file.FileReader;
@@ -176,7 +177,7 @@ public class DocumentCreator extends Composite {
         Boolean isLocalFile = true;
         
         if (!remoteURL.isEmpty()) {
-            moviePath = remoteURL;
+            moviePath = YoutubeUrlParser.parse(remoteURL);
             isLocalFile = false;
         } else if (localFile != null) {
             moviePath = localFile.createObjectURL();

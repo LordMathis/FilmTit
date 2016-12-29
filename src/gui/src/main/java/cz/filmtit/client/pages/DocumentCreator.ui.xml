@@ -59,6 +59,7 @@
                     <b:ControlLabel>Local File</b:ControlLabel>
                     <b:Controls>
                         <lgf:FileUploadExt ui:field="videoUpload" />
+                        <b:Label type="WARNING">Local file will not be saved across sessions</b:Label>                        
                     </b:Controls>
                 </b:ControlGroup>
                 

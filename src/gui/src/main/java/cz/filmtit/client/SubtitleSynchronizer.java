@@ -47,7 +47,7 @@ public class SubtitleSynchronizer {
         ChunkTimePosition posStart = new ChunkTimePosition(Math.min(start, end), 0);
         ChunkTimePosition posEnd = new ChunkTimePosition(Math.max(start, end), 100);
         Collection<TranslationResult> values = resultsByTime.subMap(posStart, posEnd).values();
-                
+                       
         return values;
     }
 
