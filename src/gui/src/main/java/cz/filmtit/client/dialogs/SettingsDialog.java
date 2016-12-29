@@ -15,12 +15,11 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Widget;
-import cz.filmtit.client.Gui;
+import cz.filmtit.client.YoutubeUrlParser;
 import cz.filmtit.client.callables.GetShareId;
 import cz.filmtit.client.callables.LoadDocumentSettings;
 import cz.filmtit.client.callables.SaveSettings;
 import cz.filmtit.share.Document;
-import cz.filmtit.share.LevelLogEnum;
 import cz.filmtit.share.User;
 import org.vectomatic.file.File;
 import org.vectomatic.file.FileUploadExt;
@@ -145,7 +144,7 @@ public class SettingsDialog extends Dialog {
         File localFile = getFileUpload().getFiles().getItem(0);
 
         if (!remoteURL.isEmpty()) {
-            moviePath = remoteURL;
+            moviePath = YoutubeUrlParser.parse(remoteURL);
             isLocalFile = false;
         } else if (localFile != null) {
             moviePath = localFile.createObjectURL();

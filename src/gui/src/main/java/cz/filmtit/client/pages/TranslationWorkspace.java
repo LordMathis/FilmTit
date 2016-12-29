@@ -130,7 +130,7 @@ public class TranslationWorkspace extends Composite {
      * Youtube Video Player Widget
      */
     private YoutubeVideoWidget ytVideoPlayer;
-    
+
     /**
      * Local File Video Player Widget
      */
@@ -412,17 +412,17 @@ public class TranslationWorkspace extends Composite {
                 break;
         }
 
-        
-        if (!getMoviePath().isEmpty()) {
+        if (getMoviePath() != null) {
+            if (!getMoviePath().isEmpty()) {
 
-            if (!getIsLocalFile()) {
-                ytVideoPlayer = new YoutubeVideoWidget(moviePath, synchronizer);
-                panelForVideo.setWidget(ytVideoPlayer);
-            } else {
-                fileVideoPlayer = new FileVideoWidget(moviePath);
-                panelForVideo.setWidget(fileVideoPlayer);
+                if (!getIsLocalFile()) {
+                    ytVideoPlayer = new YoutubeVideoWidget(moviePath, synchronizer);
+                    panelForVideo.setWidget(ytVideoPlayer);
+                } else {
+                    fileVideoPlayer = new FileVideoWidget(moviePath);
+                    panelForVideo.setWidget(fileVideoPlayer);
+                }
             }
-            
         }
 
         scrollPanel.setStyleName("scrollPanel");
@@ -797,11 +797,10 @@ public class TranslationWorkspace extends Composite {
         } else {
             table.getRowFormatter().addStyleName(index + 1, "row_group_begin");
         }
-        
-       /* if (posteditOn) {
+
+        /* if (posteditOn) {
             table.getCellFormatter().addStyleName(index + 1, index, moviePath);
         }*/
-
     }
 
     /**

@@ -85,11 +85,11 @@ public class YoutubeVideoWidget extends Composite implements VideoWidget {
 
         initWidget(uiBinder.createAndBindUi(this));
 
-        leftLabel = new Label("Left Label");
+        leftLabel = new Label();
         leftLabel.setWidth("292px");
         leftLabel.setHeight("100%");
 
-        rightLabel = new Label("Right Label");
+        rightLabel = new Label();
         rightLabel.setWidth("292px");
         rightLabel.setHeight("100%");
 
