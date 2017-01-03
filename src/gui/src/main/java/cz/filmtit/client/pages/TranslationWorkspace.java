@@ -419,7 +419,7 @@ public class TranslationWorkspace extends Composite {
                     ytVideoPlayer = new YoutubeVideoWidget(moviePath, synchronizer);
                     panelForVideo.setWidget(ytVideoPlayer);
                 } else {
-                    fileVideoPlayer = new FileVideoWidget(moviePath);
+                    fileVideoPlayer = new FileVideoWidget(moviePath, synchronizer);
                     panelForVideo.setWidget(fileVideoPlayer);
                 }
             }
