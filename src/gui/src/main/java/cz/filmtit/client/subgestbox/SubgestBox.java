@@ -393,8 +393,6 @@ public class SubgestBox extends RichTextArea implements Comparable<SubgestBox> {
 
         if (this.getSuggestions().size() > 0) {
 
-            Gui.log(LevelLogEnum.Error, "SubgestBox", "showSuggestions");
-
             // showing the suggestions always below this SubgestBox:
             final UIObject relativeObject = this;
             suggestPanel.setPopupPositionAndShow(new PopupPanel.PositionCallback() {
