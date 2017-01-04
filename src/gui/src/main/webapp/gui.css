@@ -140,6 +140,12 @@ body {
 	border-bottom: 1px solid #EEE;
 	cursor: pointer;
 }
+
+.suggestionItem-error {
+    color: red;
+    
+}
+
 .suggestionItem p {
 	margin: 4px 0;
 }
@@ -288,7 +294,7 @@ iframe.gwt-RichTextArea, .pre_subgestbox {
 .subtitleDisplayedLeft, .subtitleDisplayedRight {
     width: 270px;
     min-height: 10px;
-    color:white;
+    color:black;
     position: relative;
     top: 80px;
     float:left;

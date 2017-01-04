@@ -302,13 +302,6 @@ public class TranslationWorkspace extends Composite {
     }
 
     /**
-     * @return the videoPlayer
-     */
-    public YoutubeVideoWidget getVideoPlayer() {
-        return ytVideoPlayer;
-    }
-
-    /**
      * Sets the subgestbox that is currently active.
      */
     public void setActiveSuggestionWidget(Widget w) {
@@ -362,6 +355,20 @@ public class TranslationWorkspace extends Composite {
      */
     public void setIsLocalFile(Boolean isLocalFile) {
         this.isLocalFile = isLocalFile;
+    }
+
+    /**
+     * @return the ytVideoPlayer
+     */
+    public YoutubeVideoWidget getYtVideoPlayer() {
+        return ytVideoPlayer;
+    }
+
+    /**
+     * @return the fileVideoPlayer
+     */
+    public FileVideoWidget getFileVideoPlayer() {
+        return fileVideoPlayer;
     }
 
     /**

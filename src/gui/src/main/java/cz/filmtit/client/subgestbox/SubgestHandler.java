@@ -32,7 +32,7 @@ import cz.filmtit.client.pages.TranslationWorkspace;
  * Universal event-handler for all {@link SubgestBox} instances in one
  * {@link TranslationWorkspace} instance.
  */
-public class SubgestHandler implements FocusHandler, KeyDownHandler, KeyUpHandler, ClickHandler, ChangeHandler {
+public class SubgestHandler implements FocusHandler, KeyDownHandler, KeyUpHandler, ChangeHandler {
 
     private TranslationWorkspace workspace;
 
@@ -61,14 +61,12 @@ public class SubgestHandler implements FocusHandler, KeyDownHandler, KeyUpHandle
                 unlockedPosteditBox.setEnabled(true);
             }
         }
-        
-        
+
         new ReloadTranslationResults(workspace.getCurrentDocument().getId(), workspace);
 
-        if (event.getSource() instanceof SubgestBox) { 
+        if (event.getSource() instanceof SubgestBox) {
             final SubgestBox subbox = (SubgestBox) event.getSource();
-            
-            
+
             if (workspace.getLockedSubgestBox() == null) {
                 new LockTranslationResult(subbox, workspace);
             } else if (workspace.getLockedSubgestBox() != subbox) {
@@ -109,10 +107,12 @@ public class SubgestHandler implements FocusHandler, KeyDownHandler, KeyUpHandle
                     }
                 });
             }
-            
+
             int position = (int) (subbox.getChunk().getStartTimeLong() / 1000);
-            if (workspace.getVideoPlayer() != null) {
-                workspace.getVideoPlayer().playPart(position);
+            if (workspace.getYtVideoPlayer() != null) {
+                workspace.getYtVideoPlayer().playPart(position);
+            } else if (workspace.getFileVideoPlayer() != null) {
+                workspace.getFileVideoPlayer().playPart(position);
             }
 
             subbox.updateVerticalSize();
@@ -240,19 +240,6 @@ public class SubgestHandler implements FocusHandler, KeyDownHandler, KeyUpHandle
                     posteditBox.updateVerticalSize();
                 }
             });
-        }
-    }
-
-    @Override
-    public void onClick(ClickEvent event) {
-
-        if (event.getSource() instanceof SubgestBox) {
-            final SubgestBox subbox = (SubgestBox) event.getSource();
-            long time = subbox.getChunk().getStartTimeLongNonZero();
-
-            if (workspace.getVideoPlayer() != null) {
-                //workspace.getVideoPlayer().maybePlayWindow(time);
-            }
         }
     }
 

@@ -90,8 +90,6 @@ class BackoffTranslationMemory(
           case Some(r) => r.rank(chunk, mediaSource, pairs)
           case None => pairs
         }).filter(pair => pair.getScore >= level.threshold)
-
-        //LOG.info(results)
         
         val s3 = System.currentTimeMillis
 

@@ -55,7 +55,6 @@ public class PosteditBox extends RichTextArea implements Comparable<PosteditBox>
         this.addFocusHandler(this.workspace.subgestHandler);
         this.addKeyDownHandler(this.workspace.subgestHandler);
         this.addKeyUpHandler(this.workspace.subgestHandler);
-        this.addClickHandler(this.workspace.subgestHandler);
         this.setTabIndex(tabIndex);
 
         this.addStyleName("subgest_fullwidth");

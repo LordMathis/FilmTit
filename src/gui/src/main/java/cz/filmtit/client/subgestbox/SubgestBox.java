@@ -208,8 +208,6 @@ public class SubgestBox extends RichTextArea implements Comparable<SubgestBox> {
         this.addFocusHandler(this.workspace.subgestHandler);
         this.addKeyDownHandler(this.workspace.subgestHandler);
         this.addKeyUpHandler(this.workspace.subgestHandler);
-        this.addClickHandler(this.workspace.subgestHandler);
-
         this.setTabIndex(tabIndex);
 
         this.addStyleName("subgest_fullwidth");
@@ -363,19 +361,21 @@ public class SubgestBox extends RichTextArea implements Comparable<SubgestBox> {
         selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
             public void onSelectionChange(SelectionChangeEvent event) {
                 TranslationPair selected = selectionModel.getSelectedObject();
-                if (selected != null) {
-                    translationResult.setSelectedTranslationPairID(selected.getId());
-                    // copy the selected suggestion into the richtextarea with the annotation highlighting:
-                    setHTML(subgestBoxHTML(getAnnotatedSuggestionFromChunk(selected.getChunkL2())));
-                    // contents have changed - resize if necessary:
-                    updateVerticalSize();
+                if (!(selected instanceof TranslationError)) {
+                    if (selected != null) {
+                        translationResult.setSelectedTranslationPairID(selected.getId());
+                        // copy the selected suggestion into the richtextarea with the annotation highlighting:
+                        setHTML(subgestBoxHTML(getAnnotatedSuggestionFromChunk(selected.getChunkL2())));
+                        // contents have changed - resize if necessary:
+                        updateVerticalSize();
 
-                    Scheduler.get().scheduleDeferred(new ScheduledCommand() {
-                        @Override
-                        public void execute() {
-                            SubgestBox.this.setFocus(true);
-                        }
-                    });
+                        Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+                            @Override
+                            public void execute() {
+                                SubgestBox.this.setFocus(true);
+                            }
+                        });
+                    }
                 }
             }
         });
