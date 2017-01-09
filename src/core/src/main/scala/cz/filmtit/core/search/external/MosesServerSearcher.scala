@@ -85,9 +85,8 @@ class MosesServerSearcher(
     val candidates = ListBuffer[TranslationPair]()
 
 
-    //TODO: add exception handling!
     if (apiResponse.getInt("errorCode") != 0) {
-      logger.info("Moses server error: " + apiResponse.getString("errorMessage"))
+      //logger.info("Moses server error: " + apiResponse.getString("errorMessage"))
       val result = new TranslationError(apiResponse.getInt("errorCode"), apiResponse.getString("errorMessage"))
       candidates += result
       return candidates.toList

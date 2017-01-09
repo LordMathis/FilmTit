@@ -21,7 +21,7 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import cz.filmtit.core.Configuration;
 import cz.filmtit.core.ConfigurationSingleton;
 import cz.filmtit.core.Factory;
-import cz.filmtit.core.io.data.FreebaseMediaSourceFactory;
+import cz.filmtit.core.io.data.OpenMovieDBMediaSourceFactory;
 import cz.filmtit.core.model.MediaSourceFactory;
 import cz.filmtit.core.model.TranslationMemory;
 import cz.filmtit.share.*;
@@ -181,7 +181,7 @@ public class FilmTitBackendServer extends RemoteServiceServlet implements
 
         loadTranslationMemory();
 
-        mediaSourceFactory = new FreebaseMediaSourceFactory(configuration.freebaseKey(), 10);
+        mediaSourceFactory = new OpenMovieDBMediaSourceFactory();
 
         String serverAddress = configuration.serverAddress();
         new WatchSessionTimeOut().start(); // runs deleting timed out sessions

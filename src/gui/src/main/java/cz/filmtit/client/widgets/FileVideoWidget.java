@@ -6,8 +6,6 @@
 package cz.filmtit.client.widgets;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ProgressEvent;
-import com.google.gwt.event.dom.client.ProgressHandler;
 import com.google.gwt.media.client.Video;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -80,10 +78,12 @@ public class FileVideoWidget extends Composite implements VideoWidget {
         leftLabel = new Label("Left Label");
         leftLabel.setWidth("292px");
         leftLabel.setHeight("100%");
+        leftLabel.addStyleName("subtitleDisplayedLeft");
 
         rightLabel = new Label("Right Label");
         rightLabel.setWidth("292px");
         rightLabel.setHeight("100%");
+        rightLabel.addStyleName("subtitleDisplayedRight");
 
         videoWrapper.add(leftLabel);
         videoWrapper.add(player);

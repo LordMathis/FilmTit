@@ -26,7 +26,7 @@ import org.vectomatic.file.FileUploadExt;
 
 /**
  *
- * @author matus
+ * @author Matus Namesny
  */
 public class SettingsDialog extends Dialog {
 
@@ -96,7 +96,7 @@ public class SettingsDialog extends Dialog {
 
     public SettingsDialog(User user, Document doc) {
         initWidget(uiBinder.createAndBindUi(this));
-        
+
         this.doc = doc;
         this.user = user;
 
@@ -130,6 +130,14 @@ public class SettingsDialog extends Dialog {
     @UiHandler("btnCancel")
     void onClick(ClickEvent e) {
         this.close();
+    }
+
+    @UiField
+    Button btnClear;
+    
+    @UiHandler("btnClear")
+    void clearText(ClickEvent e) {
+        ytURL.setText("");
     }
 
     @UiField

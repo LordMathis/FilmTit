@@ -88,10 +88,12 @@ public class YoutubeVideoWidget extends Composite implements VideoWidget {
         leftLabel = new Label();
         leftLabel.setWidth("292px");
         leftLabel.setHeight("100%");
+        leftLabel.addStyleName("subtitleDisplayedLeft");
 
         rightLabel = new Label();
         rightLabel.setWidth("292px");
         rightLabel.setHeight("100%");
+        rightLabel.addStyleName("subtitleDisplayedRight");
 
         this.synchronizer = synchronizer;
 
