@@ -18,7 +18,7 @@ along with FilmTit.  If not, see <http://www.gnu.org/licenses/>.*/
 package cz.filmtit.core.io.data
 
 import _root_.java.io.IOException
-import javax.net.ssl.{TrustManager, X509TrustManager, HttpsURLConnection, SSLContext}
+import javax.net.ssl.{ TrustManager, X509TrustManager, HttpsURLConnection, SSLContext }
 import javax.security.cert
 import java.security.cert.X509Certificate
 import cz.filmtit.share.MediaSource
@@ -26,13 +26,15 @@ import io.Source
 import java.net.URLEncoder
 import scala.collection.JavaConversions._
 import net.liftweb.json.JsonAST._
-import net.liftweb.json.{MappingException, JsonParser}
+import net.liftweb.json.{ MappingException, JsonParser }
 import cz.filmtit.core.model.MediaSourceFactory
 import java.util.ArrayList
 import scala.Some
 
 /**
  * A [[cz.filmtit.core.model.MediaSourceFactory]] based on data from Freebase.com.
+ *
+ * @deprecated
  *
  * @author Joachim Daiber
  */
@@ -74,7 +76,6 @@ class FreebaseMediaSourceFactory(val apiKey: String, val n: Int = 10) extends Me
 
   val fbDateFormat = new java.text.SimpleDateFormat("yyyy-MM-dd")
   val yearFormat = new java.text.SimpleDateFormat("yyyy")
-
 
   def yearFromFB(fbDate: String): String = {
     try {
@@ -136,7 +137,6 @@ class FreebaseMediaSourceFactory(val apiKey: String, val n: Int = 10) extends Me
     Some(ms)
   }
 
-
   /**
    * Retrieve more information abount a Freebase entity of type /tv/tv_programme
    *
@@ -158,7 +158,6 @@ class FreebaseMediaSourceFactory(val apiKey: String, val n: Int = 10) extends Me
             }
         } """.format(mid)
     )
-
 
     val ms = new MediaSource()
 
@@ -222,7 +221,7 @@ class FreebaseMediaSourceFactory(val apiKey: String, val n: Int = 10) extends Me
 
   def getSuggestions(title: String): java.util.List[MediaSource] = {
     val moviesFromFreebase = try {
-       new ArrayList((getMoviesByTitle(title) \ "result").children.map(getMediaSource).flatten)
+      new ArrayList((getMoviesByTitle(title) \ "result").children.map(getMediaSource).flatten)
     } catch {
       case e: IOException => new ArrayList[MediaSource]()
     }
@@ -260,11 +259,13 @@ class FreebaseMediaSourceFactory(val apiKey: String, val n: Int = 10) extends Me
     val response = title match {
       case tvShowPattern(titleShow) => {
         Source.fromURL("https://www.googleapis.com/freebase/v1/search?query=%s&limit=%d&indent=true&filter=(any%%20type:/tv/tv_program)%s".format(
-          URLEncoder.encode(titleShow, "utf-8"), n, urlApiKey)).getLines().mkString("")
+          URLEncoder.encode(titleShow, "utf-8"), n, urlApiKey
+        )).getLines().mkString("")
       }
       case _ => {
         Source.fromURL("https://www.googleapis.com/freebase/v1/search?query=%s&limit=%d&indent=true&filter=(any%%20type:/tv/tv_program%%20type:/film/film)%s".format(
-          URLEncoder.encode(title, "utf-8"), n, urlApiKey)).getLines().mkString("")
+          URLEncoder.encode(title, "utf-8"), n, urlApiKey
+        )).getLines().mkString("")
       }
     }
 

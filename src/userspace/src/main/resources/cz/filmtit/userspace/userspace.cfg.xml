@@ -5,6 +5,7 @@
 
 <hibernate-configuration>
     <session-factory>
+        
         <property name="hibernate.connection.driver_class">
             org.postgresql.Driver
         </property>
@@ -28,6 +29,15 @@
         <mapping resource="cz/filmtit/userspace/MediaSource.hbm.xml" />
         <mapping resource="cz/filmtit/userspace/log.hbm.xml" />
         <mapping resource="cz/filmtit/userspace/USDocumentUsers.hbm.xml" />
+        
+        <listener class="org.hibernate.envers.event.AuditEventListener" type="post-insert"/>
+        <listener class="org.hibernate.envers.event.AuditEventListener" type="post-update"/>
+        <listener class="org.hibernate.envers.event.AuditEventListener" type="post-delete"/>
+        <listener class="org.hibernate.envers.event.AuditEventListener" type="pre-collection-update"/>
+        <listener class="org.hibernate.envers.event.AuditEventListener" type="pre-collection-remove"/>
+        <listener class="org.hibernate.envers.event.AuditEventListener" type="post-collection-recreate"/>
+        
+        
 
     </session-factory>
 </hibernate-configuration>

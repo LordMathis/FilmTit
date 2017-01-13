@@ -70,6 +70,8 @@ class MosesServerSearcher(
 
       val params = "action=translate&model=0&sourceLang=" + language.getCode + "&targetLang=" + { if (language == l1) l2.getCode else l1.getCode } + "&nBestSize=5" + "&text=" + URLEncoder.encode(chunk.getSurfaceForm, "utf-8")
 
+      logger.info(url + "?" + params)
+      
       new JSONObject(
         Source.fromURL(
         url + "?" + params

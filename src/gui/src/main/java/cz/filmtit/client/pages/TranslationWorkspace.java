@@ -34,6 +34,7 @@ import cz.filmtit.client.SubtitleSynchronizer;
 import cz.filmtit.client.callables.*;
 import cz.filmtit.client.dialogs.TimeEditDialog;
 import cz.filmtit.client.subgestbox.PosteditBox;
+import cz.filmtit.client.subgestbox.PosteditHandler;
 import cz.filmtit.client.subgestbox.SubgestBox;
 import cz.filmtit.client.subgestbox.SubgestHandler;
 import cz.filmtit.client.widgets.FileVideoWidget;
@@ -90,6 +91,11 @@ public class TranslationWorkspace extends Composite {
      * Handles events for all {@link SubgestBox} instances in this workspace.
      */
     public SubgestHandler subgestHandler;
+    
+    /**
+     * 
+     */
+    public PosteditHandler posteditHandler;
 
     /**
      * List of Fake SubgestBoxes which are more lightweight and will be replaced
@@ -445,8 +451,9 @@ public class TranslationWorkspace extends Composite {
         table.setWidth("100%");
         translationHPanel.setCellWidth(scrollPanel, "100%");
         this.subgestHandler = new SubgestHandler(this);
+        this.posteditHandler = new PosteditHandler(this);
 
-        if (posteditOn) {
+     /*   if (posteditOn) {
 
             table.getColumnFormatter().setWidth(TIMES_COLNUMBER, "164px");
             table.getColumnFormatter().setWidth(SOURCETEXT_COLNUMBER, "260px");
@@ -465,7 +472,7 @@ public class TranslationWorkspace extends Composite {
             table.getColumnFormatter().setWidth(TARGETBOX_COLNUMBER, "390px");
             table.getColumnFormatter().setWidth(SOURCE_DIALOGMARK_COLNUMBER, "10px");
             table.getColumnFormatter().setWidth(TARGET_DIALOGMARK_COLNUMBER, "10px");
-        }
+        }*/
 
         table.setWidget(0, TIMES_COLNUMBER, new Label("Timing"));
         table.setWidget(0, SOURCETEXT_COLNUMBER, new Label("Original"));
@@ -805,8 +812,14 @@ public class TranslationWorkspace extends Composite {
             table.getRowFormatter().addStyleName(index + 1, "row_group_begin");
         }
 
-        /* if (posteditOn) {
-            table.getCellFormatter().addStyleName(index + 1, index, moviePath);
+         /*if (posteditOn) {
+            table.getCellFormatter().addStyleName(index + 1, TIMES_COLNUMBER, "times-postedit");
+            table.getCellFormatter().addStyleName(index + 1, SOURCE_DIALOGMARK_COLNUMBER, "dialogmark");
+            table.getCellFormatter().addStyleName(index + 1, SOURCETEXT_COLNUMBER, "sourcetext-postedit");
+            table.getCellFormatter().addStyleName(index + 1, TARGET_DIALOGMARK_COLNUMBER, "dialogmark");
+            table.getCellFormatter().addStyleName(index + 1, TARGETBOX_COLNUMBER, "targetbox-postedit");
+            table.getCellFormatter().addStyleName(index + 1, POSTEDIT_DIALOGMARK_COLNUMBER, "dialogmark");
+            table.getCellFormatter().addStyleName(index + 1, POSTEDIT_COLNUMBER, "posteditbox");            
         }*/
     }
 

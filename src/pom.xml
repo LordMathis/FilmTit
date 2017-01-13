@@ -154,13 +154,7 @@
             <url>http://download.java.net/maven/2/</url>
             <layout>default</layout>
         </repository>
-        
-        <repository>
-            <id>bramosystems-releases</id>
-            <name>Bramosystems Release Repository</name>
-            <url>http://downloads.bramosystems.com/maven2/releases</url>
-        </repository>
-        
+                
         <repository>
             <id>Pandurang repo</id>
             <url>https://github.com/pandurangpatil/pandurang-mvn-repo/raw/master/releases</url>
@@ -361,6 +355,12 @@
             <version>1.4.0</version>
         </dependency>
         
+        <!-- https://mvnrepository.com/artifact/org.hibernate/hibernate-envers -->
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-envers</artifactId>
+            <version>4.1.0.Final</version>
+        </dependency>
 
         <!-- Java Mail API -->
         <dependency>

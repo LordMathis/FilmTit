@@ -61,7 +61,7 @@ class Configuration(configurationFile: InputStream) {
   val modelPath: String = (XMLFile \ "model_path").text
   val neRecognizers = HashMap[Language, List[Pair[AnnotationType, String]]]()
 
-  
+  /*
   //Read the NER models and them by their language
   (XMLFile \ "ner_models" \ "ner_model") foreach( ner_model => {
     val language_code = Language.fromCode( (ner_model \ "@language").text )
@@ -69,7 +69,7 @@ class Configuration(configurationFile: InputStream) {
       language_code, List[Pair[AnnotationType, String]]()
     ) ++ List(Pair(AnnotationType.fromDescription( (ner_model \ "@type").text ), modelPath + ner_model.text))
     neRecognizers.update(language_code, updated_models)
-  })
+  })*/
 
   //Read Tokenizers from the configuration
   var tokenizers = HashMap[Language, TokenizerModel]()
@@ -123,10 +123,6 @@ class Configuration(configurationFile: InputStream) {
 
   val SeznamEndpoint = (userspaceXML \ "openid" \ "seznamcz").text
   val SeznamNick =   (userspaceXML \ "openid" \ "nickname").text
-
-
-  val freebaseKey: String = (XMLFile \ "freebase_key").text
-
 
 
 }

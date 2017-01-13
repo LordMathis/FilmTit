@@ -34,12 +34,14 @@ import java.util.*;
 import java.util.regex.Pattern;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.hibernate.Query;
+import org.hibernate.annotations.Entity;
 
 /**
  * Represents a running session.
  *
  * @author Jindřich Libovický
  */
+@Entity
 public class Session {
 
     /**

@@ -25,7 +25,7 @@ class OpenMovieDBMediaSourceFactory extends MediaSourceFactory {
   def getSuggestions(title: String, year: String): java.util.List[MediaSource] = {
     val suggestions = getSuggestions(title)
     val filtered = new ArrayList[MediaSource]()
-    for (i <- 0 to suggestions.size()) {
+    for (i <- 0 to suggestions.size() - 1) {
       if (suggestions.get(i).getYear() == year) {
         filtered.add(suggestions.get(i))
       }

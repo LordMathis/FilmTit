@@ -20,6 +20,7 @@ import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.Widget;
 import cz.filmtit.client.Gui;
 import cz.filmtit.client.pages.TranslationWorkspace;
+import cz.filmtit.share.LevelLogEnum;
 import cz.filmtit.share.TimedChunk;
 import cz.filmtit.share.TranslationResult;
 
@@ -33,9 +34,9 @@ public class PosteditBox extends RichTextArea implements Comparable<PosteditBox>
     private TimedChunk chunk;
     private TranslationResult translationResult;
     private TranslationWorkspace workspace;
-    private PopupPanel suggestPanel;
+    /*private PopupPanel suggestPanel;
     private Widget suggestionWidget;
-    private boolean loadedSuggestions = false;
+    private boolean loadedSuggestions = false;*/
     String lastText = "";
     private SubgestBox subgestBox;
 
@@ -52,12 +53,12 @@ public class PosteditBox extends RichTextArea implements Comparable<PosteditBox>
         this.setHeight("36px");
         this.setHTML(posteditBoxHTML(""));
 
-        this.addFocusHandler(this.workspace.subgestHandler);
-        this.addKeyDownHandler(this.workspace.subgestHandler);
-        this.addKeyUpHandler(this.workspace.subgestHandler);
+        this.addFocusHandler(this.workspace.posteditHandler);
+        this.addKeyDownHandler(this.workspace.posteditHandler);
+        this.addKeyUpHandler(this.workspace.posteditHandler);
         this.setTabIndex(tabIndex);
 
-        this.addStyleName("subgest_fullwidth");
+        this.addStyleName("posteditwidth");
 
         final RichTextArea richtext = this;
         richtext.addInitializeHandler(new InitializeHandler() {
@@ -142,20 +143,9 @@ public class PosteditBox extends RichTextArea implements Comparable<PosteditBox>
             this.setTabIndex(tabIndex);
             this.setStyleName("pre_subgestbox");
             this.addStyleName("loading");
-            this.addStyleName("subgest_fullwidth");
-        }
+            this.setHeight("36px");
 
-        /**
-         * Set the fakebox' height according to its current contents.
-         */
-        public void updateVerticalSize() {
-            int newHeight = this.getElement().getScrollHeight();
-            // setHeight probably sets the "inner" height, i.e. this would be a bit larger
-            // (everywhere but in Firefox):
-            if (!Window.Navigator.getUserAgent().matches(".*Firefox.*")) {
-                newHeight -= 16;
-            }
-            this.setHeight(newHeight + "px");
+            this.addStyleName("posteditwidth");
         }
 
         /**
@@ -180,9 +170,10 @@ public class PosteditBox extends RichTextArea implements Comparable<PosteditBox>
 
     }
 
-    private int getCorrectVerticalSize() {
+    public int getCorrectVerticalSize() {
         FrameElement frameElement = (FrameElement) this.getElement().cast();
         int newHeight = frameElement.getContentDocument().getScrollHeight();
+        Gui.log(LevelLogEnum.Error, "PosteditBox.getCorrectVerticalSize()", String.valueOf(newHeight));
         return newHeight;
     }
 
@@ -191,9 +182,16 @@ public class PosteditBox extends RichTextArea implements Comparable<PosteditBox>
      * contents.
      */
     public void updateVerticalSize() {
-        setHeight("36px"); // == height of the one-line SubgestBox
-        // grow from that, if necessary:
-        setHeight(getCorrectVerticalSize() + "px");
+
+        int verticalSize = getCorrectVerticalSize();
+        int subgestHeight = subgestBox.getCorrectVerticalSize();
+
+        int newHeight = Math.max(36, Math.max(verticalSize, subgestHeight));
+        setHeight(newHeight + "px");
+
+        if (newHeight != subgestHeight) {
+            subgestBox.updateVerticalSize();
+        }
     }
 
 }

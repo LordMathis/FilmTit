@@ -126,20 +126,13 @@ public class SubgestBox extends RichTextArea implements Comparable<SubgestBox> {
             this.setTabIndex(tabIndex);
             this.setStyleName("pre_subgestbox");
             this.addStyleName("loading");
-            this.addStyleName("subgest_fullwidth");
-        }
+            this.setHeight("36px");
 
-        /**
-         * Set the fakebox' height according to its current contents.
-         */
-        public void updateVerticalSize() {
-            int newHeight = this.getElement().getScrollHeight();
-            // setHeight probably sets the "inner" height, i.e. this would be a bit larger
-            // (everywhere but in Firefox):
-            if (!Window.Navigator.getUserAgent().matches(".*Firefox.*")) {
-                newHeight -= 16;
+            if (SubgestBox.this.workspace.isPosteditOn()) {
+                this.addStyleName("posteditwidth");
+            } else {
+                this.addStyleName("subgest_fullwidth");
             }
-            this.setHeight(newHeight + "px");
         }
 
         /**
@@ -210,7 +203,11 @@ public class SubgestBox extends RichTextArea implements Comparable<SubgestBox> {
         this.addKeyUpHandler(this.workspace.subgestHandler);
         this.setTabIndex(tabIndex);
 
-        this.addStyleName("subgest_fullwidth");
+        if (workspace.isPosteditOn()) {
+            this.addStyleName("posteditwidth");
+        } else {
+            this.addStyleName("subgest_fullwidth");
+        }
 
         final RichTextArea richtext = this;
         richtext.addInitializeHandler(new InitializeHandler() {
@@ -238,7 +235,6 @@ public class SubgestBox extends RichTextArea implements Comparable<SubgestBox> {
 
         if (userTranslation != null && !userTranslation.equals("")) {
             getSubstitute().setText(userTranslation);
-            getSubstitute().updateVerticalSize();
             this.setHTML(subgestBoxHTML(userTranslation));
             updateLastText();
         }
@@ -473,7 +469,7 @@ public class SubgestBox extends RichTextArea implements Comparable<SubgestBox> {
         this.lastText = this.getTextWithNewlines();
     }
 
-    private int getCorrectVerticalSize() {
+    public int getCorrectVerticalSize() {
         FrameElement frameElement = (FrameElement) this.getElement().cast();
         int newHeight = frameElement.getContentDocument().getScrollHeight();
         return newHeight;
@@ -484,9 +480,22 @@ public class SubgestBox extends RichTextArea implements Comparable<SubgestBox> {
      * contents.
      */
     public void updateVerticalSize() {
-        setHeight("36px"); // == height of the one-line SubgestBox
-        // grow from that, if necessary:
-        setHeight(getCorrectVerticalSize() + "px");
+
+        int verticalSize = getCorrectVerticalSize();
+        int posteditHeight = 0;
+
+        if (workspace.isPosteditOn()) {
+            posteditHeight = posteditBox.getCorrectVerticalSize();
+        }
+
+        int newHeight = Math.max(36, Math.max(verticalSize, posteditHeight));
+        setHeight(newHeight + "px");
+
+        if (workspace.isPosteditOn()) {
+            if (newHeight != posteditHeight) {
+                posteditBox.updateVerticalSize();
+            }
+        }
         // and refresh suggestions (to be placed correctly):
         showSuggestions();
     }
@@ -498,7 +507,8 @@ public class SubgestBox extends RichTextArea implements Comparable<SubgestBox> {
      * @return value of compareTo applied on the underlying TranslationResults
      */
     @Override
-    public int compareTo(SubgestBox that) {
+    public int compareTo(SubgestBox that
+    ) {
         return this.translationResult.compareTo(that.getTranslationResult());
     }
 
