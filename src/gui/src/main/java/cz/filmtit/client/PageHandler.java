@@ -325,7 +325,7 @@ public class PageHandler {
      * @param evenIfAlreadyLoaded reload the page if already loaded
      */
     private void loadPageToLoad(boolean evenIfAlreadyLoaded) {
-        if (pageToLoad != pageLoaded || evenIfAlreadyLoaded) {
+        if ((pageToLoad != pageLoaded) || evenIfAlreadyLoaded) {
 
             // unloading TranslationWorkspace
             if (pageLoaded == Page.TranslationWorkspace && TranslationWorkspace.getCurrentWorkspace() != null) {

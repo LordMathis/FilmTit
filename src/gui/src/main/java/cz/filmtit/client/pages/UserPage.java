@@ -243,13 +243,14 @@ public class UserPage extends Composite {
         com.google.gwt.user.cellview.client.Column<Document, String> deleteButton = new com.google.gwt.user.cellview.client.Column<Document, String>(buttonCell) {
             @Override
             public String getValue(Document doc) {
-                return "Delete";
+                return "Remove";
             }
         };
 
         deleteButton.setFieldUpdater(new FieldUpdater<Document, String>() {
             public void update(int index, Document doc, String value) {
-                if (Window.confirm("Do you really want to delete the document " + doc.getTitle() + "?")) {
+                if (Window.confirm("Do you really want to remove the document " + doc.getTitle() + " from your list of documents?"
+                        + "\nNote: Document will still be available to users who have access to this document.")) {
                     new DeleteDocument(doc.getId());
                 }
             }
@@ -263,7 +264,7 @@ public class UserPage extends Composite {
         docTable.addColumn(buttonClm, "Edit");
         docTable.addColumn(settingsButton, "Settings");
         docTable.addColumn(exportSubtitlesButton, "Export");
-        docTable.addColumn(deleteButton, "Delete");
+        docTable.addColumn(deleteButton, "Remove");
 
         // load documents
         new GetListOfDocuments(this);
@@ -310,7 +311,6 @@ public class UserPage extends Composite {
     
     @UiHandler("btnAddNewDoc")
     void newDocOnClick(ClickEvent event) {
-        Gui.log(LevelLogEnum.Error, "btnNewDoc", "It works!");
         new AddDocumentDialog();
     }
 

@@ -469,14 +469,32 @@ public class Session {
      * with such ID is not owned by the user.
      */
     public Void deleteDocument(long documentId) throws InvalidDocumentIdException {
-        USDocument document = getActiveDocument(documentId);
 
         activeDocuments.remove(documentId);
-        user.getOwnedDocuments().remove(documentId);
-        document.setToBeDeleted(true);
+        org.hibernate.Session session = usHibernateUtil.getSessionWithActiveTransaction();
+        USDocument usdoc = (USDocument) session.get(USDocument.class, documentId);
 
+        if (usdoc == null) {
+            throw new InvalidDocumentIdException("Document " + documentId + "does not exist");
+        }
+
+        List<USDocumentUsers> documentUsers = usdoc.getDocumentUsers();
+
+        for (Iterator<USDocumentUsers> it = documentUsers.iterator(); it.hasNext();) {
+            USDocumentUsers documentUser = it.next();
+            if (documentUser.getUserId() == this.getUserDatabaseId()) {
+                it.remove();
+                session.delete(documentUser);
+            }
+        }
+
+        usdoc.setDocumentUsers(documentUsers);
+        session.update(usdoc);
+        usHibernateUtil.closeAndCommitSession(session);
+
+        //document.setToBeDeleted(true);
         // take care of the database and the translation results in separate thread not to delay the RPC response
-        new DeleteDocumentRunner(document).run();
+        //new DeleteDocumentRunner(document).run();
         return null;
     }
 
@@ -491,14 +509,22 @@ public class Session {
         }
 
         List<USDocumentUsers> documentUsers = usdoc.getDocumentUsers();
+        DocumentUserSettings docSettings = null;
 
         for (USDocumentUsers documentUser : documentUsers) {
             if (documentUser.getUserId() == this.getUserDatabaseId()) {
-                return new DocumentUserSettings(this.getUserDatabaseId(), documentUser.getMoviePath(), documentUser.getPosteditOn(), documentUser.getLocalFile());
+                docSettings = new DocumentUserSettings(this.getUserDatabaseId(), documentUser.getMoviePath(), documentUser.getPosteditOn(), documentUser.getLocalFile());
+                break;
             }
         }
 
-        throw new InvalidUserIdException("User " + this.getUserDatabaseId() + "does not have access to document" + documentId);
+        usHibernateUtil.closeAndCommitSession(session);
+
+        if (docSettings != null) {
+            return docSettings;
+        } else {
+            throw new InvalidUserIdException("User " + this.getUserDatabaseId() + "does not have access to document" + documentId);
+        }
     }
 
     /**
@@ -613,7 +639,9 @@ public class Session {
         List<Document> result = new ArrayList<Document>();
 
         for (USDocument accessibleDocument : user.getAccessibleDocuments()) {
-            result.add(accessibleDocument.getDocument().documentWithoutResults());
+            if (accessibleDocument != null) {
+                result.add(accessibleDocument.getDocument().documentWithoutResults());
+            }
         }
 
         Collections.sort(result);
@@ -1163,17 +1191,17 @@ public class Session {
 
         return usdoc.getDocument();
     }
-    
+
     public synchronized Void saveSettings(Document doc, String moviePath, Boolean posteditOn, Boolean localFile) throws InvalidDocumentIdException {
         updateLastOperationTime();
-        
+
         org.hibernate.Session session = usHibernateUtil.getSessionWithActiveTransaction();
         USDocument usdoc = (USDocument) session.get(USDocument.class, doc.getId());
-        
+
         if (usdoc == null) {
             throw new InvalidDocumentIdException(String.valueOf(doc.getId()));
         }
-                
+
         boolean found = false;
         List<USDocumentUsers> documentUsers = usdoc.getDocumentUsers();
         for (USDocumentUsers documentUser : documentUsers) {
@@ -1185,11 +1213,11 @@ public class Session {
                 break;
             }
         }
-                
+
         session.saveOrUpdate(usdoc);
         usHibernateUtil.closeAndCommitSession(session);
-        
-        return  null;
+
+        return null;
     }
 
     /**
