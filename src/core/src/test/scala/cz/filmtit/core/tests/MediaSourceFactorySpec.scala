@@ -24,7 +24,7 @@ import org.scalatest.junit.JUnitRunner
 
 import org.scalatest.Spec
 import cz.filmtit.share.MediaSource
-import cz.filmtit.core.io.data.FreebaseMediaSourceFactory
+import cz.filmtit.core.io.data.OpenMovieDBMediaSourceFactory
 
 
 /**
@@ -36,7 +36,7 @@ import cz.filmtit.core.io.data.FreebaseMediaSourceFactory
 @RunWith(classOf[JUnitRunner])
 class MediaSourceFactorySpec extends Spec {
 
-  val msFactory = new FreebaseMediaSourceFactory()
+  val msFactory = new OpenMovieDBMediaSourceFactory()
 
   describe("A MediaSourceFactory") {
 

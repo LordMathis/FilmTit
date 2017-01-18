@@ -39,6 +39,7 @@ Uncomment this for XHTML entities
                         <b:ControlLabel>Youtube URL</b:ControlLabel>
                         <b:Controls>
                             <b:TextBox ui:field="ytURL"></b:TextBox>
+                            <b:Button ui:field="btnClear">Clear</b:Button>
                         </b:Controls>
                     </b:ControlGroup>
 

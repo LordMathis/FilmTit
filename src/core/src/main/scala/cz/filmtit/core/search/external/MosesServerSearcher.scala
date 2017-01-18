@@ -23,7 +23,7 @@ import org.apache.commons.logging.LogFactory
 import org.json.{ JSONArray, JSONObject }
 import cz.filmtit.core.model.TranslationPairSearcher
 import collection.mutable.ListBuffer
-import cz.filmtit.share.{ Language, TranslationPair, TranslationSource, Chunk }
+import cz.filmtit.share.{ Language, TranslationPair, TranslationError, TranslationSource, Chunk }
 
 /**
  * Translation pair searcher using standard Moses server
@@ -65,15 +65,17 @@ class MosesServerSearcher(
   val limit = 5
 
   def candidates(chunk: Chunk, language: Language): List[TranslationPair] = {
-    
+
     val apiResponse = try {
 
       val params = "action=translate&model=0&sourceLang=" + language.getCode + "&targetLang=" + { if (language == l1) l2.getCode else l1.getCode } + "&nBestSize=5" + "&text=" + URLEncoder.encode(chunk.getSurfaceForm, "utf-8")
-            
+
+      logger.info(url + "?" + params)
+      
       new JSONObject(
         Source.fromURL(
-          url + "?" + params
-        ).mkString
+        url + "?" + params
+      ).mkString
       )
 
     } catch {
@@ -82,24 +84,26 @@ class MosesServerSearcher(
         return List[TranslationPair]()
       }
     }
-
-    //TODO: add exception handling!
-    if (apiResponse.getInt("errorCode") != 0) {
-      logger.info("Moses server error: " + apiResponse.getString("errorMessage"))
-      //return candidates(chunk, language)
-    }
-    
     val candidates = ListBuffer[TranslationPair]()
+
+
+    if (apiResponse.getInt("errorCode") != 0) {
+      //logger.info("Moses server error: " + apiResponse.getString("errorMessage"))
+      val result = new TranslationError(apiResponse.getInt("errorCode"), apiResponse.getString("errorMessage"))
+      candidates += result
+      return candidates.toList
+    }
+
     val matches: JSONArray = try {
       apiResponse.getJSONArray("translation").getJSONObject(0).getJSONArray("translated")
     } catch {
       case e: org.json.JSONException => new JSONArray()
     }
-    
+
     //Retrieve all matches:
     for (i <- 0 to math.min(matches.length() - 1, limit)) {
       val translation = matches.getJSONObject(i)
-      
+
       //Set the chunks for the resulting translation pair
       val chunkL1 = if (language == l1) chunk else new Chunk(translation.getString("text"))
       val chunkL2 = if (language == l1) new Chunk(translation.getString("text")) else chunk

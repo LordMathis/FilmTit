@@ -1,48 +1,41 @@
-/*Copyright 2012 FilmTit authors - Karel Bílek, Josef Čech, Joachim Daiber, Jindřich Libovický, Rudolf Rosa, Jan Václ
-
-This file is part of FilmTit.
-
-FilmTit is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 2.0 of the License, or
-(at your option) any later version.
-
-FilmTit is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with FilmTit.  If not, see <http://www.gnu.org/licenses/>.*/
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package cz.filmtit.client.subgestbox;
 
-import com.google.gwt.event.dom.client.*;
 import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.event.dom.client.FocusEvent;
+import com.google.gwt.event.dom.client.FocusHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
+import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.Focusable;
-import com.google.gwt.user.client.ui.SimplePanel;
-import cz.filmtit.client.Gui;
 import cz.filmtit.client.callables.LockTranslationResult;
 import cz.filmtit.client.callables.ReloadTranslationResults;
 import cz.filmtit.client.callables.UnlockTranslationResult;
 import cz.filmtit.client.pages.TranslationWorkspace;
 
 /**
- * Universal event-handler for all {@link SubgestBox} instances in one
- * {@link TranslationWorkspace} instance.
+ *
+ * @author Matus Namesny
  */
-public class SubgestHandler implements FocusHandler, KeyDownHandler, KeyUpHandler, ChangeHandler {
+public class PosteditHandler implements FocusHandler, KeyDownHandler, KeyUpHandler, ChangeHandler {
 
     private TranslationWorkspace workspace;
 
     /**
-     * Creates a new SubgestHandler within the given workspace.
+     * Creates a new PosteditHandler within the given workspace.
      *
      * @param workspace - the TranslationWorkspace inside which the handled
      * SubgestBox operates
      */
-    public SubgestHandler(TranslationWorkspace workspace) {
+    public PosteditHandler(TranslationWorkspace workspace) {
         this.workspace = workspace;
     }
 
@@ -64,71 +57,49 @@ public class SubgestHandler implements FocusHandler, KeyDownHandler, KeyUpHandle
 
         new ReloadTranslationResults(workspace.getCurrentDocument().getId(), workspace);
 
-        if (event.getSource() instanceof SubgestBox) {
-            final SubgestBox subbox = (SubgestBox) event.getSource();
+        if (event.getSource() instanceof PosteditBox) {
+            final PosteditBox posteditBox = (PosteditBox) event.getSource();
 
             if (workspace.getLockedSubgestBox() == null) {
-                new LockTranslationResult(subbox, workspace);
-            } else if (workspace.getLockedSubgestBox() != subbox) {
+                new LockTranslationResult(posteditBox.getSubgestBox(), workspace);
+            } else if (workspace.getLockedSubgestBox() != posteditBox.getSubgestBox()) {
                 SubgestBox toSaveAndUnlock = workspace.getLockedSubgestBox();
                 toSaveAndUnlock.getTranslationResult().setUserTranslation(toSaveAndUnlock.getTextWithNewlines());
 
                 // submitting only when the contents have changed
                 if (toSaveAndUnlock.textChanged()) {
-                    workspace.submitUserTranslation(toSaveAndUnlock, subbox);
+                    workspace.submitUserTranslation(toSaveAndUnlock, posteditBox.getSubgestBox());
                     toSaveAndUnlock.updateLastText();
                 } else {
-                    new UnlockTranslationResult(toSaveAndUnlock, workspace, subbox);
+                    new UnlockTranslationResult(toSaveAndUnlock, workspace, posteditBox.getSubgestBox());
                 }
 
             }
 
-            subbox.loadSuggestions(); // if not already loaded - the check is inside
-
-            // hide the suggestion widget corresponding to the SubgestBox
-            //   which previously had focus (if any)
-            workspace.deactivateSuggestionWidget();
-            workspace.ensureVisible(subbox);
-            // and show a new one for the current SubgestBox
-            Scheduler.get().scheduleDeferred(new ScheduledCommand() {
-                @Override
-                public void execute() {
-                    subbox.showSuggestions();
-                    workspace.setActiveSuggestionWidget(subbox.getSuggestionWidget());
-                }
-            });
+            //workspace.deactivateSuggestionWidget();
+            workspace.ensureVisible(posteditBox);
 
             if (Window.Navigator.getUserAgent().matches(".*Firefox.*")) {
                 // In Firefox - resetting focus needed:
-                Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+                Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
                     @Override
                     public void execute() {
-                        subbox.setFocus(true);
+                        posteditBox.setFocus(true);
                     }
                 });
             }
-
-            int position = (int) (subbox.getChunk().getStartTimeLong() / 1000);
-            if (workspace.getYtVideoPlayer() != null) {
-                workspace.getYtVideoPlayer().playPart(position);
-            } else if (workspace.getFileVideoPlayer() != null) {
-                workspace.getFileVideoPlayer().playPart(position);
-            }
-
-            subbox.updateVerticalSize();
         }
     }
 
     @Override
     public void onKeyDown(KeyDownEvent event) {
-        if (event.getSource() instanceof SubgestBox) {
-            // pressing the Down arrow - setting focus to the suggestions:
+        if (event.getSource() instanceof PosteditBox) {
             if (isThisKeyEvent(event, KeyCodes.KEY_DOWN)) {
                 event.preventDefault(); // default is to scroll down the page or to move to the next line in the textarea
-                SubgestBox subbox = (SubgestBox) event.getSource();
+                /*PosteditBox posteditBox = (PosteditBox) event.getSource();
                 Focusable suggestionsList = ((Focusable) ((SimplePanel) subbox.getSuggestionWidget()).getWidget());
                 Gui.log("setting focus to suggestions");
-                suggestionsList.setFocus(true);
+                suggestionsList.setFocus(true);*/
             } // pressing Esc:
             else if (isThisKeyEvent(event, KeyCodes.KEY_ESCAPE)) {
                 // hide the suggestion widget corresponding to the SubgestBox
@@ -137,16 +108,15 @@ public class SubgestHandler implements FocusHandler, KeyDownHandler, KeyUpHandle
             } // pressing Tab:
             else if (isThisKeyEvent(event, KeyCodes.KEY_TAB)) {
                 event.preventDefault(); // e.g. in Chrome, default is to insert TAB character in the textarea
-                workspace.deactivateSuggestionWidget();
-                SubgestBox subbox = (SubgestBox) event.getSource();
+                //workspace.deactivateSuggestionWidget();
+                PosteditBox posteditBox = (PosteditBox) event.getSource();
                 if (event.isShiftKeyDown()) {
-                    workspace.goToPreviousBox(subbox);
+                    workspace.goToPreviousBox(posteditBox);
                 } else {
-                    workspace.goToNextBox(subbox);
+                    workspace.goToNextBox(posteditBox);
                 }
             }
-
-        } 
+        }
     }
 
     /**
@@ -166,17 +136,15 @@ public class SubgestHandler implements FocusHandler, KeyDownHandler, KeyUpHandle
 
     @Override
     public void onKeyUp(KeyUpEvent event) {
-        if (event.getSource() instanceof SubgestBox) { // should be
-            final SubgestBox subbox = (SubgestBox) event.getSource();
-            // auto-resize, if necessary:
-            Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+        if (event.getSource() instanceof PosteditBox) {
+            final PosteditBox posteditBox = (PosteditBox) event.getSource();
+
+            Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
                 @Override
                 public void execute() {
-                    subbox.updateVerticalSize();
+                    posteditBox.updateVerticalSize();
                 }
             });
-
-            workspace.getTimer().schedule(60000);
         }
     }
 

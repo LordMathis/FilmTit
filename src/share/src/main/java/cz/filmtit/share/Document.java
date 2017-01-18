@@ -97,7 +97,6 @@ public class Document implements IsSerializable, Serializable, Comparable<Docume
      *
      * @param title Document title
      * @param langCode Code of the source language
-     * @param moviePath Path to the video file on the users hard drive
      */
     public Document(String title, String langCode) {
         this.title = title;

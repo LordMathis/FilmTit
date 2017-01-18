@@ -6,7 +6,7 @@
 
 }
 .scrollPanel.creating_document {
-	background: #fcfcfc;
+    background: #fcfcfc;
 }
 
 .scrollPanel.translating {
@@ -19,7 +19,7 @@
 }
 
 .parsing {
-	background:  bottom center no-repeat url(data:image/gif;base64,R0lGODlhEAAQAPIAAP///5mZmebm5rOzs5mZmb+/v8zMzNPT0yH+GkNyZWF0ZWQgd2l0aCBhamF4bG9hZC5pbmZvACH5BAAKAAAAIf8LTkVUU0NBUEUyLjADAQAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQACgABACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkEAAoAAgAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkEAAoAAwAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkEAAoABAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQACgAFACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQACgAGACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAAKAAcALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==);
+    background:  bottom center no-repeat url(data:image/gif;base64,R0lGODlhEAAQAPIAAP///5mZmebm5rOzs5mZmb+/v8zMzNPT0yH+GkNyZWF0ZWQgd2l0aCBhamF4bG9hZC5pbmZvACH5BAAKAAAAIf8LTkVUU0NBUEUyLjADAQAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQACgABACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkEAAoAAgAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkEAAoAAwAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkEAAoABAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQACgAFACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQACgAGACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAAKAAcALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==);
 }
 
 
@@ -39,51 +39,51 @@
 
 
 .chunk_timing {
-	font-size: 11px;
-	font-weight: normal;
-	color: #777;
+    font-size: 11px;
+    font-weight: normal;
+    color: #777;
 }
 
 .nav li.active {
-	margin-right: -1px;
-	border-right: 0px;
+    margin-right: -1px;
+    border-right: 0px;
 }
 
 div.tab-content {
 
 }
 .tabs-left > .nav-tabs {
-	margin-right: 0px !important;
-	border-right: 0 !important;
+    margin-right: 0px !important;
+    border-right: 0 !important;
 }
 
 .chunk_l1 {
-	padding-right: 10px;
+    padding-right: 10px;
 }
 
 tr.header td {
-	height: 35px;
+    height: 35px;
 }
 tr.header .gwt-Label {
-	text-align: center;
-	text-transform: uppercase;
-	font-weight: bold;
-	font-size: 90%;
-	color: #999;
-	
+    text-align: center;
+    text-transform: uppercase;
+    font-weight: bold;
+    font-size: 90%;
+    color: #999;
+
 }
 
 
 .filmtit_container {
-	width: 100%;
-	padding-top: 15px;
+    width: 100%;
+    padding-top: 15px;
 }
 
 .content {
-	width: 1024px;
-	margin-left: auto;
-	margin-right: auto;
-	margin-top: 40px;
+    width: 1024px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 40px;
 }
 
 body {
@@ -93,36 +93,36 @@ body {
 
 
 .sendButton {
-  display: block;
-  font-size: 16pt;
+    display: block;
+    font-size: 16pt;
 }
 
 /** Most GWT widgets already have a style name defined */
 .gwt-DialogBox {
-  width: 400px;
+    width: 400px;
 }
 
 .dialogVPanel {
-  margin: 5px;
+    margin: 5px;
 }
 
 .serverResponseLabelError {
-  color: red;
+    color: red;
 }
 
 /** Set ids using widget.getElement().setId("idOfElement") */
 #closeButton {
-  margin: 15px 6px 6px;
+    margin: 15px 6px 6px;
 }
 .gwt-Label {
-	margin: 2px;
-	font-family: Verdana, sans-serif;
+    margin: 2px;
+    font-family: Verdana, sans-serif;
 }
 .gwt-Header {
-	color: Black;
-	margin: 40px 0px 70px;
-	font-size: 2em;
-	font-weight: bold;
+    color: Black;
+    margin: 40px 0px 70px;
+    font-size: 2em;
+    font-weight: bold;
 }
 .suggestionsPopup {
 
@@ -130,59 +130,65 @@ body {
     -webkit-box-shadow:  0px 3px 5px 0px rgba(0, 0, 0, 0.3);
     box-shadow:  0px 3px 5px 0px rgba(0, 0, 0, 0.3);
 
-	background: #fff;
-	border: 1px solid #b0b0b0;
-	
+    background: #fff;
+    border: 1px solid #b0b0b0;
+
 }
 .suggestionItem {
-	width: 100%;
-	/*border: 2px outset Silver;*/
-	border-bottom: 1px solid #EEE;
-	cursor: pointer;
+    width: 100%;
+    /*border: 2px outset Silver;*/
+    border-bottom: 1px solid #EEE;
+    cursor: pointer;
 }
+
+.suggestionItem-error {
+    color: red;
+
+}
+
 .suggestionItem p {
-	margin: 4px 0;
+    margin: 4px 0;
 }
 .suggestionItem .row-fluid {
-	padding: 8px 10px;
+    padding: 8px 10px;
 }
 
 .suggestionItemText {
-	font-weight: normal;
+    font-weight: normal;
 }
 .suggestionItemMatch {
-	font-size: 80%;
-	font-style: italic;
+    font-size: 80%;
+    font-style: italic;
 }
 .score {
-	font-weight: bold;
-	color: #777;
+    font-weight: bold;
+    color: #777;
 }
 
 .suggestionItemScore {
-	width: 30px;
+    width: 30px;
 }
 .scrollPanel {
-	-webkit-border-radius: 2px;
-	-moz-border-radius: 2px;
-	border-radius: 2px;
-	
-	padding: 10px 20px;
-	border: 0px solid #ccc;
-	/*height: 452px;*/
-	overflow: visible;
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    border-radius: 2px;
+
+    padding: 10px 20px;
+    border: 0px solid #ccc;
+    /*height: 452px;*/
+    overflow: visible;
 }
 .scrollPanel td {
-	height: 45px;
+    height: 45px;
 }
 
 .mainPanel {
-	padding-bottom: 20px;
+    padding-bottom: 20px;
 }
 .suggestionItemSource {
-	font-size: 80%;
-	color: #999;
-	
+    font-size: 80%;
+    color: #999;
+
 }
 
 body textarea.subgest_fullwidth {
@@ -191,6 +197,14 @@ body textarea.subgest_fullwidth {
 
 .subgest_fullwidth {
     width:396px;
+}
+
+.posteditwidth {
+    width: 260px;
+}
+
+.gwt-RichTextArea {
+    border: 1px solid #ccc !important;
 }
 
 .gwt-RichTextArea-locked {
@@ -210,38 +224,37 @@ body textarea.subgest_halfwidth {
 }
 
 body textarea.pre_subgestbox {
-	/*width: 380px;*/
-	height: 20px;
-	padding: 8px;
-	margin: 0;
+    height: 20px;
+    margin: 0;
     margin-bottom: 5px;
-	-webkit-box-shadow:  0px 0px 0px 0px rgba(255, 255, 255, 0.0);
-	box-shadow:  0px 0px 0px 0px rgba(255, 255, 255, 0.0);
-	display: block;
-	outline: none;
-	color: #333;
+    -webkit-box-shadow:  0px 0px 0px 0px rgba(255, 255, 255, 0.0);
+    box-shadow:  0px 0px 0px 0px rgba(255, 255, 255, 0.0);
+    display: block;
+    outline: none;
+    color: #333;
     resize: none;
+    padding: 0;
 }
 body textarea.pre_subgestbox.loading {
-	background: #F9F9F9 95% center no-repeat url(data:image/gif;base64,R0lGODlhEAALAPQAAPn5+czMzPHx8e/v7/X19czMzMzMzNTU1OLi4tzc3Ozs7NHR0djY2OTk5N3d3e3t7dLS0svLy9nZ2fT09PHx8ff399XV1fLy8vb29uvr6+fn5+/v7/X19QAAAAAAAAAAACH+GkNyZWF0ZWQgd2l0aCBhamF4bG9hZC5pbmZvACH5BAALAAAAIf8LTkVUU0NBUEUyLjADAQAAACwAAAAAEAALAAAFLSAgjmRpnqSgCuLKAq5AEIM4zDVw03ve27ifDgfkEYe04kDIDC5zrtYKRa2WQgAh+QQACwABACwAAAAAEAALAAAFJGBhGAVgnqhpHIeRvsDawqns0qeN5+y967tYLyicBYE7EYkYAgAh+QQACwACACwAAAAAEAALAAAFNiAgjothLOOIJAkiGgxjpGKiKMkbz7SN6zIawJcDwIK9W/HISxGBzdHTuBNOmcJVCyoUlk7CEAAh+QQACwADACwAAAAAEAALAAAFNSAgjqQIRRFUAo3jNGIkSdHqPI8Tz3V55zuaDacDyIQ+YrBH+hWPzJFzOQQaeavWi7oqnVIhACH5BAALAAQALAAAAAAQAAsAAAUyICCOZGme1rJY5kRRk7hI0mJSVUXJtF3iOl7tltsBZsNfUegjAY3I5sgFY55KqdX1GgIAIfkEAAsABQAsAAAAABAACwAABTcgII5kaZ4kcV2EqLJipmnZhWGXaOOitm2aXQ4g7P2Ct2ER4AMul00kj5g0Al8tADY2y6C+4FIIACH5BAALAAYALAAAAAAQAAsAAAUvICCOZGme5ERRk6iy7qpyHCVStA3gNa/7txxwlwv2isSacYUc+l4tADQGQ1mvpBAAIfkEAAsABwAsAAAAABAACwAABS8gII5kaZ7kRFGTqLLuqnIcJVK0DeA1r/u3HHCXC/aKxJpxhRz6Xi0ANAZDWa+kEAA7AAAAAAAAAAAA);
+    background: #F9F9F9 95% center no-repeat url(data:image/gif;base64,R0lGODlhEAALAPQAAPn5+czMzPHx8e/v7/X19czMzMzMzNTU1OLi4tzc3Ozs7NHR0djY2OTk5N3d3e3t7dLS0svLy9nZ2fT09PHx8ff399XV1fLy8vb29uvr6+fn5+/v7/X19QAAAAAAAAAAACH+GkNyZWF0ZWQgd2l0aCBhamF4bG9hZC5pbmZvACH5BAALAAAAIf8LTkVUU0NBUEUyLjADAQAAACwAAAAAEAALAAAFLSAgjmRpnqSgCuLKAq5AEIM4zDVw03ve27ifDgfkEYe04kDIDC5zrtYKRa2WQgAh+QQACwABACwAAAAAEAALAAAFJGBhGAVgnqhpHIeRvsDawqns0qeN5+y967tYLyicBYE7EYkYAgAh+QQACwACACwAAAAAEAALAAAFNiAgjothLOOIJAkiGgxjpGKiKMkbz7SN6zIawJcDwIK9W/HISxGBzdHTuBNOmcJVCyoUlk7CEAAh+QQACwADACwAAAAAEAALAAAFNSAgjqQIRRFUAo3jNGIkSdHqPI8Tz3V55zuaDacDyIQ+YrBH+hWPzJFzOQQaeavWi7oqnVIhACH5BAALAAQALAAAAAAQAAsAAAUyICCOZGme1rJY5kRRk7hI0mJSVUXJtF3iOl7tltsBZsNfUegjAY3I5sgFY55KqdX1GgIAIfkEAAsABQAsAAAAABAACwAABTcgII5kaZ4kcV2EqLJipmnZhWGXaOOitm2aXQ4g7P2Ct2ER4AMul00kj5g0Al8tADY2y6C+4FIIACH5BAALAAYALAAAAAAQAAsAAAUvICCOZGme5ERRk6iy7qpyHCVStA3gNa/7txxwlwv2isSacYUc+l4tADQGQ1mvpBAAIfkEAAsABwAsAAAAABAACwAABS8gII5kaZ7kRFGTqLLuqnIcJVK0DeA1r/u3HHCXC/aKxJpxhRz6Xi0ANAZDWa+kEAA7AAAAAAAAAAAA);
 }
 
 iframe.gwt-RichTextArea, .pre_subgestbox {
-/*	width: 396px;*/
+    /*	width: 396px;*/
 }
 
 iframe.gwt-RichTextArea, .pre_subgestbox {
-	-webkit-border-radius: 3px !important;
-	-moz-border-radius: 3px !important;
-	border-radius: 3px !important;
-/*	border: 1px solid !important; */
-/*	border-bottom: 1px solid #aaa !important;*/
+    -webkit-border-radius: 3px !important;
+    -moz-border-radius: 3px !important;
+    border-radius: 3px !important;
+    /*	border: 1px solid !important; */
+    /*	border-bottom: 1px solid #aaa !important;*/
 }
 
 .mediasource_thumb {
-	width: 60px;
-	text-align: center;
-	padding: 4px;
+    width: 60px;
+    text-align: center;
+    padding: 4px;
 }
 
 .no_thumb {
@@ -278,17 +291,17 @@ iframe.gwt-RichTextArea, .pre_subgestbox {
 }
 
 .downloadButtons {
-	text-align: center;
+    text-align: center;
 }
 .new_document_button {
-	float: right;
+    float: right;
 }
 
 
 .subtitleDisplayedLeft, .subtitleDisplayedRight {
     width: 270px;
     min-height: 10px;
-    color:white;
+    color:black;
     position: relative;
     top: 80px;
     float:left;
@@ -331,12 +344,12 @@ iframe.gwt-RichTextArea, .pre_subgestbox {
 }
 
 .numerical2digits input {
-	width: 3ex;
+    width: 3ex;
     text-align: right;
 }
 
 .numerical3digits input {
-	width: 4ex;
+    width: 4ex;
     text-align: right;
 }
 
@@ -370,9 +383,9 @@ style copied from bootstrap's .modal and edited
 .timeEditDialog .dialogBottom {
     display: none;    
 }
-	
+
 .timeEditDialog .Caption {
-	padding:9px 15px !important;
+    padding:9px 15px !important;
     border-top:none !important;
     border-bottom:1px solid #eee !important;
     background-color: #fff !important;
@@ -381,7 +394,7 @@ style copied from bootstrap's .modal and edited
     -moz-border-radius:6px;
     border-radius:6px;
 }
-	
+
 .timeEditDialog .dialogContent {
     max-height:400px;
     padding:15px;
@@ -415,22 +428,23 @@ style copied from bootstrap's .modal and edited
 /* HELP section */
 
 div.figure {
-	width: 100%;
-	text-align: center;
-	margin: 2em 0;
+    width: 100%;
+    text-align: center;
+    margin: 2em 0;
 }
 
 p.caption {
-	color: #333;
-	font-weight: bold;
+    color: #333;
+    font-weight: bold;
 }
 
 div.help h1, div.help h2, div.help h3, div.help h4, div.help h5, div.help h6 {
-	margin: 1em 0 0.2em 0;
-	
+    margin: 1em 0 0.2em 0;
+
 }
 
 div.help {
-	padding-bottom: 5em;
+    padding-bottom: 5em;
 }
+
 

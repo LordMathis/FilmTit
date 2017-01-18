@@ -18,6 +18,7 @@ along with FilmTit.  If not, see <http://www.gnu.org/licenses/>.*/
 package cz.filmtit.userspace;
 
 import cz.filmtit.core.ConfigurationSingleton;
+import javax.persistence.EntityManagerFactory;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
@@ -45,6 +46,7 @@ public class USHibernateUtil {
 
     protected Logger logger = Logger.getLogger("HibernateUtil");
     protected SessionFactory sessionFactory = null;
+    protected EntityManagerFactory entityManagerFactory = null;
     protected ServiceRegistry serviceRegistry;
 
 
@@ -67,6 +69,7 @@ public class USHibernateUtil {
 
             serviceRegistry = new ServiceRegistryBuilder().applySettings(hibernateConfiguration.getProperties()).buildServiceRegistry();
             sessionFactory = hibernateConfiguration.buildSessionFactory(serviceRegistry);
+                        
             return sessionFactory;
         }
         catch (Throwable ex) {

@@ -14,13 +14,11 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with FilmTit.  If not, see <http://www.gnu.org/licenses/>.*/
-
 package cz.filmtit.userspace.tests;
-
 
 import cz.filmtit.core.Configuration;
 import cz.filmtit.core.ConfigurationSingleton;
-import cz.filmtit.core.io.data.FreebaseMediaSourceFactory;
+import cz.filmtit.core.io.data.OpenMovieDBMediaSourceFactory;
 import cz.filmtit.core.model.MediaSourceFactory;
 import cz.filmtit.core.model.TranslationMemory;
 import cz.filmtit.share.*;
@@ -43,13 +41,13 @@ import java.util.Map;
 
 import static junit.framework.Assert.*;
 
-
 /**
  * Test of the Session class functionality.
  *
  * @author Jindřich Libovický
  */
 public class TestSession {
+
     @BeforeClass
     public static void setupConfiguration() {
         Configuration configuration = new Configuration("configuration.xml");
@@ -65,15 +63,14 @@ public class TestSession {
     private LoremIpsum loremIpsum = new LoremIpsum();
     private TranslationMemory TM;
     private USHibernateUtil usHibernateUtil = MockHibernateUtil.getInstance();
-    private MediaSourceFactory mediaSourceFactory =
-            new FreebaseMediaSourceFactory(ConfigurationSingleton.getConf().freebaseKey(), 10);
-
+    private MediaSourceFactory mediaSourceFactory
+            = new OpenMovieDBMediaSourceFactory();
 
     public TestSession() {
         Configuration config = new Configuration(new File("configuration.xml"));
         TM = cz.filmtit.core.tests.TestUtil.createTMWithDummyContent(config);
-                //Factory.createTMFromConfiguration(ConfigurationSingleton.conf(), true, false);
-        mediaSourceFactory = new FreebaseMediaSourceFactory(config.freebaseKey(), 10);
+        //Factory.createTMFromConfiguration(ConfigurationSingleton.conf(), true, false);
+        mediaSourceFactory = new OpenMovieDBMediaSourceFactory();
 
     }
 
@@ -185,11 +182,10 @@ public class TestSession {
         session.loadDocument(trToUpdate.getDocumentDatabaseId());
 
         List<TranslationPair> originalSuggestion = trToUpdate.getTranslationResult().getTmSuggestions();
-        TranslationResult result =
-                session.changeText(trToUpdate.getTranslationResult().getSourceChunk(), "New text", TM);
+        TranslationResult result
+                = session.changeText(trToUpdate.getTranslationResult().getSourceChunk(), "New text", TM);
 
         assertNotNull(result);
-
 
         // test if the change appeared in the user space structure
         USTranslationResult changed = findTranslationResultInStructure(session,
@@ -230,7 +226,7 @@ public class TestSession {
         List<TranslationResult> clientTRList = new ArrayList<TranslationResult>();
         for (int i = 0; i < 9; ++i) {
             TimedChunk sampleTimedChunk = new TimedChunk("00:0" + i + ":00,000", "00:0" + (i + 1) + ":01,000", 0,
-                    loremIpsum.getWords(5,5), i, clientDocument.getId());
+                    loremIpsum.getWords(5, 5), i, clientDocument.getId());
             timedChunks.add(sampleTimedChunk);
         }
         session.saveSourceChunks(timedChunks);
@@ -241,7 +237,7 @@ public class TestSession {
         }
 
         for (TranslationResult tr : clientTRList) {
-            session.setUserTranslation(tr.getSourceChunk().getChunkIndex(), tr.getDocumentId(), loremIpsum.getWords(5,5), 0);
+            session.setUserTranslation(tr.getSourceChunk().getChunkIndex(), tr.getDocumentId(), loremIpsum.getWords(5, 5), 0);
         }
 
         session.logout();
@@ -265,18 +261,20 @@ public class TestSession {
         Thread.sleep(2000l);
 
         org.hibernate.Session dbSession = usHibernateUtil.getSessionWithActiveTransaction();
-        List dbQuery =
-            dbSession.createQuery("select t from USTranslationResult t where t.documentDatabaseId = " + documentId).list();
+        List dbQuery
+                = dbSession.createQuery("select t from USTranslationResult t where t.documentDatabaseId = " + documentId).list();
         usHibernateUtil.closeAndCommitSession(dbSession);
 
         assertEquals(32, dbQuery.size());
     }
 
     /**
-     * Tests the standard deletion of a document. First a half of the translation results are marked as if they
-     * have already sent feedback to the core. Then the delete method is called. It is tested that the deletion
-     * sign was set and the deleted document does not appear in the list provided to the client. Then it is tested
-     * if the chunks that already sent the feedback were deleted.
+     * Tests the standard deletion of a document. First a half of the
+     * translation results are marked as if they have already sent feedback to
+     * the core. Then the delete method is called. It is tested that the
+     * deletion sign was set and the deleted document does not appear in the
+     * list provided to the client. Then it is tested if the chunks that already
+     * sent the feedback were deleted.
      */
     @Test
     public void testDeleteDocument()
@@ -301,7 +299,9 @@ public class TestSession {
             result.saveToDatabase(dbSession);
 
             feedbackedResults++;
-            if (feedbackedResults >= 10) { break; }
+            if (feedbackedResults >= 10) {
+                break;
+            }
         }
         usHibernateUtil.closeAndCommitSession(dbSession);
 
@@ -320,8 +320,8 @@ public class TestSession {
     }
 
     /**
-     * The first translation result generated in getSampleUser() method to be used in the test as
-     * a sample translation result.
+     * The first translation result generated in getSampleUser() method to be
+     * used in the test as a sample translation result.
      */
     private USTranslationResult firstGeneratedTranslationResult = null;
     private USDocument firstGeneratedDocument = null;
@@ -333,7 +333,6 @@ public class TestSession {
 
         USUser sampleUser = new USUser("Jindra the User no." + sampleUsersCount);
         LoremIpsum loremIpsum = new LoremIpsum();
-
 
         for (int i = 0; i < 3; ++i) {
             USDocument usDocument = new USDocument(new Document("Test", "en"), sampleUser, new ArrayList<USDocumentUsers>());
@@ -363,10 +362,13 @@ public class TestSession {
                 Method ownerDatabaseIDSetter = USDocument.class.getDeclaredMethod("setOwnerDatabaseId", long.class);
                 ownerDatabaseIDSetter.setAccessible(true);
                 ownerDatabaseIDSetter.invoke(usDocument, sampleUser.getDatabaseId());
+            } catch (NoSuchMethodException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
             }
-            catch (NoSuchMethodException e) { e.printStackTrace(); }
-            catch (InvocationTargetException e) { e.printStackTrace(); }
-            catch (IllegalAccessException e) { e.printStackTrace(); }
 
             org.hibernate.Session dbSession = usHibernateUtil.getSessionWithActiveTransaction();
             usDocument.saveToDatabase(dbSession);
@@ -384,8 +386,7 @@ public class TestSession {
         if (dbRes.size() == 1) {
             //return (USUser)(dbRes.get(0));
             return sampleUser;
-        }
-        else {
+        } else {
             return null;
         }
     }
@@ -393,13 +394,14 @@ public class TestSession {
     private boolean testIfDocumentInActiveList(Session session, long id) throws IllegalAccessException, NoSuchFieldException {
         Field activeDocumentsField = Session.class.getDeclaredField("activeDocuments");
         activeDocumentsField.setAccessible(true);
-        Map<Long, USDocument> activeDocuments = (Map<Long, USDocument>)(activeDocumentsField.get(session));
+        Map<Long, USDocument> activeDocuments = (Map<Long, USDocument>) (activeDocumentsField.get(session));
 
         return activeDocuments.containsKey(id);
     }
 
     /**
      * Loads USTranslationResult with given ID from the database.
+     *
      * @param id ID of requested USTranslationResult
      * @return The requested USTranslationResult
      */
@@ -408,15 +410,15 @@ public class TestSession {
         List dbRes = dbSession.createQuery("select r from USTranslationResult r where r.id = " + id).list();
         usHibernateUtil.closeAndCommitSession(dbSession);
         if (dbRes.size() == 1) {
-            return (USTranslationResult)(dbRes.get(0));
-        }
-        else {
+            return (USTranslationResult) (dbRes.get(0));
+        } else {
             return null;
         }
     }
 
     /**
      * Finds the chunk in given document with such index.
+     *
      * @param session Session within the result is supposed to be found
      * @param index Index of the source chunk
      * @return Requested result
@@ -458,7 +460,6 @@ public class TestSession {
     }
 
     //changeDocumentTitle, changeMovieTitle
-
     @Test
     public void testChangeDocumentTitle() throws InvalidDocumentIdException {
         USUser user = getSampleUser();
@@ -473,7 +474,7 @@ public class TestSession {
         usHibernateUtil.closeAndCommitSession(dbSession);
 
         assertEquals(1, fromDb.size());
-        assertEquals("Changed title", ((USDocument)fromDb.get(0)).getTitle());
+        assertEquals("Changed title", ((USDocument) fromDb.get(0)).getTitle());
     }
 
     public void testChangeMovieTitle() throws InvalidDocumentIdException {
@@ -490,7 +491,7 @@ public class TestSession {
         usHibernateUtil.closeAndCommitSession(dbSession);
 
         assertEquals(1, fromDb.size());
-        assertEquals(null, ((USDocument)(fromDb.get(0))).getMediaSource());
+        assertEquals(null, ((USDocument) (fromDb.get(0))).getMediaSource());
     }
 
 }
