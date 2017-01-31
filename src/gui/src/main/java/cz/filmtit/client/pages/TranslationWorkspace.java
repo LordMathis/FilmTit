@@ -91,9 +91,9 @@ public class TranslationWorkspace extends Composite {
      * Handles events for all {@link SubgestBox} instances in this workspace.
      */
     public SubgestHandler subgestHandler;
-    
+
     /**
-     * 
+     *
      */
     public PosteditHandler posteditHandler;
 
@@ -113,6 +113,11 @@ public class TranslationWorkspace extends Composite {
      * Currently active SubgestBox
      */
     private Widget activeSuggestionWidget = null;
+
+    /**
+     * Currently active PosteditBox
+     */
+    private Widget activePosteditWidget = null;
 
     /**
      * column numbers in the subtitle-table
@@ -378,6 +383,13 @@ public class TranslationWorkspace extends Composite {
     }
 
     /**
+     * @param activePosteditWidget the activePosteditWidget to set
+     */
+    public void setActivePosteditWidget(Widget activePosteditWidget) {
+        this.activePosteditWidget = activePosteditWidget;
+    }
+
+    /**
      * UiBinder Interface
      */
     interface TranslationWorkspaceUiBinder extends UiBinder<Widget, TranslationWorkspace> {
@@ -444,6 +456,7 @@ public class TranslationWorkspace extends Composite {
             @Override
             public void onScroll(ScrollEvent event) {
                 deactivateSuggestionWidget();
+                deactivatePosteditWidget();
             }
         });
 
@@ -452,27 +465,6 @@ public class TranslationWorkspace extends Composite {
         translationHPanel.setCellWidth(scrollPanel, "100%");
         this.subgestHandler = new SubgestHandler(this);
         this.posteditHandler = new PosteditHandler(this);
-
-     /*   if (posteditOn) {
-
-            table.getColumnFormatter().setWidth(TIMES_COLNUMBER, "164px");
-            table.getColumnFormatter().setWidth(SOURCETEXT_COLNUMBER, "260px");
-            table.getColumnFormatter().setWidth(TARGETBOX_COLNUMBER, "255px");
-            table.getColumnFormatter().setWidth(POSTEDIT_COLNUMBER, "255px");
-            table.getColumnFormatter().setWidth(SOURCE_DIALOGMARK_COLNUMBER, "10px");
-            table.getColumnFormatter().setWidth(TARGET_DIALOGMARK_COLNUMBER, "10px");
-            table.getColumnFormatter().setWidth(POSTEDIT_DIALOGMARK_COLNUMBER, "10px");
-
-            table.setWidget(0, POSTEDIT_COLNUMBER, new Label("Postedit"));
-            table.setWidget(0, POSTEDIT_DIALOGMARK_COLNUMBER, new Label(""));
-
-        } else {
-            table.getColumnFormatter().setWidth(TIMES_COLNUMBER, "164px");
-            table.getColumnFormatter().setWidth(SOURCETEXT_COLNUMBER, "400px");
-            table.getColumnFormatter().setWidth(TARGETBOX_COLNUMBER, "390px");
-            table.getColumnFormatter().setWidth(SOURCE_DIALOGMARK_COLNUMBER, "10px");
-            table.getColumnFormatter().setWidth(TARGET_DIALOGMARK_COLNUMBER, "10px");
-        }*/
 
         table.setWidget(0, TIMES_COLNUMBER, new Label("Timing"));
         table.setWidget(0, SOURCETEXT_COLNUMBER, new Label("Original"));
@@ -494,11 +486,20 @@ public class TranslationWorkspace extends Composite {
             @Override
             public void run() {
                 lockedSubgestBox.getTranslationResult().setUserTranslation(lockedSubgestBox.getTextWithNewlines());
+                boolean posteditTextChanged = false;
+
+                if (isPosteditOn()) {
+                    lockedSubgestBox.getTranslationResult().setPosteditedString(lockedSubgestBox.getPosteditBox().getTextWithNewlines());
+                    posteditTextChanged = lockedSubgestBox.getPosteditBox().textChanged();
+                }
 
                 // submitting only when the contents have changed
-                if (lockedSubgestBox.textChanged()) {
+                if (lockedSubgestBox.textChanged() || posteditTextChanged) {
                     submitUserTranslation(lockedSubgestBox, null);
                     lockedSubgestBox.updateLastText();
+                    if (isPosteditOn()) {
+                        lockedSubgestBox.getPosteditBox().updateLastText();
+                    }
                 } else {
                     Gui.log(LevelLogEnum.Error, "TranslationWorkspace", "timer run out");
                     new UnlockTranslationResult(lockedSubgestBox, currentWorkspace);
@@ -557,12 +558,14 @@ public class TranslationWorkspace extends Composite {
         List<TimedChunk> untranslatedOnes = new LinkedList<TimedChunk>();
         List<TimedChunk> allChunks = new LinkedList<TimedChunk>();
         List<TranslationResult> results = new LinkedList<TranslationResult>();
+        List<TranslationResult> postedited = new LinkedList<TranslationResult>();
 
         for (TranslationResult tr : translations) {
             TimedChunk sChunk = tr.getSourceChunk();
             synchronizer.putTranslationResult(tr);
             synchronizer.putSourceChunk(sChunk, -1, false);
             String tChunk = tr.getUserTranslation();
+            String posteditedString = tr.getPosteditedString();
 
             ChunkIndex chunkIndex = sChunk.getChunkIndex();
 
@@ -575,9 +578,13 @@ public class TranslationWorkspace extends Composite {
             } else {
                 results.add(tr);
             }
+
+            if (posteditedString != null && !posteditedString.isEmpty()) {
+                postedited.add(tr);
+            }
         }
 
-        dealWithChunks(allChunks, results, untranslatedOnes);
+        dealWithChunks(allChunks, results, untranslatedOnes, postedited);
 
     }
 
@@ -708,20 +715,24 @@ public class TranslationWorkspace extends Composite {
 
         if (toLock != null) {
             new SetUserTranslation(chunkIndex, transResult.getDocumentId(),
-                    transResult.getUserTranslation(), transResult.getSelectedTranslationPairID(), lockedSubgestBox, this, toLock);
+                    transResult.getUserTranslation(), transResult.getSelectedTranslationPairID(), lockedSubgestBox, this, toLock, transResult.getPosteditedString(), transResult.getSelectedPosteditPairID());
         } else {
             new SetUserTranslation(chunkIndex, transResult.getDocumentId(),
-                    transResult.getUserTranslation(), transResult.getSelectedTranslationPairID(), lockedSubgestBox, this);
+                    transResult.getUserTranslation(), transResult.getSelectedTranslationPairID(), lockedSubgestBox, this, transResult.getPosteditedString(), transResult.getSelectedPosteditPairID());
         }
 
         synchronizer.putTranslationResult(transResult);
-        //reverseTimeMap.put((double)(transresult.getSourceChunk().getStartTimeLong()), transresult);
     }
 
-    private void dealWithChunks(List<TimedChunk> original, List<TranslationResult> translated, List<TimedChunk> untranslated) {
+    private void dealWithChunks(List<TimedChunk> original, List<TranslationResult> translated, List<TimedChunk> untranslated, List<TranslationResult> postedited) {
 
         Scheduler.get().scheduleIncremental(new ShowOriginalCommand(original));
         Scheduler.get().scheduleIncremental(new ShowUserTranslatedCommand(translated));
+
+        if (isPosteditOn()) {
+            Scheduler.get().scheduleIncremental(new ShowPosteditedCommand(postedited));
+        }
+
         prepareSendChunkCommand(untranslated);
         startShowingTranslationsIfReady();
     }
@@ -732,7 +743,7 @@ public class TranslationWorkspace extends Composite {
      * @param chunks
      */
     public void showSources(List<TimedChunk> chunks) {
-        dealWithChunks(chunks, new LinkedList<TranslationResult>(), chunks);
+        dealWithChunks(chunks, new LinkedList<TranslationResult>(), chunks, new LinkedList<TranslationResult>());
     }
 
     /**
@@ -785,6 +796,7 @@ public class TranslationWorkspace extends Composite {
 
             targetbox.setPosteditBox(posteditBox);
             posteditBox.setSubgestBox(targetbox);
+            posteditBox.setTranslationResult(targetbox.getTranslationResult());
         }
         // chunk-marking (dialogs):
         // setting sourcemarks:
@@ -812,15 +824,6 @@ public class TranslationWorkspace extends Composite {
             table.getRowFormatter().addStyleName(index + 1, "row_group_begin");
         }
 
-         /*if (posteditOn) {
-            table.getCellFormatter().addStyleName(index + 1, TIMES_COLNUMBER, "times-postedit");
-            table.getCellFormatter().addStyleName(index + 1, SOURCE_DIALOGMARK_COLNUMBER, "dialogmark");
-            table.getCellFormatter().addStyleName(index + 1, SOURCETEXT_COLNUMBER, "sourcetext-postedit");
-            table.getCellFormatter().addStyleName(index + 1, TARGET_DIALOGMARK_COLNUMBER, "dialogmark");
-            table.getCellFormatter().addStyleName(index + 1, TARGETBOX_COLNUMBER, "targetbox-postedit");
-            table.getCellFormatter().addStyleName(index + 1, POSTEDIT_DIALOGMARK_COLNUMBER, "dialogmark");
-            table.getCellFormatter().addStyleName(index + 1, POSTEDIT_COLNUMBER, "posteditbox");            
-        }*/
     }
 
     /**
@@ -891,7 +894,30 @@ public class TranslationWorkspace extends Composite {
                 posteditBoxes.get(index).removeStyleName("loading");
             }
         }
+    }
 
+    /**
+     *
+     */
+    public void showPostedited(final TranslationResult translationResult) {
+        if (!synchronizer.isChunkDisplayed(translationResult)) {
+            //try it again after some time
+            new com.google.gwt.user.client.Timer() {
+                @Override
+                public void run() {
+                    showPostedited(translationResult);
+                }
+            }.schedule(400);
+        } else {
+
+            //index is there -> insert result
+            int index = synchronizer.getIndexOf(translationResult);
+
+            posteditBoxes.get(index).getFather().setTranslationResult(translationResult);
+            posteditBoxes.get(index).removeStyleName("loading");
+            posteditBoxes.get(index).removeStyleName("loading");
+
+        }
     }
 
     /**
@@ -918,7 +944,6 @@ public class TranslationWorkspace extends Composite {
                 posteditBoxes.get(index).removeStyleName("loading");
             }
         }
-
     }
 
     /**
@@ -1085,6 +1110,18 @@ public class TranslationWorkspace extends Composite {
         }
     }
 
+    public void deactivatePosteditWidget() {
+        Widget w = this.activePosteditWidget;
+        if (w != null) {
+            if (w instanceof PopupPanel) {
+                ((PopupPanel) w).setVisible(false);
+            } else {
+                ((Panel) w.getParent()).remove(w);
+            }
+            setActivePosteditWidget(null);
+        }
+    }
+
     ////////////////////////////
     //                        //
     //   Native Methods       //
@@ -1242,6 +1279,29 @@ public class TranslationWorkspace extends Composite {
             if (!resultsToDisplay.isEmpty()) {
                 TranslationResult result = resultsToDisplay.removeFirst();
                 showResult(result);
+                return true;
+            }
+            return false;
+        }
+    }
+
+    private class ShowPosteditedCommand implements RepeatingCommand {
+
+        LinkedList<TranslationResult> resultsToDisplay = new LinkedList<TranslationResult>();
+
+        public ShowPosteditedCommand(List<TranslationResult> chunks) {
+            this.resultsToDisplay.addAll(chunks);
+        }
+
+        @Override
+        public boolean execute() {
+            if (stopLoading) {
+                return false;
+            }
+
+            if (!resultsToDisplay.isEmpty()) {
+                TranslationResult result = resultsToDisplay.removeFirst();
+                showPostedited(result);
                 return true;
             }
             return false;

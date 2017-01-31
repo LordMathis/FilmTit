@@ -403,9 +403,9 @@ public class FilmTitBackendServer extends RemoteServiceServlet implements
      */
     @Override
     public Void setUserTranslation(String sessionID, ChunkIndex chunkIndex, long documentId,
-                                   String userTranslation, long chosenTranslationPairID)
+                                   String userTranslation, long chosenTranslationPairID, String posteditedString, long chosenPosteditPairID)
             throws InvalidSessionIdException, InvalidChunkIdException, InvalidDocumentIdException {
-        return getSessionIfCan(sessionID).setUserTranslation(chunkIndex, documentId, userTranslation, chosenTranslationPairID);
+        return getSessionIfCan(sessionID).setUserTranslation(chunkIndex, documentId, userTranslation, chosenTranslationPairID, posteditedString, chosenPosteditPairID);
     }
 
     /**

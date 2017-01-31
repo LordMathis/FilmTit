@@ -118,7 +118,7 @@ public class Session {
 
         USTranslationResult translationResult = (USTranslationResult) list.get(0);
 
-        if (translationResult.getLockedByUser() == this.getUserDatabaseId()) {
+        if ((translationResult.getLockedByUser() == null) || (translationResult.getLockedByUser() == this.getUserDatabaseId())) {
             translationResult.setLockedByUser(null);
         }
 
@@ -878,17 +878,17 @@ public class Session {
      * @throws InvalidChunkIdException Throws an exception if the document does
      * not contain chunk with given index.
      */
-    public Void setUserTranslation(ChunkIndex chunkIndex, long documentId, String userTranslation, long chosenTranslationPairID)
+    public Void setUserTranslation(ChunkIndex chunkIndex, long documentId, String userTranslation, long chosenTranslationPairID,
+            String posteditedString, long chosenPosteditPairID)
             throws InvalidDocumentIdException, InvalidChunkIdException {
         updateLastOperationTime();
-
+        
         USDocument document = getActiveDocument(documentId);
         USTranslationResult tr = document.getTranslationResultForIndex(chunkIndex);
 
         if (tr == null) {
             String s = ("TranslationResult is null for index " + chunkIndex + ", document has id : " + document.getDatabaseId() + ", translationresults : " + document.getTranslationResultKeys());
             throw new RuntimeException(s);
-
         }
 
         // update count of already translated chunks
@@ -905,8 +905,10 @@ public class Session {
         // set the translation
         tr.setUserTranslation(userTranslation);
         tr.setSelectedTranslationPairID(chosenTranslationPairID);
+        tr.setPosteditedString(posteditedString);
+        tr.setSelectedPosteditPairID(chosenPosteditPairID);
         saveTranslationResult(document, tr);
-
+        
         return null;
     }
 

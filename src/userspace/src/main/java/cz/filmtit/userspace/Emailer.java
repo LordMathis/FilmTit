@@ -26,7 +26,6 @@ package cz.filmtit.userspace;
 
 import cz.filmtit.core.ConfigurationSingleton;
 import cz.filmtit.share.exceptions.InvalidValueException;
-import sun.misc.Regexp;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;

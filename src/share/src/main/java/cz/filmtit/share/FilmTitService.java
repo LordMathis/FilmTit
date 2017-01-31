@@ -323,7 +323,7 @@ public interface FilmTitService extends RemoteService {
      * @throws InvalidChunkIdException Throws an exception when such chunk does
      * not exist in the document.
      */
-    Void setUserTranslation(String sessionID, ChunkIndex chunkIndex, long documentID, String userTranslation, long chosenTranslationPairID)
+    Void setUserTranslation(String sessionID, ChunkIndex chunkIndex, long documentID, String userTranslation, long chosenTranslationPairID, String posteditedString, long chosenPosteditPairID)
             throws InvalidSessionIdException, InvalidChunkIdException, InvalidDocumentIdException;
 
     ////////////////////////////////////////

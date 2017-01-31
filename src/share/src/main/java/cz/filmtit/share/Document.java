@@ -66,7 +66,7 @@ public class Document implements IsSerializable, Serializable, Comparable<Docume
      * Map of the translation results the document consists of
      */
     public TreeMap<ChunkIndex, TranslationResult> translationResults = new TreeMap<ChunkIndex, TranslationResult>();
-
+    
     /**
      * Default constructor required by GWT.
      */
@@ -258,7 +258,7 @@ public class Document implements IsSerializable, Serializable, Comparable<Docume
         }
         return res;
     }
-
+    
     /**
      * Gets the translation results of the document as map of chunk indexes and
      * translation results.

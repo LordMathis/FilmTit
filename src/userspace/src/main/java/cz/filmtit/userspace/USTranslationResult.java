@@ -207,6 +207,20 @@ public class USTranslationResult extends DatabaseObject implements Comparable<US
         translationResult.setUserTranslation(userTranslation);
         feedbackSent = false;
     }
+    
+    /**
+     * 
+     */
+    public String getPosteditedString() {
+        return translationResult.getPosteditedString();
+    }
+    
+    /**
+     * 
+     */
+    public void setPosteditedString(String posteditedString) {
+        translationResult.setPosteditedString(posteditedString);
+    }
 
     /**
      * Gets the order of the part of the original subtitle chunk which is this
@@ -249,6 +263,20 @@ public class USTranslationResult extends DatabaseObject implements Comparable<US
      */
     public void setSelectedTranslationPairID(long selectedTranslationPairID) {
         translationResult.setSelectedTranslationPairID(selectedTranslationPairID);
+    }
+    
+    /**
+     * 
+     */
+    public long getSelectedPosteditPairID() {
+        return translationResult.getSelectedPosteditPairID();
+    }
+    
+    /**
+     * 
+     */
+    public void setSelectedPosteditPairID(long selectedPosteditPairID) {
+        translationResult.setSelectedPosteditPairID(selectedPosteditPairID);
     }
 
     /**
@@ -300,7 +328,6 @@ public class USTranslationResult extends DatabaseObject implements Comparable<US
      */
     @Override
     protected void setSharedClassDatabaseId(long setSharedDatabaseId) {
-        //logger.error("Setting translationResult.Id to " + setSharedDatabaseId);
         translationResult.setId(setSharedDatabaseId);
     }
 

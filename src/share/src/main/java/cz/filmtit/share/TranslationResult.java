@@ -48,6 +48,18 @@ public class TranslationResult implements com.google.gwt.user.client.rpc.IsSeria
      */
     private volatile long selectedTranslationPairID;
     /**
+     * List of postedit suggestions
+     */
+    private volatile List<PosteditPair> posteditSuggestions = new LinkedList<PosteditPair>();
+    /**
+     * userTranslation postedited
+     */
+    private volatile String posteditedString;
+    /**
+     * ID of postedit suggestion selected by user
+     */
+    private volatile long selectedPosteditPairID;
+    /**
      * shared id
      */
     private volatile long id;
@@ -252,5 +264,46 @@ public class TranslationResult implements com.google.gwt.user.client.rpc.IsSeria
      */
     public void setId(long id) {
         this.id = id;
+    }
+    /**
+     * @return the posteditSuggestions
+     */
+    public List<PosteditPair> getPosteditSuggestions() {
+        return posteditSuggestions;
+    }
+
+    /**
+     * @param posteditSuggestions the posteditSuggestions to set
+     */
+    public void setPosteditSuggestions(List<PosteditPair> posteditSuggestions) {
+        this.posteditSuggestions = posteditSuggestions;
+    }
+
+    /**
+     * @return the posteditedString
+     */
+    public String getPosteditedString() {
+        return posteditedString;
+    }
+
+    /**
+     * @param posteditedString the posteditedString to set
+     */
+    public void setPosteditedString(String posteditedString) {
+        this.posteditedString = posteditedString;
+    }
+
+    /**
+     * @return the selectedPosteditPairID
+     */
+    public long getSelectedPosteditPairID() {
+        return selectedPosteditPairID;
+    }
+
+    /**
+     * @param selectedPosteditPairID the selectedPosteditPairID to set
+     */
+    public void setSelectedPosteditPairID(long selectedPosteditPairID) {
+        this.selectedPosteditPairID = selectedPosteditPairID;
     }
 }

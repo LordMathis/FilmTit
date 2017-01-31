@@ -20,7 +20,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import com.google.gwt.regexp.shared.RegExp;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.cell.client.AbstractCell;
 import com.google.gwt.cell.client.ValueUpdater;
 import com.google.gwt.core.client.Scheduler;
@@ -230,6 +229,7 @@ public class SubgestBox extends RichTextArea implements Comparable<SubgestBox> {
      */
     public void setTranslationResult(TranslationResult translationResult) {
         this.translationResult = translationResult;
+        posteditBox.setTranslationResult(translationResult);
         loadedSuggestions = false;
         String userTranslation = translationResult.getUserTranslation();
 

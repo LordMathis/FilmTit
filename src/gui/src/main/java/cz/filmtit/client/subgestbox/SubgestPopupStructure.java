@@ -23,6 +23,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 import com.github.gwtbootstrap.client.ui.Paragraph;
+import cz.filmtit.share.PosteditPair;
 import cz.filmtit.share.TranslationError;
 
 import cz.filmtit.share.TranslationPair;
@@ -54,7 +55,7 @@ public class SubgestPopupStructure extends Composite {
             suggestionItemText.setText("There was an error during translation. Server responded with: " + errorValue.getErrorMessage());
             suggestionItemMatch.setText("Error code: " + errorValue.getErrorCode());
             this.addStyleDependentName("error");
-            
+
         } else {
             suggestionItemText.setText(value.getStringL2());
             suggestionItemMatch.setText(value.getStringL1());
@@ -66,6 +67,19 @@ public class SubgestPopupStructure extends Composite {
             }
             suggestionItemSource.setText("Source: " + value.getSource().getDescription());
         }
+    }
+
+    public SubgestPopupStructure(PosteditPair value) {
+        initWidget(uiBinder.createAndBindUi(this));
+        suggestionItemText.setText(value.getString2());
+        suggestionItemMatch.setText(value.getString1());
+        if (value.getScore() != null) {
+            suggestionItemScore.setStyleName("score score_" + Math.round(value.getScore() * 10));
+            suggestionItemScore.setText(NumberFormat.getPercentFormat().format(value.getScore()));
+        } else {
+            suggestionItemScore.setText("Score unknown");
+        }
+        suggestionItemSource.setText("Source: " + value.getSource().getDescription());
     }
 
     @UiField

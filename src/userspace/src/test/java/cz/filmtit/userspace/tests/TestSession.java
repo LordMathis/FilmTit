@@ -131,7 +131,7 @@ public class TestSession {
         session.loadDocument(trToUpdate.getDocumentDatabaseId());
         session.setUserTranslation(trToUpdate.getTranslationResult().getSourceChunk().getChunkIndex(),
                 trToUpdate.getDocumentDatabaseId(),
-                "User translation", 0l);
+                "User translation", 0l, "", 0l);
 
         // test if the change appeared in the user space structure
         USTranslationResult changed = findTranslationResultInStructure(session, trToUpdate.getDocumentDatabaseId(),
@@ -237,7 +237,7 @@ public class TestSession {
         }
 
         for (TranslationResult tr : clientTRList) {
-            session.setUserTranslation(tr.getSourceChunk().getChunkIndex(), tr.getDocumentId(), loremIpsum.getWords(5, 5), 0);
+            session.setUserTranslation(tr.getSourceChunk().getChunkIndex(), tr.getDocumentId(), loremIpsum.getWords(5, 5), 0, "", 0);
         }
 
         session.logout();

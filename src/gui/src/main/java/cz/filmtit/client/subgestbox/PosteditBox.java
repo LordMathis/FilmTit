@@ -5,24 +5,36 @@
  */
 package cz.filmtit.client.subgestbox;
 
+import com.google.gwt.cell.client.AbstractCell;
+import com.google.gwt.cell.client.Cell;
+import com.google.gwt.cell.client.ValueUpdater;
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.FrameElement;
 import com.google.gwt.dom.client.IFrameElement;
+import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.FocusEvent;
 import com.google.gwt.event.dom.client.FocusHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.logical.shared.InitializeEvent;
 import com.google.gwt.event.logical.shared.InitializeHandler;
-import com.google.gwt.user.client.Window;
+import com.google.gwt.regexp.shared.RegExp;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
+import com.google.gwt.user.cellview.client.CellList;
+import com.google.gwt.user.cellview.client.HasKeyboardSelectionPolicy;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RichTextArea;
 import com.google.gwt.user.client.ui.TextArea;
+import com.google.gwt.user.client.ui.UIObject;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.view.client.SelectionChangeEvent;
+import com.google.gwt.view.client.SingleSelectionModel;
 import cz.filmtit.client.Gui;
 import cz.filmtit.client.pages.TranslationWorkspace;
-import cz.filmtit.share.LevelLogEnum;
-import cz.filmtit.share.TimedChunk;
-import cz.filmtit.share.TranslationResult;
+import cz.filmtit.share.*;
+import java.util.List;
 
 /**
  *
@@ -34,15 +46,14 @@ public class PosteditBox extends RichTextArea implements Comparable<PosteditBox>
     private TimedChunk chunk;
     private TranslationResult translationResult;
     private TranslationWorkspace workspace;
-    /*private PopupPanel suggestPanel;
-    private Widget suggestionWidget;
-    private boolean loadedSuggestions = false;*/
+    private PopupPanel posteditPanel;
+    private Widget posteditWidget;
+    private boolean loadedSuggestions = false;
     String lastText = "";
     private SubgestBox subgestBox;
 
     public PosteditBox(TimedChunk chunk, TranslationWorkspace workspace, int tabIndex) {
         this.chunk = chunk;
-        this.translationResult = new TranslationResult(chunk);
         this.workspace = workspace;
         if (this.workspace == null) {
             Gui.log("workspace for subgestbox is null!!!");
@@ -75,7 +86,6 @@ public class PosteditBox extends RichTextArea implements Comparable<PosteditBox>
     @Override
     public int compareTo(PosteditBox o) {
         return this.getTranslationResult().compareTo(o.getTranslationResult());
-
     }
 
     public void replaceFakeWithReal() {
@@ -109,6 +119,47 @@ public class PosteditBox extends RichTextArea implements Comparable<PosteditBox>
     }
 
     /**
+     * Replace the text remembered as the last saved text with the current text.
+     * To be used when the text is sent to be saved as the user translation via
+     * SetUserTranslation.
+     */
+    public void updateLastText() {
+        this.lastText = this.getTextWithNewlines();
+    }
+
+    /**
+     * Returns the SubgestBox' contents as text with newlines unified as "\n"
+     * (also trimmed on the beginning and end and removed duplicate newlines)
+     *
+     * @return the text contents with unified newlines
+     */
+    public String getTextWithNewlines() {
+        String text = this.getHTML();
+        RegExp newlineTags = RegExp.compile("<p>|<div>|<br>", "g");
+        RegExp toClean = RegExp.compile("</p>|</div>|&nbsp;", "g");
+        RegExp newlineSequence = RegExp.compile("\n*");
+        text = newlineTags.replace(text, "\n");
+        text = toClean.replace(text, "");
+        text = newlineSequence.replace(text, "\n");
+        text = text.trim();
+        return text;
+    }
+
+    /**
+     * @param posteditWidget the posteditWidget to set
+     */
+    public void setPosteditWidget(Widget posteditWidget) {
+        this.posteditWidget = posteditWidget;
+    }
+
+    /**
+     * @return the posteditWidget
+     */
+    public Widget getPosteditWidget() {
+        return posteditWidget;
+    }
+
+    /**
      * @return the translationResult
      */
     public TranslationResult getTranslationResult() {
@@ -120,6 +171,13 @@ public class PosteditBox extends RichTextArea implements Comparable<PosteditBox>
      */
     public void setTranslationResult(TranslationResult translationResult) {
         this.translationResult = translationResult;
+        String posteditedString = translationResult.getPosteditedString();
+
+        if (posteditedString != null && !posteditedString.equals("")) {
+            getSubstitute().setText(posteditedString);
+            this.setHTML(subgestBoxHTML(posteditedString));
+            updateLastText();
+        }
     }
 
     public class FakePosteditBox extends TextArea implements Comparable<FakePosteditBox> {
@@ -170,10 +228,19 @@ public class PosteditBox extends RichTextArea implements Comparable<PosteditBox>
 
     }
 
+    /**
+     * True if the user translation text has changed since the last submitting
+     * (or update) (except for the trimmed newlines).
+     *
+     * @return
+     */
+    public boolean textChanged() {
+        return !this.getTextWithNewlines().equals(this.lastText);
+    }
+
     public int getCorrectVerticalSize() {
         FrameElement frameElement = (FrameElement) this.getElement().cast();
         int newHeight = frameElement.getContentDocument().getScrollHeight();
-        Gui.log(LevelLogEnum.Error, "PosteditBox.getCorrectVerticalSize()", String.valueOf(newHeight));
         return newHeight;
     }
 
@@ -192,6 +259,153 @@ public class PosteditBox extends RichTextArea implements Comparable<PosteditBox>
         if (newHeight != subgestHeight) {
             subgestBox.updateVerticalSize();
         }
+
+        showSuggestions();
+    }
+
+    /**
+     * Prepare the suggestions from the underlying TranslationResult to be
+     * displayed (if they are already fetched and not loaded yet).
+     */
+    public void loadSuggestions() {
+
+        if (loadedSuggestions == true) {
+            return;
+        }
+
+        loadedSuggestions = true;
+        // creating the suggestions pop-up panel:
+        posteditPanel = new PopupPanel();
+        posteditPanel.setAutoHideEnabled(true);
+        posteditPanel.setStylePrimaryName("suggestionsPopup");
+
+        final SingleSelectionModel<PosteditPair> selectionModel = new SingleSelectionModel<PosteditPair>();
+        CellList<PosteditPair> cellList = new CellList<PosteditPair>(new PosteditBox.PosteditCell(selectionModel, posteditPanel));
+        cellList.setWidth(Integer.toString(this.getOffsetWidth()) + "px");
+        cellList.setKeyboardSelectionPolicy(HasKeyboardSelectionPolicy.KeyboardSelectionPolicy.ENABLED);
+
+        // setting tabindex so that the suggestions are focused between this box and the next one
+        cellList.setTabIndex(this.getTabIndex());
+
+        cellList.setSelectionModel(selectionModel);
+        selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
+            public void onSelectionChange(SelectionChangeEvent event) {
+                PosteditPair selected = selectionModel.getSelectedObject();
+                if (selected != null) {
+                    //translationResult.setSelectedTranslationPairID(selected.getId());
+                    // copy the selected suggestion into the richtextarea with the annotation highlighting:
+                    setHTML(subgestBoxHTML(selected.getChunk2().getSurfaceForm()));
+                    // contents have changed - resize if necessary:
+                    updateVerticalSize();
+
+                    Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
+                        @Override
+                        public void execute() {
+                            PosteditBox.this.setFocus(true);
+                        }
+                    });
+
+                }
+            }
+        });
+        cellList.setRowData(this.getSuggestions());
+        posteditPanel.setWidget(cellList);
+
+        this.setPosteditWidget(posteditPanel);
+    }
+
+    private String subgestBoxHTML(String content) {
+        content = content.replaceAll("\n", "<br>");
+        return content;
+    }
+
+    /**
+     * Returns the list of suggestions from the underlying TranslationResult.
+     *
+     * @return
+     */
+    public List<PosteditPair> getSuggestions() {
+        return this.translationResult.getPosteditSuggestions();
+    }
+
+    /**
+     * Display the postedit suggestion widget with the suggestions from the
+     * underlying TranslationResult.
+     */
+    public void showSuggestions() {
+
+        if (this.getSuggestions().size() > 0) {
+
+            // showing the suggestions always below this SubgestBox:
+            final UIObject relativeObject = this;
+            posteditPanel.setPopupPositionAndShow(new PopupPanel.PositionCallback() {
+                @Override
+                public void setPosition(int offsetWidth, int offsetHeight) {
+                    // Calculate left position for the popup
+                    int left = relativeObject.getAbsoluteLeft();
+                    // Calculate top position for the popup
+                    int top = relativeObject.getAbsoluteTop();
+                    // Position below the textbox:
+                    top += relativeObject.getOffsetHeight();
+                    posteditPanel.setPopupPosition(left, top);
+                }
+            });
+            posteditWidget.setWidth(this.getOffsetWidth() + "px");
+        }
+    }
+
+    /**
+     * The Cell used to render the list of suggestions from the current
+     * TranslationPair.
+     */
+    static class PosteditCell extends AbstractCell<PosteditPair> {
+
+        // for explicitly setting the selection after Enter key press
+        private SingleSelectionModel<PosteditPair> selectionModel;
+        private PopupPanel parentPopup;
+
+        public PosteditCell(SingleSelectionModel<PosteditPair> selectionModel, PopupPanel parentPopup) {
+            super("keydown"); // tells the AbstractCell that we want to catch the keydown events
+            this.selectionModel = selectionModel;
+            this.parentPopup = parentPopup;
+        }
+
+        @Override
+        public void render(Cell.Context context, PosteditPair value, SafeHtmlBuilder sb) {
+            // Value can be null, so do a null check:
+            if (value == null) {
+                return;
+            }
+            SubgestPopupStructure struct = new SubgestPopupStructure(value);
+            // TODO after switching to GWT 2.5 - use UiRenderer for doing this;
+            // (this is probably neither the safest, nor the best way...)
+            sb.append(SafeHtmlUtils.fromTrustedString(struct.toString()));
+        }
+
+        @Override
+        protected void onEnterKeyDown(Cell.Context context, Element parent, PosteditPair value,
+                NativeEvent event, ValueUpdater<PosteditPair> valueUpdater) {
+            // selecting also by Enter is automatic in Opera only, others use only Spacebar
+            // (and we want also Enter everywhere)
+            event.preventDefault();
+            selectionModel.setSelected(value, true);
+        }
+
+        @Override
+        public void onBrowserEvent(
+                com.google.gwt.cell.client.Cell.Context context,
+                Element parent, PosteditPair value, NativeEvent event,
+                ValueUpdater<PosteditPair> valueUpdater) {
+            super.onBrowserEvent(context, parent, value, event, valueUpdater);
+            // handle the tabbing out from the selecting process (by keyboard) - hiding the popup:
+            if ("keydown".equals(event.getType())) {
+                if (event.getKeyCode() == KeyCodes.KEY_TAB) {
+                    parentPopup.setVisible(false);
+                    // (we cannot hide it because the list would lose its proper TabIndex)
+                }
+            }
+        }
+
     }
 
 }
