@@ -15,7 +15,13 @@ public class PosteditSource implements com.google.gwt.user.client.rpc.IsSerializ
 
     private String description;
 
-    PosteditSource(String description) {
+    /**
+     * Default GWT constructor
+     */
+    public PosteditSource() {
+    }  
+    
+    public PosteditSource(String description) {
         this.description = description;
     }
 

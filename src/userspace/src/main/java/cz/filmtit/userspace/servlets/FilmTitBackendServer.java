@@ -388,6 +388,15 @@ public class FilmTitBackendServer extends RemoteServiceServlet implements
             throws InvalidSessionIdException, InvalidDocumentIdException {
         return getSessionIfCan(sessionID).stopTranslationResults(chunks);
     }
+    
+    /**
+     * 
+     */
+    @Override
+    public Void stopPosteditSuggestions(String sessionID, List<TimedChunk> chunks)
+            throws InvalidSessionIdException, InvalidDocumentIdException {
+        return getSessionIfCan(sessionID).stopPosteditSuggestions(chunks);
+    }
 
     /**
      * Set the user translation of the given chunk.

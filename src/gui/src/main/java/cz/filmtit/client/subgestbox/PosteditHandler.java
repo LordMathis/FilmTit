@@ -23,6 +23,7 @@ import cz.filmtit.client.callables.LockTranslationResult;
 import cz.filmtit.client.callables.ReloadTranslationResults;
 import cz.filmtit.client.callables.UnlockTranslationResult;
 import cz.filmtit.client.pages.TranslationWorkspace;
+import cz.filmtit.share.LevelLogEnum;
 
 /**
  *
@@ -62,7 +63,9 @@ public class PosteditHandler implements FocusHandler, KeyDownHandler, KeyUpHandl
 
         if (event.getSource() instanceof PosteditBox) {
             final PosteditBox posteditBox = (PosteditBox) event.getSource();
-
+            
+            //Gui.log(LevelLogEnum.Error, this.getClass().getName(), posteditBox.getTranslationResult().getUserTranslation() + " " + posteditBox.getSuggestions().size());
+            
             if (workspace.getLockedSubgestBox() == null) {
                 new LockTranslationResult(posteditBox.getSubgestBox(), workspace);
             } else if (workspace.getLockedSubgestBox() != posteditBox.getSubgestBox()) {

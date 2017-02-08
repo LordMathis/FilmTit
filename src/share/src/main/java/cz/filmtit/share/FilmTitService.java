@@ -264,7 +264,7 @@ public interface FilmTitService extends RemoteService {
      */
     TranslationResult getTranslationResults(String sessionID, TimedChunk chunk)
             throws InvalidSessionIdException, InvalidDocumentIdException;
-
+    
     /**
      * Get the list of lists of possible translations of the given chunks.
      *
@@ -304,6 +304,12 @@ public interface FilmTitService extends RemoteService {
      * not have document of given ID.
      */
     Void stopTranslationResults(String sessionID, List<TimedChunk> chunks)
+            throws InvalidSessionIdException, InvalidDocumentIdException;
+    
+    /**
+     * 
+     */
+    Void stopPosteditSuggestions(String sessionID, List<TimedChunk> chunks)
             throws InvalidSessionIdException, InvalidDocumentIdException;
 
     /**

@@ -177,6 +177,11 @@ public class TranslationWorkspace extends Composite {
     private boolean translationStarted = false;
 
     /**
+     *
+     */
+    private boolean posteditStarted = false;
+
+    /**
      * List of RPC calls to get TranslationResults from Translation Memory
      */
     private Map<Integer, GetTranslationResults> sentGetTranslationsResultsCalls;
@@ -301,6 +306,7 @@ public class TranslationWorkspace extends Composite {
         for (GetTranslationResults getTranslationResults : sentGetTranslationsResultsCalls.values()) {
             getTranslationResults.stop();
         }
+
         this.stopLoading = true;
         Gui.log("stopLoading set for the workspace");
     }
@@ -411,10 +417,14 @@ public class TranslationWorkspace extends Composite {
         posteditOn = userSettings.getPosteditOn();
         moviePath = userSettings.getMoviePath();
         isLocalFile = userSettings.isLocalFile();
+
         synchronizer = new SubtitleSynchronizer();
+
         sentGetTranslationsResultsCalls = new HashMap<Integer, GetTranslationResults>();
+
         currentWorkspace = this;
         currentDocument = doc;
+
         targetBoxes = new ArrayList<SubgestBox.FakeSubgestBox>();
         posteditBoxes = new ArrayList<PosteditBox.FakePosteditBox>();
         timeLabels = new HashMap<ChunkIndex, Label>();
@@ -493,6 +503,13 @@ public class TranslationWorkspace extends Composite {
                     posteditTextChanged = lockedSubgestBox.getPosteditBox().textChanged();
                 }
 
+                if (lockedSubgestBox != null) {
+                    lockedSubgestBox.addStyleDependentName("unlocked");
+                    if (isPosteditOn()) {
+                        lockedSubgestBox.getPosteditBox().addStyleDependentName("unlocked");
+                    }
+                }
+
                 // submitting only when the contents have changed
                 if (lockedSubgestBox.textChanged() || posteditTextChanged) {
                     submitUserTranslation(lockedSubgestBox, null);
@@ -503,13 +520,6 @@ public class TranslationWorkspace extends Composite {
                 } else {
                     Gui.log(LevelLogEnum.Error, "TranslationWorkspace", "timer run out");
                     new UnlockTranslationResult(lockedSubgestBox, currentWorkspace);
-                }
-
-                if (unlockedSubgestBox != null) {
-                    unlockedSubgestBox.addStyleDependentName("unlocked");
-                    if (isPosteditOn()) {
-                        unlockedSubgestBox.getPosteditBox().addStyleDependentName("unlocked");
-                    }
                 }
 
                 this.cancel();
@@ -555,36 +565,34 @@ public class TranslationWorkspace extends Composite {
             return;
         }
 
-        List<TimedChunk> untranslatedOnes = new LinkedList<TimedChunk>();
+        List<TimedChunk> unedited = new LinkedList<TimedChunk>();
         List<TimedChunk> allChunks = new LinkedList<TimedChunk>();
         List<TranslationResult> results = new LinkedList<TranslationResult>();
-        List<TranslationResult> postedited = new LinkedList<TranslationResult>();
 
         for (TranslationResult tr : translations) {
-            TimedChunk sChunk = tr.getSourceChunk();
+            TimedChunk sourceChunk = tr.getSourceChunk();
             synchronizer.putTranslationResult(tr);
-            synchronizer.putSourceChunk(sChunk, -1, false);
-            String tChunk = tr.getUserTranslation();
+            synchronizer.putSourceChunk(sourceChunk, -1, false);
+            String userTranslation = tr.getUserTranslation();
             String posteditedString = tr.getPosteditedString();
 
-            ChunkIndex chunkIndex = sChunk.getChunkIndex();
+            ChunkIndex chunkIndex = sourceChunk.getChunkIndex();
 
             this.getCurrentDocument().translationResults.put(chunkIndex, tr);
 
-            allChunks.add(sChunk);
+            allChunks.add(sourceChunk);
 
-            if (tChunk == null || tChunk.equals("")) {
-                untranslatedOnes.add(sChunk);
+            if (userTranslation == null || userTranslation.isEmpty()) {
+                unedited.add(sourceChunk);
             } else {
                 results.add(tr);
-            }
-
-            if (posteditedString != null && !posteditedString.isEmpty()) {
-                postedited.add(tr);
+                if (isPosteditOn() && ((posteditedString == null) || (posteditedString.isEmpty()))) {
+                    unedited.add(sourceChunk);
+                }
             }
         }
 
-        dealWithChunks(allChunks, results, untranslatedOnes, postedited);
+        dealWithChunks(allChunks, results, unedited);
 
     }
 
@@ -595,23 +603,35 @@ public class TranslationWorkspace extends Composite {
      */
     public void fillTranslationResults(List<TranslationResult> translations) {
 
-        List<TranslationResult> translated = new ArrayList<TranslationResult>();
+        List<TranslationResult> unedited = new ArrayList<TranslationResult>();
 
         for (TranslationResult tr : translations) {
-            TimedChunk sChunk = tr.getSourceChunk();
-            synchronizer.putTranslationResult(tr);
-            synchronizer.putSourceChunk(sChunk, -1, false);
-            String tChunk = tr.getUserTranslation();
 
+            TimedChunk sChunk = tr.getSourceChunk();
             ChunkIndex chunkIndex = sChunk.getChunkIndex();
+            String userTranslation = tr.getUserTranslation();
+            String posteditedString = tr.getPosteditedString();
+            
+            TranslationResult getTr = currentDocument.translationResults.get(chunkIndex);
+                        
+            tr.setTmSuggestions(getTr.getTmSuggestions());
+            tr.setPosteditSuggestions(getTr.getPosteditSuggestions());
+            
             this.getCurrentDocument().translationResults.put(chunkIndex, tr);
 
-            if (tChunk != null && !tChunk.equals("")) {
-                translated.add(tr);
+            synchronizer.putTranslationResult(tr);
+            synchronizer.putSourceChunk(sChunk, -1, false);
+
+            if (userTranslation != null && !userTranslation.isEmpty()) {
+                unedited.add(tr);
+            } else if (posteditedString != null && !posteditedString.isEmpty()) {
+                unedited.add(tr);
             }
+
         }
 
-        Scheduler.get().scheduleIncremental(new ShowUserTranslatedCommand(translated));
+        Scheduler.get().scheduleIncremental(new ShowUserTranslatedCommand(unedited));
+
     }
 
     /**
@@ -691,7 +711,7 @@ public class TranslationWorkspace extends Composite {
     public void startShowingTranslationsIfReady() {
         if (sourceSelected) {
             if (sendChunksCommand != null) {
-                if (translationStarted == false) {
+                if (!translationStarted) {
                     sendChunksCommand.execute();
                     translationStarted = true;
                 }
@@ -724,16 +744,16 @@ public class TranslationWorkspace extends Composite {
         synchronizer.putTranslationResult(transResult);
     }
 
-    private void dealWithChunks(List<TimedChunk> original, List<TranslationResult> translated, List<TimedChunk> untranslated, List<TranslationResult> postedited) {
+    private void dealWithChunks(List<TimedChunk> original, List<TranslationResult> translated, List<TimedChunk> unedited) {
 
         Scheduler.get().scheduleIncremental(new ShowOriginalCommand(original));
         Scheduler.get().scheduleIncremental(new ShowUserTranslatedCommand(translated));
 
         if (isPosteditOn()) {
-            Scheduler.get().scheduleIncremental(new ShowPosteditedCommand(postedited));
+            //Scheduler.get().scheduleIncremental(new ShowPosteditedCommand(postedited));
         }
 
-        prepareSendChunkCommand(untranslated);
+        prepareSendChunkCommand(unedited);
         startShowingTranslationsIfReady();
     }
 
@@ -743,7 +763,7 @@ public class TranslationWorkspace extends Composite {
      * @param chunks
      */
     public void showSources(List<TimedChunk> chunks) {
-        dealWithChunks(chunks, new LinkedList<TranslationResult>(), chunks, new LinkedList<TranslationResult>());
+        dealWithChunks(chunks, new LinkedList<TranslationResult>(), chunks);
     }
 
     /**
@@ -796,7 +816,7 @@ public class TranslationWorkspace extends Composite {
 
             targetbox.setPosteditBox(posteditBox);
             posteditBox.setSubgestBox(targetbox);
-            posteditBox.setTranslationResult(targetbox.getTranslationResult());
+
         }
         // chunk-marking (dialogs):
         // setting sourcemarks:
@@ -893,30 +913,6 @@ public class TranslationWorkspace extends Composite {
             if (isPosteditOn()) {
                 posteditBoxes.get(index).removeStyleName("loading");
             }
-        }
-    }
-
-    /**
-     *
-     */
-    public void showPostedited(final TranslationResult translationResult) {
-        if (!synchronizer.isChunkDisplayed(translationResult)) {
-            //try it again after some time
-            new com.google.gwt.user.client.Timer() {
-                @Override
-                public void run() {
-                    showPostedited(translationResult);
-                }
-            }.schedule(400);
-        } else {
-
-            //index is there -> insert result
-            int index = synchronizer.getIndexOf(translationResult);
-
-            posteditBoxes.get(index).getFather().setTranslationResult(translationResult);
-            posteditBoxes.get(index).removeStyleName("loading");
-            posteditBoxes.get(index).removeStyleName("loading");
-
         }
     }
 
@@ -1122,6 +1118,16 @@ public class TranslationWorkspace extends Composite {
         }
     }
 
+    private List<TimedChunk> translationResultsAChunks(List<TranslationResult> results) {
+        List<TimedChunk> chunks = new ArrayList<TimedChunk>();
+
+        for (TranslationResult result : results) {
+            chunks.add(result.getSourceChunk());
+        }
+
+        return chunks;
+    }
+
     ////////////////////////////
     //                        //
     //   Native Methods       //
@@ -1285,7 +1291,7 @@ public class TranslationWorkspace extends Composite {
         }
     }
 
-    private class ShowPosteditedCommand implements RepeatingCommand {
+    /*   private class ShowPosteditedCommand implements RepeatingCommand {
 
         LinkedList<TranslationResult> resultsToDisplay = new LinkedList<TranslationResult>();
 
@@ -1306,8 +1312,7 @@ public class TranslationWorkspace extends Composite {
             }
             return false;
         }
-    }
-
+    }*/
     /**
      * Used to change the source of a chunk. Rough and probably TODO now.
      */

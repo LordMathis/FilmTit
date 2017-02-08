@@ -16,19 +16,8 @@ You should have received a copy of the GNU General Public License
 along with FilmTit.  If not, see <http://www.gnu.org/licenses/>.*/
 
 package cz.filmtit.client.callables;
-import com.google.gwt.user.client.*;
 
 import cz.filmtit.client.*;
-
-import cz.filmtit.client.pages.TranslationWorkspace;
-import cz.filmtit.client.pages.TranslationWorkspace.SendChunksCommand;
-
-import com.google.gwt.user.client.ui.*;
-import com.google.gwt.core.client.Scheduler.RepeatingCommand;
-import com.google.gwt.core.client.Scheduler.ScheduledCommand;
-import com.google.gwt.user.client.rpc.*;
-import com.google.gwt.event.dom.client.*;
-import com.google.gwt.core.client.*;
 import cz.filmtit.share.*;
 import java.util.*;
 

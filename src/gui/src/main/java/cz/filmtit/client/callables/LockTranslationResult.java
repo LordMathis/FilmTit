@@ -50,7 +50,7 @@ public class LockTranslationResult extends Callable<Void> {
 
     @Override
     protected void onFinalError(String message) {
-        
+
         subgestBox.addStyleDependentName("unlocked");
         subgestBox.setEnabled(false);
 
@@ -69,8 +69,6 @@ public class LockTranslationResult extends Callable<Void> {
     public void onSuccessAfterLog(Void result) {
         Gui.log(LevelLogEnum.DebugNotice, "LockTranslationResult", "Locked Translation Result id: " + String.valueOf(tResult.getChunkId()));
 
-        workspace.getLockTranslationResultCalls().remove(tResult.getSourceChunk());
-
         subgestBox.setEnabled(true);
         PosteditBox posteditBox = subgestBox.getPosteditBox();
         if (posteditBox != null) {
@@ -85,6 +83,9 @@ public class LockTranslationResult extends Callable<Void> {
         if (posteditBox != null) {
             posteditBox.addStyleDependentName("locked");
         }
+
+        workspace.getLockTranslationResultCalls().remove(tResult.getSourceChunk());
+
     }
 
     @Override

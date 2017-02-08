@@ -861,6 +861,25 @@ public class Session {
             return null;
         }
     }
+    
+    /**
+     * 
+     */
+    public Void stopPosteditSuggestions(List<TimedChunk> chunks) throws InvalidDocumentIdException {
+        if (chunks == null || chunks.isEmpty()) {
+            return null;
+        } else {
+            USDocument document = getActiveDocument(chunks.get(0).getDocumentId());
+
+            for (TimedChunk chunk : chunks) {
+                ChunkIndex index = chunk.getChunkIndex();
+                document.getTranslationResultForIndex(index).setChunkActive(false);
+            }
+
+            logger.info("!!! STOP POSTEDIT SUGGESTIONS !!! " + chunks.size() + " chunks");
+            return null;
+        }
+    }
 
     /**
      * Sets the translation the user has written and ID of the translation pair
@@ -882,7 +901,7 @@ public class Session {
             String posteditedString, long chosenPosteditPairID)
             throws InvalidDocumentIdException, InvalidChunkIdException {
         updateLastOperationTime();
-        
+
         USDocument document = getActiveDocument(documentId);
         USTranslationResult tr = document.getTranslationResultForIndex(chunkIndex);
 
@@ -908,7 +927,7 @@ public class Session {
         tr.setPosteditedString(posteditedString);
         tr.setSelectedPosteditPairID(chosenPosteditPairID);
         saveTranslationResult(document, tr);
-        
+
         return null;
     }
 

@@ -79,7 +79,10 @@ public class SubgestPopupStructure extends Composite {
         } else {
             suggestionItemScore.setText("Score unknown");
         }
+        
+        if (value.getSource() != null && value.getSource().getDescription() != null) {
         suggestionItemSource.setText("Source: " + value.getSource().getDescription());
+        }
     }
 
     @UiField

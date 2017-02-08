@@ -5,14 +5,13 @@
  */
 package cz.filmtit.share;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
 import java.io.Serializable;
 
 /**
  *
  * @author matus
  */
-public class PosteditPair implements IsSerializable, Serializable {
+public class PosteditPair implements com.google.gwt.user.client.rpc.IsSerializable, Serializable {
 
     private Long id = (long) - 1;
 
@@ -31,7 +30,7 @@ public class PosteditPair implements IsSerializable, Serializable {
         this.chunk2 = chunk2;
     }
 
-    PosteditPair(String userTranslation, String userTranslation1) {
+    public PosteditPair(String userTranslation, String userTranslation1) {
         this(new Chunk(userTranslation), new Chunk(userTranslation1));
     }
 

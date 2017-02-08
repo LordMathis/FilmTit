@@ -228,10 +228,26 @@ public class SubgestBox extends RichTextArea implements Comparable<SubgestBox> {
      * @param translationResult - new value of the underlying TranslationResult
      */
     public void setTranslationResult(TranslationResult translationResult) {
+
+        if (translationResult.getTmSuggestions() == null || translationResult.getTmSuggestions().isEmpty()) {
+            translationResult.setTmSuggestions(this.translationResult.getTmSuggestions());
+        }
+
+        if (translationResult.getPosteditSuggestions() == null || translationResult.getPosteditSuggestions().isEmpty()) {
+            translationResult.setPosteditSuggestions(this.translationResult.getPosteditSuggestions());
+        }
+
         this.translationResult = translationResult;
-        posteditBox.setTranslationResult(translationResult);
         loadedSuggestions = false;
         String userTranslation = translationResult.getUserTranslation();
+
+        if (posteditBox != null) {
+            if ((translationResult.getUserTranslation() != null) && (translationResult.getPosteditedString() == null)) {
+                Gui.log(LevelLogEnum.Error, "SubgestBox.setTranslationResult()", translationResult.getUserTranslation() + " | " + translationResult.getPosteditSuggestions().size());
+            }
+
+            posteditBox.setTranslationResult(translationResult);
+        }
 
         if (userTranslation != null && !userTranslation.equals("")) {
             getSubstitute().setText(userTranslation);

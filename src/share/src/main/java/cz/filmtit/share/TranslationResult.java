@@ -241,7 +241,7 @@ public class TranslationResult implements com.google.gwt.user.client.rpc.IsSeria
     }
 
     public TranslationResult resultWithoutSuggestions() {
-        if (tmSuggestions == null || tmSuggestions.size() == 0) {
+        if ((tmSuggestions == null || tmSuggestions.size() == 0) && (posteditSuggestions == null || posteditSuggestions.size() == 0)) {
             return this;
         }
 
