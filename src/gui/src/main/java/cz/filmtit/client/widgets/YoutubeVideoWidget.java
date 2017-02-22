@@ -7,9 +7,11 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import cz.filmtit.client.Gui;
 import cz.filmtit.client.SubtitleSynchronizer;
+import cz.filmtit.client.pages.TranslationWorkspace;
 import cz.filmtit.share.ChunkStringGenerator;
 import cz.filmtit.share.LevelLogEnum;
 import cz.filmtit.share.TranslationResult;
@@ -69,13 +71,18 @@ public class YoutubeVideoWidget extends Composite implements VideoWidget {
      * holds currently loaded subtitle chunks
      */
     Collection<TranslationResult> currentLoaded;
+    
+    ButtonPanel buttonPanel;
 
     /**
      * wrapper panel which holds the ui
      */
     @UiField
     HorizontalPanel videoWrapper;
-
+    
+    @UiField
+    VerticalPanel panelWrapper;
+    
     /**
      * Creates Youtube video player widget
      *
@@ -84,7 +91,7 @@ public class YoutubeVideoWidget extends Composite implements VideoWidget {
     public YoutubeVideoWidget(final String src, SubtitleSynchronizer synchronizer) {
 
         initWidget(uiBinder.createAndBindUi(this));
-
+        
         leftLabel = new Label();
         leftLabel.setWidth("292px");
         leftLabel.setHeight("100%");
@@ -106,6 +113,8 @@ public class YoutubeVideoWidget extends Composite implements VideoWidget {
                 updateLabels();
             }
         };
+        
+        buttonPanel = new ButtonPanel(TranslationWorkspace.getCurrentWorkspace());
 
         YouTubePlayer.loadYouTubeIframeApi();
         YouTubePlayer.addApiReadyHandler(new ApiReadyEventHandler() {
@@ -133,9 +142,11 @@ public class YoutubeVideoWidget extends Composite implements VideoWidget {
 
                 videoWrapper.add(leftLabel);
                 videoWrapper.add(player);
-                videoWrapper.add(rightLabel);
+                videoWrapper.add(rightLabel);                
             }
         });
+        
+        panelWrapper.add(buttonPanel);
     }
 
     /**

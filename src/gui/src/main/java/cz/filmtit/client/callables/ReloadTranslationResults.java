@@ -5,8 +5,10 @@
  */
 package cz.filmtit.client.callables;
 
+import com.google.gwt.user.client.Window;
 import cz.filmtit.client.Callable;
 import cz.filmtit.client.Gui;
+import cz.filmtit.client.dialogs.ReloadDocumentDialog;
 import cz.filmtit.client.pages.TranslationWorkspace;
 import cz.filmtit.share.Document;
 import cz.filmtit.share.TranslationResult;
@@ -16,31 +18,44 @@ import java.util.List;
  *
  * @author matus
  */
-public class ReloadTranslationResults extends Callable<Document>{
-    
+public class ReloadTranslationResults extends Callable<Document> {
+
     private long documentId;
     private TranslationWorkspace workspace;
-    
+
     public ReloadTranslationResults() {
-        
+
     }
-    
+
     public ReloadTranslationResults(long documentId, TranslationWorkspace workspace) {
         super();
         this.documentId = documentId;
         this.workspace = workspace;
-        enqueue();
+
+        if (workspace.getReloadTranslationResultsCall() == null) {
+            workspace.setReloadTranslationResultsCall(this);
+            enqueue();
+        }
     }
-    
+
     @Override
     public void onSuccessAfterLog(Document result) {
-        List<TranslationResult> translations = result.getSortedTranslationResults();
-        workspace.fillTranslationResults(translations);
+        
+        workspace.setReloadTranslationResultsCall(null);
+
+        List<TranslationResult> tResults = workspace.getCurrentDocument().getSortedTranslationResults();
+        List<TranslationResult> newTResults = result.getSortedTranslationResults();
+
+        if (newTResults.size() > tResults.size()) {
+            new ReloadDocumentDialog();
+        } else {
+            workspace.fillTranslationResults(newTResults);
+        }
     }
 
     @Override
     protected void call() {
         filmTitService.reloadTranslationResults(Gui.getSessionID(), documentId, this);
     }
-    
+
 }

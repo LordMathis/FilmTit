@@ -14,7 +14,6 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with FilmTit.  If not, see <http://www.gnu.org/licenses/>.*/
-
 package cz.filmtit.share;
 
 import cz.filmtit.share.annotations.AnnotationType;
@@ -30,17 +29,18 @@ import java.util.List;
 
 /**
  * Represents a subtitle chunk.
+ *
  * @author Joachim Daiber
  */
 public class Chunk implements com.google.gwt.user.client.rpc.IsSerializable, Serializable {
 
     /**
-     *  Flag if the chunk is active and therefore core should generate
+     * Flag if the chunk is active and therefore core should generate
      */
     public boolean isActive = true;
-	
+
     private volatile String surfaceForm = "";
-    
+
     protected List<Annotation> annotations;
 
     @GwtTransient
@@ -48,6 +48,7 @@ public class Chunk implements com.google.gwt.user.client.rpc.IsSerializable, Ser
 
     /**
      * Gets flag if the tokenization of the chunk has been done.
+     *
      * @return
      */
     public boolean isTokenized() {
@@ -56,11 +57,13 @@ public class Chunk implements com.google.gwt.user.client.rpc.IsSerializable, Ser
 
     /**
      * Sets the array of chunk tokens if the it has not been set before.
+     *
      * @param tokens Array of chunk tokens.
-     * @throws Exception Throws an exception if the resetting of tokenization is attempted.
+     * @throws Exception Throws an exception if the resetting of tokenization is
+     * attempted.
      */
     public void setTokens(String[] tokens) throws Exception {
-        if (tokens== null) {
+        if (tokens == null) {
             throw new Exception("Cannot unset tokens");
         }
         if (isTokenized()) {
@@ -71,6 +74,7 @@ public class Chunk implements com.google.gwt.user.client.rpc.IsSerializable, Ser
 
     /**
      * Gets tokenized chunk as an array of tokens.
+     *
      * @return Array of tokens.
      * @throws Exception Throws an exception if the chunk hasn't been tokenized.
      */
@@ -79,7 +83,7 @@ public class Chunk implements com.google.gwt.user.client.rpc.IsSerializable, Ser
             return tokens;
         } else {
             throw new Exception("cannot get no tokens");
-            
+
 //            return new String[]{};
         }
     }
@@ -88,30 +92,33 @@ public class Chunk implements com.google.gwt.user.client.rpc.IsSerializable, Ser
      * Default constructor for GWT.
      */
     public Chunk() {
-    	// nothing
+        // nothing
     }
 
     /**
      * Crates chunk from surface form and annotations
+     *
      * @param surfaceForm Chunks surface form
      * @param annotations Annotations of the chunk (e.g. if it is a dialog)
      */
     public Chunk(String surfaceForm, List<Annotation> annotations) {
-        this.surfaceForm = surfaceForm.replace('\u0000',' ');
-        this.annotations=annotations;
+        this.surfaceForm = surfaceForm.replace('\u0000', ' ');
+        this.annotations = annotations;
     }
-
 
     /**
      * Creates a chunk from surface form.
+     *
      * @param surfaceForm
      */
     public Chunk(String surfaceForm) {
-        this.surfaceForm = surfaceForm.replace('\u0000',' ');
+        this.surfaceForm = surfaceForm.replace('\u0000', ' ');
     }
 
     /**
-     * Gets only the string, with no annotations (newlines are turned into spaces).
+     * Gets only the string, with no annotations (newlines are turned into
+     * spaces).
+     *
      * @return Surface form of the chunk
      */
     public String getSurfaceForm() {
@@ -119,15 +126,19 @@ public class Chunk implements com.google.gwt.user.client.rpc.IsSerializable, Ser
     }
 
     /**
-     * Gets the string with annotations, as in an SRT file (newlines are turned into |).
+     * Gets the string with annotations, as in an SRT file (newlines are turned
+     * into |).
+     *
      * @return Chunk string with annotations
      */
     public String getDatabaseForm() {
-        return getFormatedForm("- "," | ");
+        return getFormatedForm("- ", " | ");
     }
 
     /**
-     * Sets the string with annotations, as in an SRT file (newlines are turned into |).
+     * Sets the string with annotations, as in an SRT file (newlines are turned
+     * into |).
+     *
      * @param form Chunk string with annotations
      */
     public void setDatabaseForm(String form) {
@@ -135,8 +146,9 @@ public class Chunk implements com.google.gwt.user.client.rpc.IsSerializable, Ser
     }
 
     /**
-     * The string with annotations, as in an SRT file (newlines are turned into |).
-     * Deletes previously existing format annotations.
+     * The string with annotations, as in an SRT file (newlines are turned into
+     * |). Deletes previously existing format annotations.
+     *
      * @param form Chunk string with annotations
      */
     public void setDatabaseFormForce(String form) {
@@ -146,6 +158,7 @@ public class Chunk implements com.google.gwt.user.client.rpc.IsSerializable, Ser
 
     /**
      * Copies data from other chunk.
+     *
      * @param other Chunk to copy data from
      */
     public void copyFromOther(Chunk other) {
@@ -154,19 +167,21 @@ public class Chunk implements com.google.gwt.user.client.rpc.IsSerializable, Ser
     }
 
     /**
-     * The string with annotations, newlines turned into newlineString, dialogue dashes into dashString.
+     * The string with annotations, newlines turned into newlineString, dialogue
+     * dashes into dashString.
+     *
      * @return
      */
     public String getFormatedForm(String dashString, String newlineString) {
         String displayForm = getSurfaceForm();
-        
+
         //we are doing annots from left to right
         //and if we move the string, we have to move the positions too
-        int movedAlready=0;
+        int movedAlready = 0;
 
         if (annotations != null) {
             Collections.sort(annotations);
-            for (Annotation annotation : annotations)  {
+            for (Annotation annotation : annotations) {
                 int pos = annotation.getBegin() + movedAlready;
                 switch (annotation.getType()) {
                     case DIALOGUE:
@@ -184,16 +199,16 @@ public class Chunk implements com.google.gwt.user.client.rpc.IsSerializable, Ser
                 }
             }
         }
-        
 
         return displayForm;
     }
 
-
     public boolean isDialogue() {
-        for (Annotation annotation: annotations) {
-            if (annotation.getType() == AnnotationType.DIALOGUE) {
-                return true;
+        if (annotations != null) {
+            for (Annotation annotation : annotations) {
+                if (annotation.getType() == AnnotationType.DIALOGUE) {
+                    return true;
+                }
             }
         }
         return false;
@@ -201,6 +216,7 @@ public class Chunk implements com.google.gwt.user.client.rpc.IsSerializable, Ser
 
     /**
      * Only the string, with no annotations (newlines are turned into spaces).
+     *
      * @return Surface form of the chunk
      */
     public void setSurfaceForm(String surfaceform) {
@@ -225,8 +241,12 @@ public class Chunk implements com.google.gwt.user.client.rpc.IsSerializable, Ser
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Chunk)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Chunk)) {
+            return false;
+        }
 
         Chunk chunk = (Chunk) o;
 
@@ -247,17 +267,20 @@ public class Chunk implements com.google.gwt.user.client.rpc.IsSerializable, Ser
     }
 
     public void addAnnotation(Annotation annotation) {
-        if (this.annotations == null)
+        if (this.annotations == null) {
             this.annotations = new ArrayList<Annotation>();
+        }
 
         this.annotations.add(annotation);
     }
- 
+
     /**
-     * Gets the string with annotations in HTML form (newlines are turned into <br />).
+     * Gets the string with annotations in HTML form (newlines are turned into
+     * <br />).
+     *
      * @return GUI form of the chunk text
      */
-    public String getGUIForm(){
+    public String getGUIForm() {
         return getFormatedForm("- ", "<br />");
     }
 
@@ -280,34 +303,34 @@ public class Chunk implements com.google.gwt.user.client.rpc.IsSerializable, Ser
 //    	String dbForm = newline.replace(form, " | ");
 //        setDatabaseForm(dbForm);
 //    }
-    
     /**
      * Adds new annotations, keeping the original ones.
+     *
      * @param annotations Annotations to be added
      */
     public void addAnnotations(Collection<Annotation> annotations) {
-        if (this.annotations == null)
+        if (this.annotations == null) {
             this.annotations = new ArrayList<Annotation>();
+        }
 
         this.annotations.addAll(annotations);
     }
 
     /**
      * Set new formatting annotations, deleting the previous ones.
+     *
      * @param annotations Annotations to be set
      */
     public void setFormattingAnnotations(Collection<Annotation> annotations) {
-    	// remove old formatting annotations = readd non-formatting annotations
-    	List<Annotation> newAnnotations = new ArrayList<Annotation>();
-    	
-        if (this.annotations!=null) {
+        // remove old formatting annotations = readd non-formatting annotations
+        List<Annotation> newAnnotations = new ArrayList<Annotation>();
+
+        if (this.annotations != null) {
             for (Annotation annotation : this.annotations) {
-                if (
-                        annotation.getType() == AnnotationType.ORGANIZATION ||
-                        annotation.getType() == AnnotationType.PERSON ||
-                        annotation.getType() == AnnotationType.PLACE
-                        ) {
-                    
+                if (annotation.getType() == AnnotationType.ORGANIZATION
+                        || annotation.getType() == AnnotationType.PERSON
+                        || annotation.getType() == AnnotationType.PLACE) {
+
                     annotations.add(annotation);
                 }
             }
@@ -320,10 +343,12 @@ public class Chunk implements com.google.gwt.user.client.rpc.IsSerializable, Ser
 
     /**
      * Removes annotation of given index in the list of annotations.
+     *
      * @param index Annotation index
      */
     public void removeAnnotation(int index) {
-        if (this.annotations != null)
+        if (this.annotations != null) {
             this.annotations.remove(index);
+        }
     }
 }

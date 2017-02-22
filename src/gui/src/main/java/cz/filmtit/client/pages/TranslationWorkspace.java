@@ -159,6 +159,8 @@ public class TranslationWorkspace extends Composite {
      */
     private Map<TimedChunk, LockTranslationResult> lockTranslationResultCalls = new HashMap<TimedChunk, LockTranslationResult>();
 
+    private ReloadTranslationResults reloadTranslationResultsCall = null;
+
     /**
      * Current SendChunksCommand
      */
@@ -512,7 +514,7 @@ public class TranslationWorkspace extends Composite {
 
                 // submitting only when the contents have changed
                 if (lockedSubgestBox.textChanged() || posteditTextChanged) {
-                    submitUserTranslation(lockedSubgestBox, null);
+                    submitUserTranslation(lockedSubgestBox, null, null, null);
                     lockedSubgestBox.updateLastText();
                     if (isPosteditOn()) {
                         lockedSubgestBox.getPosteditBox().updateLastText();
@@ -611,12 +613,12 @@ public class TranslationWorkspace extends Composite {
             ChunkIndex chunkIndex = sChunk.getChunkIndex();
             String userTranslation = tr.getUserTranslation();
             String posteditedString = tr.getPosteditedString();
-            
+
             TranslationResult getTr = currentDocument.translationResults.get(chunkIndex);
-                        
+
             tr.setTmSuggestions(getTr.getTmSuggestions());
             tr.setPosteditSuggestions(getTr.getPosteditSuggestions());
-            
+
             this.getCurrentDocument().translationResults.put(chunkIndex, tr);
 
             synchronizer.putTranslationResult(tr);
@@ -726,19 +728,24 @@ public class TranslationWorkspace extends Composite {
      * @param toSaveAndUnlock
      * @param toLock
      */
-    public void submitUserTranslation(SubgestBox toSaveAndUnlock, SubgestBox toLock) {
+    public void submitUserTranslation(SubgestBox toSaveAndUnlock, SubgestBox toLock, SourceChangeHandler sourceChangeHandler, TimeChangeHandler timeChangeHandler) {
         TranslationResult transResult = toSaveAndUnlock.getTranslationResult();
         String combinedTRId = transResult.getDocumentId() + ":" + transResult.getSourceChunk().getChunkIndex();
         Gui.log("sending user feedback with values: " + combinedTRId + ", " + transResult.getUserTranslation() + ", " + transResult.getSelectedTranslationPairID());
 
         ChunkIndex chunkIndex = transResult.getSourceChunk().getChunkIndex();
 
+        // TODO add setUserTranslation for TimeChangeHandler and SourceChangeHandler
         if (toLock != null) {
             new SetUserTranslation(chunkIndex, transResult.getDocumentId(),
-                    transResult.getUserTranslation(), transResult.getSelectedTranslationPairID(), lockedSubgestBox, this, toLock, transResult.getPosteditedString(), transResult.getSelectedPosteditPairID());
+                    transResult.getUserTranslation(), transResult.getSelectedTranslationPairID(),
+                    lockedSubgestBox, this, toLock, transResult.getPosteditedString(), transResult.getSelectedPosteditPairID(),
+                    sourceChangeHandler, timeChangeHandler);
         } else {
             new SetUserTranslation(chunkIndex, transResult.getDocumentId(),
-                    transResult.getUserTranslation(), transResult.getSelectedTranslationPairID(), lockedSubgestBox, this, transResult.getPosteditedString(), transResult.getSelectedPosteditPairID());
+                    transResult.getUserTranslation(), transResult.getSelectedTranslationPairID(),
+                    lockedSubgestBox, this, transResult.getPosteditedString(), transResult.getSelectedPosteditPairID(),
+                    sourceChangeHandler, timeChangeHandler);
         }
 
         synchronizer.putTranslationResult(transResult);
@@ -782,7 +789,6 @@ public class TranslationWorkspace extends Composite {
         Label timeslabel = new Label(chunk.getDisplayTimeInterval());
         timeslabel.setStyleName("chunk_timing");
         timeslabel.setTitle("double-click to change the timing");
-        timeslabel.addDoubleClickHandler(new TimeChangeHandler(chunk));
         // add label to map
         timeLabels.put(chunkIndex, timeslabel);
 
@@ -798,7 +804,6 @@ public class TranslationWorkspace extends Composite {
         Label sourcelabel = new HTML(chunk.getSurfaceForm());
         sourcelabel.setStyleName("chunk_l1");
         sourcelabel.setTitle("double-click to change this text");
-        sourcelabel.addDoubleClickHandler(new SourceChangeHandler(chunk, sourcelabel));
         table.setWidget(index + 1, SOURCETEXT_COLNUMBER, sourcelabel);
 
         // initializing targetbox - fakeSubgetsBox
@@ -806,6 +811,9 @@ public class TranslationWorkspace extends Composite {
         SubgestBox.FakeSubgestBox fakeSubgetsBox = targetbox.new FakeSubgestBox(index + 1);
         targetBoxes.add(fakeSubgetsBox);
         table.setWidget(index + 1, TARGETBOX_COLNUMBER, fakeSubgetsBox);
+
+        sourcelabel.addDoubleClickHandler(new SourceChangeHandler(chunk, sourcelabel, targetbox));
+        timeslabel.addDoubleClickHandler(new TimeChangeHandler(chunk, targetbox));
 
         // initializing posteditbox - fakeSubgetsBox
         if (isPosteditOn()) {
@@ -1291,45 +1299,38 @@ public class TranslationWorkspace extends Composite {
         }
     }
 
-    /*   private class ShowPosteditedCommand implements RepeatingCommand {
-
-        LinkedList<TranslationResult> resultsToDisplay = new LinkedList<TranslationResult>();
-
-        public ShowPosteditedCommand(List<TranslationResult> chunks) {
-            this.resultsToDisplay.addAll(chunks);
-        }
-
-        @Override
-        public boolean execute() {
-            if (stopLoading) {
-                return false;
-            }
-
-            if (!resultsToDisplay.isEmpty()) {
-                TranslationResult result = resultsToDisplay.removeFirst();
-                showPostedited(result);
-                return true;
-            }
-            return false;
-        }
-    }*/
     /**
      * Used to change the source of a chunk. Rough and probably TODO now.
      */
-    private class SourceChangeHandler implements DoubleClickHandler {
+    public class SourceChangeHandler implements DoubleClickHandler {
 
         private ChunkIndex chunkIndex;
         private Label label;
+        private SubgestBox subbox;
 
-        private SourceChangeHandler(TimedChunk chunk, Label label) {
+        private SourceChangeHandler(TimedChunk chunk, Label label, SubgestBox subbox) {
             this.chunkIndex = chunk.getChunkIndex();
             this.label = label;
+            this.subbox = subbox;
         }
 
         @Override
         public void onDoubleClick(DoubleClickEvent event) {
             // TODO probably something nicer than the prompt
 
+            if (lockedSubgestBox != subbox) {
+                if (lockedSubgestBox != null) {
+                    currentWorkspace.submitUserTranslation(lockedSubgestBox, subbox, this, null);
+                } else {
+                    new LockTranslationResult(subbox, currentWorkspace, this);
+                }
+            } else {
+                changeSource();
+            }
+
+        }
+
+        public void changeSource() {
             // init
             TimedChunk chunk = synchronizer.getChunkByIndex(chunkIndex);
             String oldSource = chunk.getDatabaseForm();
@@ -1358,24 +1359,52 @@ public class TranslationWorkspace extends Composite {
      * same id (i.e. which are parts of the same chunk actually). Very rough and
      * very TODO now.
      */
-    private class TimeChangeHandler implements DoubleClickHandler {
+    public class TimeChangeHandler implements DoubleClickHandler {
 
         private TimedChunk chunk;
+        private SubgestBox subbox;
 
         // computed and cached when invoked for the first time
         private List<TimedChunk> chunks = null;
 
-        private TimeChangeHandler(TimedChunk chunk) {
+        private TimeChangeHandler(TimedChunk chunk, SubgestBox subbox) {
             this.chunk = chunk;
+            this.subbox = subbox;
         }
 
         @Override
         public void onDoubleClick(DoubleClickEvent event) {
+            if (lockedSubgestBox != subbox) {
+                if (lockedSubgestBox != null) {
+                    currentWorkspace.submitUserTranslation(lockedSubgestBox, subbox, null, this);
+                } else {
+                    new LockTranslationResult(subbox, currentWorkspace, this);
+                }
+            } else {
+                changeTiming();
+            }
+        }
+
+        public void changeTiming() {
             if (chunks == null) {
                 chunks = synchronizer.getChunksById(chunk.getId());
             }
             // the chunks are directly modified by the TimeEditDialog
             new TimeEditDialog(chunks, TranslationWorkspace.this);
         }
+    }
+
+    /**
+     * @return the reloadTranslationResultsCall
+     */
+    public ReloadTranslationResults getReloadTranslationResultsCall() {
+        return reloadTranslationResultsCall;
+    }
+
+    /**
+     * @param reloadTranslationResultsCall the reloadTranslationResultsCall to set
+     */
+    public void setReloadTranslationResultsCall(ReloadTranslationResults reloadTranslationResultsCall) {
+        this.reloadTranslationResultsCall = reloadTranslationResultsCall;
     }
 }

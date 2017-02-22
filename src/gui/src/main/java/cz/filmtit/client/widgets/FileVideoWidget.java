@@ -13,9 +13,11 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import cz.filmtit.client.Gui;
 import cz.filmtit.client.SubtitleSynchronizer;
+import cz.filmtit.client.pages.TranslationWorkspace;
 import cz.filmtit.share.ChunkStringGenerator;
 import cz.filmtit.share.LevelLogEnum;
 import cz.filmtit.share.TranslationResult;
@@ -43,6 +45,8 @@ public class FileVideoWidget extends Composite implements VideoWidget {
     Collection<TranslationResult> currentLoaded;
 
     Timer timer;
+    
+    ButtonPanel buttonPanel;
 
     private static FileVideoWidgetUiBinder uiBinder = GWT.create(FileVideoWidgetUiBinder.class);
 
@@ -88,6 +92,9 @@ public class FileVideoWidget extends Composite implements VideoWidget {
         videoWrapper.add(leftLabel);
         videoWrapper.add(player);
         videoWrapper.add(rightLabel);
+        
+        buttonPanel = new ButtonPanel(TranslationWorkspace.getCurrentWorkspace());
+        panelWrapper.add(buttonPanel);
     }
 
     /**
@@ -191,4 +198,8 @@ public class FileVideoWidget extends Composite implements VideoWidget {
 
     @UiField
     HorizontalPanel videoWrapper;
+    
+    @UiField
+    VerticalPanel panelWrapper;
+
 }

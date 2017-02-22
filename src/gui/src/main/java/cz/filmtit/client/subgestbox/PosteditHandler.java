@@ -44,8 +44,8 @@ public class PosteditHandler implements FocusHandler, KeyDownHandler, KeyUpHandl
     }
 
     @Override
-    public void onFocus(FocusEvent event) {
-
+    public void onFocus(FocusEvent event) {      
+        
         SubgestBox unlockedSubgestBox = workspace.getUnlockedSubgestBox();
 
         if (unlockedSubgestBox != null) {
@@ -64,7 +64,7 @@ public class PosteditHandler implements FocusHandler, KeyDownHandler, KeyUpHandl
         if (event.getSource() instanceof PosteditBox) {
             final PosteditBox posteditBox = (PosteditBox) event.getSource();
             
-            //Gui.log(LevelLogEnum.Error, this.getClass().getName(), posteditBox.getTranslationResult().getUserTranslation() + " " + posteditBox.getSuggestions().size());
+            //Gui.log(LevelLogEnum.Error, this.getClass().getName(), posteditBox.getTextWithNewlines());
             
             if (workspace.getLockedSubgestBox() == null) {
                 new LockTranslationResult(posteditBox.getSubgestBox(), workspace);
@@ -75,7 +75,7 @@ public class PosteditHandler implements FocusHandler, KeyDownHandler, KeyUpHandl
 
                 // submitting only when the contents have changed
                 if (toSaveAndUnlock.textChanged() || posteditBox.textChanged()) {
-                    workspace.submitUserTranslation(toSaveAndUnlock, posteditBox.getSubgestBox());
+                    workspace.submitUserTranslation(toSaveAndUnlock, posteditBox.getSubgestBox(), null, null);
                     toSaveAndUnlock.updateLastText();
                     posteditBox.updateLastText();
                 } else {

@@ -22,6 +22,8 @@ public class LockTranslationResult extends Callable<Void> {
     TranslationResult tResult;
     SubgestBox subgestBox;
     TranslationWorkspace workspace;
+    TranslationWorkspace.SourceChangeHandler sourceChangeHandler = null;
+    TranslationWorkspace.TimeChangeHandler timeChangeHandler = null;
 
     public LockTranslationResult() {
         // do nothing
@@ -35,6 +37,50 @@ public class LockTranslationResult extends Callable<Void> {
         this.tResult = subgestBox.getTranslationResult();
         this.workspace = workspace;
         this.subgestBox.setEnabled(false);
+
+        PosteditBox posteditBox = this.subgestBox.getPosteditBox();
+        if (posteditBox != null) {
+            posteditBox.setEnabled(false);
+        }
+
+        if (!workspace.getLockTranslationResultCalls().containsKey(tResult.getSourceChunk())) {
+            workspace.getLockTranslationResultCalls().put(tResult.getSourceChunk(), this);
+            enqueue();
+
+        }
+    }
+
+    public LockTranslationResult(SubgestBox subgestBox, TranslationWorkspace workspace, TranslationWorkspace.SourceChangeHandler sourceChangeHandler) {
+        super();
+
+        retries = 0;
+        this.subgestBox = subgestBox;
+        this.tResult = subgestBox.getTranslationResult();
+        this.workspace = workspace;
+        this.subgestBox.setEnabled(false);
+        this.sourceChangeHandler = sourceChangeHandler;
+
+        PosteditBox posteditBox = this.subgestBox.getPosteditBox();
+        if (posteditBox != null) {
+            posteditBox.setEnabled(false);
+        }
+
+        if (!workspace.getLockTranslationResultCalls().containsKey(tResult.getSourceChunk())) {
+            workspace.getLockTranslationResultCalls().put(tResult.getSourceChunk(), this);
+            enqueue();
+
+        }
+    }
+
+    public LockTranslationResult(SubgestBox subgestBox, TranslationWorkspace workspace, TranslationWorkspace.TimeChangeHandler timeChangeHandler) {
+        super();
+
+        retries = 0;
+        this.subgestBox = subgestBox;
+        this.tResult = subgestBox.getTranslationResult();
+        this.workspace = workspace;
+        this.subgestBox.setEnabled(false);
+        this.timeChangeHandler = timeChangeHandler;
 
         PosteditBox posteditBox = this.subgestBox.getPosteditBox();
         if (posteditBox != null) {
@@ -73,7 +119,6 @@ public class LockTranslationResult extends Callable<Void> {
         PosteditBox posteditBox = subgestBox.getPosteditBox();
         if (posteditBox != null) {
             subgestBox.getPosteditBox().setEnabled(true);
-
         }
 
         workspace.setLockedSubgestBox(subgestBox);
@@ -82,6 +127,16 @@ public class LockTranslationResult extends Callable<Void> {
         subgestBox.addStyleDependentName("locked");
         if (posteditBox != null) {
             posteditBox.addStyleDependentName("locked");
+        }
+
+        Gui.log(LevelLogEnum.Error, this.getClass().getName(), subgestBox.getTextWithNewlines());
+
+        if (this.sourceChangeHandler != null) {
+            sourceChangeHandler.changeSource();
+        }
+
+        if (this.timeChangeHandler != null) {
+            timeChangeHandler.changeTiming();
         }
 
         workspace.getLockTranslationResultCalls().remove(tResult.getSourceChunk());

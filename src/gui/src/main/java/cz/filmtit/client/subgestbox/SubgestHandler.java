@@ -27,6 +27,7 @@ import cz.filmtit.client.callables.LockTranslationResult;
 import cz.filmtit.client.callables.ReloadTranslationResults;
 import cz.filmtit.client.callables.UnlockTranslationResult;
 import cz.filmtit.client.pages.TranslationWorkspace;
+import cz.filmtit.share.LevelLogEnum;
 
 /**
  * Universal event-handler for all {@link SubgestBox} instances in one
@@ -67,13 +68,15 @@ public class SubgestHandler implements FocusHandler, KeyDownHandler, KeyUpHandle
         if (event.getSource() instanceof SubgestBox) {
             final SubgestBox subbox = (SubgestBox) event.getSource();
 
+            //Gui.log(LevelLogEnum.Error, this.getClass().getName(), subbox.getTextWithNewlines());
+
             if (workspace.getLockedSubgestBox() == null) {
                 new LockTranslationResult(subbox, workspace);
             } else if (workspace.getLockedSubgestBox() != subbox) {
                 SubgestBox toSaveAndUnlock = workspace.getLockedSubgestBox();
                 toSaveAndUnlock.getTranslationResult().setUserTranslation(toSaveAndUnlock.getTextWithNewlines());
                 boolean posteditTextChanged = false;
-                
+
                 if (workspace.isPosteditOn()) {
                     toSaveAndUnlock.getTranslationResult().setPosteditedString(toSaveAndUnlock.getPosteditBox().getTextWithNewlines());
                     posteditTextChanged = toSaveAndUnlock.getPosteditBox().textChanged();
@@ -81,7 +84,7 @@ public class SubgestHandler implements FocusHandler, KeyDownHandler, KeyUpHandle
 
                 // submitting only when the contents have changed
                 if (toSaveAndUnlock.textChanged() || posteditTextChanged) {
-                    workspace.submitUserTranslation(toSaveAndUnlock, subbox);
+                    workspace.submitUserTranslation(toSaveAndUnlock, subbox, null, null);
                     toSaveAndUnlock.updateLastText();
                     if (workspace.isPosteditOn()) {
                         toSaveAndUnlock.getPosteditBox().updateLastText();
@@ -158,7 +161,7 @@ public class SubgestHandler implements FocusHandler, KeyDownHandler, KeyUpHandle
                 }
             }
 
-        } 
+        }
     }
 
     /**

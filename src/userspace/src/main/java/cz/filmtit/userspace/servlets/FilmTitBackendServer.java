@@ -116,6 +116,11 @@ public class FilmTitBackendServer extends RemoteServiceServlet implements
         return getSessionIfCan(sessionId).loadDocumentSettings(doc.getId());
     }
 
+    @Override
+    public Void addSubtitleItem(String sessionId, TimedChunk chunk, Document doc) throws InvalidDocumentIdException, InvalidSessionIdException, InvalidChunkIdException, InvalidValueException {
+        return getSessionIfCan(sessionId).addSubtitleItem(chunk, doc);
+    }
+
     public enum CheckUserEnum {
         UserName,
         UserNamePass,

@@ -861,9 +861,9 @@ public class Session {
             return null;
         }
     }
-    
+
     /**
-     * 
+     *
      */
     public Void stopPosteditSuggestions(List<TimedChunk> chunks) throws InvalidDocumentIdException {
         if (chunks == null || chunks.isEmpty()) {
@@ -1356,6 +1356,42 @@ public class Session {
     public Void setPassword(String password) {
         user.setPassword(FilmTitBackendServer.passHash(password));
         saveUser();
+        return null;
+    }
+
+    public Void addSubtitleItem(TimedChunk chunk, Document doc) throws InvalidChunkIdException, InvalidValueException, InvalidDocumentIdException {
+        logger.log(Logger.Level.ERROR, chunk.toString());
+        updateLastOperationTime();
+
+        USDocument document = getActiveDocument(doc.getId());
+        Collection<USTranslationResult> usTranslationResults = document.getTranslationResultValues();
+        
+        List<USTranslationResult> newResults = new ArrayList<USTranslationResult>();
+        newResults.addAll(usTranslationResults);
+
+        if (chunk.getDocumentId() != document.getDatabaseId()) {
+            throw new InvalidChunkIdException("Mismatch in documents IDs of the chunks.");
+        }
+
+        // test the start timing
+        try {
+            new SrtTime(chunk.getStartTime());
+        } catch (InvalidValueException e) {
+            throw new InvalidValueException("The start time value '" + chunk.getStartTime() + "' has wrong format. " + e.getLocalizedMessage());
+        }
+        // test the end timing
+        try {
+            new SrtTime(chunk.getEndTime());
+        } catch (InvalidValueException e) {
+            throw new InvalidValueException("The end time value '" + chunk.getEndTime() + "' has wrong format. " + e.getLocalizedMessage());
+        }
+
+        USTranslationResult usTranslationResult = new USTranslationResult(chunk);        
+        usTranslationResult.setDocument(document);
+        
+        newResults.add(usTranslationResult);        
+
+        saveTranslationResults(document, newResults);
         return null;
     }
 

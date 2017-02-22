@@ -7,6 +7,8 @@ Uncomment this for XHTML entities
     <ui:style>
 
     </ui:style>
-    <g:HorizontalPanel ui:field="videoWrapper">
-    </g:HorizontalPanel>
+    <g:VerticalPanel ui:field="panelWrapper">
+        <g:HorizontalPanel ui:field="videoWrapper">
+        </g:HorizontalPanel>
+    </g:VerticalPanel>
 </ui:UiBinder>

@@ -242,10 +242,6 @@ public class SubgestBox extends RichTextArea implements Comparable<SubgestBox> {
         String userTranslation = translationResult.getUserTranslation();
 
         if (posteditBox != null) {
-            if ((translationResult.getUserTranslation() != null) && (translationResult.getPosteditedString() == null)) {
-                Gui.log(LevelLogEnum.Error, "SubgestBox.setTranslationResult()", translationResult.getUserTranslation() + " | " + translationResult.getPosteditSuggestions().size());
-            }
-
             posteditBox.setTranslationResult(translationResult);
         }
 

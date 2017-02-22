@@ -264,7 +264,7 @@ public interface FilmTitService extends RemoteService {
      */
     TranslationResult getTranslationResults(String sessionID, TimedChunk chunk)
             throws InvalidSessionIdException, InvalidDocumentIdException;
-    
+
     /**
      * Get the list of lists of possible translations of the given chunks.
      *
@@ -305,9 +305,9 @@ public interface FilmTitService extends RemoteService {
      */
     Void stopTranslationResults(String sessionID, List<TimedChunk> chunks)
             throws InvalidSessionIdException, InvalidDocumentIdException;
-    
+
     /**
-     * 
+     *
      */
     Void stopPosteditSuggestions(String sessionID, List<TimedChunk> chunks)
             throws InvalidSessionIdException, InvalidDocumentIdException;
@@ -559,8 +559,10 @@ public interface FilmTitService extends RemoteService {
     Void lockTranslationResult(TranslationResult tResult, String sessionID) throws InvalidSessionIdException, AlreadyLockedException;
 
     Void unlockTranslationResult(ChunkIndex chunkIndex, Long documentId, String sessionID) throws InvalidSessionIdException;
-    
+
     Void saveSettings(String sessionId, Document doc, String moviePath, Boolean posteditOn, Boolean localFile) throws InvalidSessionIdException, InvalidDocumentIdException, InvalidUserIdException;
-    
+
     DocumentUserSettings loadDocumentSettings(String sessionId, Document doc) throws InvalidDocumentIdException, InvalidUserIdException, InvalidSessionIdException;
+
+    Void addSubtitleItem(String sessionId, TimedChunk chunk, Document doc) throws InvalidDocumentIdException, InvalidSessionIdException, InvalidChunkIdException, InvalidValueException;
 }
