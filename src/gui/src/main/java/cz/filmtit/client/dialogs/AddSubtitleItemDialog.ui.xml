@@ -11,9 +11,7 @@ Uncomment this for XHTML entities
     </ui:style>
     <g:HTMLPanel>
         <b:Form ui:field="timesForm">
-            <b:Fieldset>
-                <b:Legend>Add new subtitle item</b:Legend>
-                
+            <b:Fieldset>               
                 <b:ControlGroup>
                     <b:ControlLabel>Source timing</b:ControlLabel>
                     <b:Controls>

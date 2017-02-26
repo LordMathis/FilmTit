@@ -449,17 +449,12 @@ public class TranslationWorkspace extends Composite {
                 break;
         }
 
-        if (getMoviePath() != null) {
-            if (!getMoviePath().isEmpty()) {
-
-                if (!getIsLocalFile()) {
-                    ytVideoPlayer = new YoutubeVideoWidget(moviePath, synchronizer);
-                    panelForVideo.setWidget(ytVideoPlayer);
-                } else {
-                    fileVideoPlayer = new FileVideoWidget(moviePath, synchronizer);
-                    panelForVideo.setWidget(fileVideoPlayer);
-                }
-            }
+        if (!getIsLocalFile()) {
+            ytVideoPlayer = new YoutubeVideoWidget(moviePath, synchronizer);
+            panelForVideo.setWidget(ytVideoPlayer);
+        } else {
+            fileVideoPlayer = new FileVideoWidget(moviePath, synchronizer);
+            panelForVideo.setWidget(fileVideoPlayer);
         }
 
         scrollPanel.setStyleName("scrollPanel");
@@ -1402,7 +1397,8 @@ public class TranslationWorkspace extends Composite {
     }
 
     /**
-     * @param reloadTranslationResultsCall the reloadTranslationResultsCall to set
+     * @param reloadTranslationResultsCall the reloadTranslationResultsCall to
+     * set
      */
     public void setReloadTranslationResultsCall(ReloadTranslationResults reloadTranslationResultsCall) {
         this.reloadTranslationResultsCall = reloadTranslationResultsCall;

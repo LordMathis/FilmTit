@@ -231,7 +231,7 @@ public class AddSubtitleItemDialog extends Composite {
         dialogBox.setAnimationEnabled(true);
         dialogBox.setGlassEnabled(true);
         dialogBox.addStyleName("timeEditDialog");
-        dialogBox.setHTML("<h3>Change chunk timing</h3>");
+        dialogBox.setHTML("<h3>Add Subtitle Item</h3>");
         dialogBox.setWidget(this);
         dialogBox.center();
     }

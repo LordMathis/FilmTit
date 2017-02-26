@@ -5,7 +5,6 @@
  */
 package cz.filmtit.client.callables;
 
-import com.google.gwt.user.client.Window;
 import cz.filmtit.client.Callable;
 import cz.filmtit.client.Gui;
 import cz.filmtit.client.dialogs.ReloadDocumentDialog;

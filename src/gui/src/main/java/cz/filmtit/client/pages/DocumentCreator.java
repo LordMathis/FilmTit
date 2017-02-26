@@ -29,6 +29,7 @@ import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -62,14 +63,13 @@ public class DocumentCreator extends Composite {
 
     private FileReader freader;
 
-
     /**
      * Shows the page.
      */
     public DocumentCreator() {
 
         initWidget(uiBinder.createAndBindUi(this));
-              
+
         // movie title copying
         txtTitle.addStyleName("copying_title");
 
@@ -164,26 +164,29 @@ public class DocumentCreator extends Composite {
 
     @UiField
     FormActions bottomControlGroup;
-    
+
     private void createDocumentFromText(String subtext) {
         btnCreateDocument.setEnabled(false);
         lblCreateProgress.setVisible(true);
         lblCreateProgress.setText("Creating the document...");
-        
+
         String moviePath = "";
         String remoteURL = ytURL.getValue();
         File localFile = fileUpload.getFiles().getItem(0);
-        
+
         Boolean isLocalFile = true;
-        
+
         if (!remoteURL.isEmpty()) {
             moviePath = YoutubeUrlParser.parse(remoteURL);
+            if (moviePath == null) {
+                Window.alert("The URL you have entered is not valid");
+                return;
+            }
             isLocalFile = false;
         } else if (localFile != null) {
             moviePath = localFile.createObjectURL();
             isLocalFile = true;
         }
-        
 
         new CreateDocument(
                 getDocumentTitle(),
@@ -196,9 +199,8 @@ public class DocumentCreator extends Composite {
                 isLocalFile,
                 this
         );
-        
-        // sets TranslationWorkspace.currentDocument and calls TranslationWorkspace.processText() on success       
 
+        // sets TranslationWorkspace.currentDocument and calls TranslationWorkspace.processText() on success       
     }
 
     @UiField
@@ -212,42 +214,41 @@ public class DocumentCreator extends Composite {
 
     @UiField
     RadioButton rdbEncodingUtf8;
-    
+
     @UiField
     RadioButton rdbEncodingWin;
-    
+
     @UiField
     RadioButton rdbEncodingIso;
 
     @UiField
     ControlGroup fileUploadControlGroup;
-    
+
     @UiField
     FileUploadExt fileUpload;
-    
+
     @UiField
     Label lblUploadProgress;
 
     @UiField
     ControlGroup filePasteControlGroup;
-    
+
     @UiField
     TextArea txtFilePaste;
 
     @UiField
     CheckBox posteditCheckBox;
-       
+
     @UiField
     Button btnCreateDocument;
     @UiField
     Label lblCreateProgress;
-    
+
     @UiField
     TextBox ytURL;
-    
+
     @UiField
     FileUploadExt videoUpload;
-
 
     private String getDocumentTitle() {
         return txtTitle.getText();
@@ -272,7 +273,6 @@ public class DocumentCreator extends Composite {
             return "utf-8";  // default value
         }
     }
-    
 
     /**
      * prepare for being reshown to the user

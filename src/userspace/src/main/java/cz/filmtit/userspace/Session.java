@@ -673,6 +673,26 @@ public class Session {
             }
         }
 
+        org.hibernate.Session session = usHibernateUtil.getSessionWithActiveTransaction();
+
+        Query query = session.createQuery("FROM USTranslationResult t WHERE t.documentDatabaseId = :did AND t.lockedByUser = :uid");
+        query.setParameter("did", documentID);
+        query.setParameter("uid", this.getUserDatabaseId());
+
+        List list = query.list();
+
+        for (Object object : list) {
+
+            USTranslationResult translationResult = (USTranslationResult) object;
+
+            if ((translationResult.getLockedByUser() == null) || (translationResult.getLockedByUser() == this.getUserDatabaseId())) {
+                translationResult.setLockedByUser(null);
+                session.saveOrUpdate(translationResult);
+            }
+        }
+
+        usHibernateUtil.closeAndCommitSession(session);
+
         return new DocumentResponse(activeDocument.getDocument(), null, userSettings);
     }
 
@@ -1256,11 +1276,22 @@ public class Session {
         // save document because of changes in last edit time and translated chunks count
         document.saveToDatabaseJustDocument(session);
 
-        // save the translation results
-        for (USTranslationResult tr : results) {
+        List<USTranslationResult> sorted = new ArrayList<USTranslationResult>();
+        sorted.addAll(results);
+        sorted.sort(new Comparator<USTranslationResult>() {
+            @Override
+            public int compare(USTranslationResult o1, USTranslationResult o2) {
+                return o1.getTranslationResult().getSourceChunk().compareTo(o2.getTranslationResult().getSourceChunk());
+            }
+        });
+
+        for (int i = 0; i < sorted.size(); i++) {
+            USTranslationResult tr = sorted.get(i);
+            tr.getTranslationResult().getSourceChunk().setOrder(i);
             document.addOrReplaceTranslationResult(tr);
             tr.saveToDatabase(session);
         }
+
         usHibernateUtil.closeAndCommitSession(session);
     }
 
@@ -1365,7 +1396,7 @@ public class Session {
 
         USDocument document = getActiveDocument(doc.getId());
         Collection<USTranslationResult> usTranslationResults = document.getTranslationResultValues();
-        
+
         List<USTranslationResult> newResults = new ArrayList<USTranslationResult>();
         newResults.addAll(usTranslationResults);
 
@@ -1386,10 +1417,10 @@ public class Session {
             throw new InvalidValueException("The end time value '" + chunk.getEndTime() + "' has wrong format. " + e.getLocalizedMessage());
         }
 
-        USTranslationResult usTranslationResult = new USTranslationResult(chunk);        
+        USTranslationResult usTranslationResult = new USTranslationResult(chunk);
         usTranslationResult.setDocument(document);
-        
-        newResults.add(usTranslationResult);        
+
+        newResults.add(usTranslationResult);
 
         saveTranslationResults(document, newResults);
         return null;

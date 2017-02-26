@@ -71,7 +71,7 @@ public class YoutubeVideoWidget extends Composite implements VideoWidget {
      * holds currently loaded subtitle chunks
      */
     Collection<TranslationResult> currentLoaded;
-    
+
     ButtonPanel buttonPanel;
 
     /**
@@ -79,10 +79,10 @@ public class YoutubeVideoWidget extends Composite implements VideoWidget {
      */
     @UiField
     HorizontalPanel videoWrapper;
-    
+
     @UiField
     VerticalPanel panelWrapper;
-    
+
     /**
      * Creates Youtube video player widget
      *
@@ -91,61 +91,64 @@ public class YoutubeVideoWidget extends Composite implements VideoWidget {
     public YoutubeVideoWidget(final String src, SubtitleSynchronizer synchronizer) {
 
         initWidget(uiBinder.createAndBindUi(this));
-        
-        leftLabel = new Label();
-        leftLabel.setWidth("292px");
-        leftLabel.setHeight("100%");
-        leftLabel.addStyleName("subtitleDisplayedLeft");
 
-        rightLabel = new Label();
-        rightLabel.setWidth("292px");
-        rightLabel.setHeight("100%");
-        rightLabel.addStyleName("subtitleDisplayedRight");
+        if (src != null && !src.isEmpty()) {
 
-        this.synchronizer = synchronizer;
+            leftLabel = new Label();
+            leftLabel.setWidth("292px");
+            leftLabel.setHeight("100%");
+            leftLabel.addStyleName("subtitleDisplayedLeft");
 
-        currentTime = 0;
-        currentLoaded = new HashSet<TranslationResult>();
+            rightLabel = new Label();
+            rightLabel.setWidth("292px");
+            rightLabel.setHeight("100%");
+            rightLabel.addStyleName("subtitleDisplayedRight");
 
-        timer = new Timer() {
-            @Override
-            public void run() {
-                updateLabels();
-            }
-        };
-        
-        buttonPanel = new ButtonPanel(TranslationWorkspace.getCurrentWorkspace());
+            this.synchronizer = synchronizer;
 
-        YouTubePlayer.loadYouTubeIframeApi();
-        YouTubePlayer.addApiReadyHandler(new ApiReadyEventHandler() {
-            @Override
-            public void onApiReady(ApiReadyEvent event) {
+            currentTime = 0;
+            currentLoaded = new HashSet<TranslationResult>();
 
-                PlayerConfiguration config = (PlayerConfiguration) PlayerConfiguration.createObject();
-                config.setVideoId(src);
-                config.setWidth("400");
-                config.setHeight("260");
+            timer = new Timer() {
+                @Override
+                public void run() {
+                    updateLabels();
+                }
+            };
 
-                player = new YouTubePlayer(config);
+            YouTubePlayer.loadYouTubeIframeApi();
+            YouTubePlayer.addApiReadyHandler(new ApiReadyEventHandler() {
+                @Override
+                public void onApiReady(ApiReadyEvent event) {
 
-                player.addStateChangedHandler(new StateChangeEventHandler() {
-                    @Override
-                    public void onStateChange(StateChangeEvent event) {
-                        int stateChangeValue = event.getPlayerEvent().getData();
-                        if (stateChangeValue == 1) {
-                            timer.scheduleRepeating(100);
-                        } else {
-                            timer.cancel();
+                    PlayerConfiguration config = (PlayerConfiguration) PlayerConfiguration.createObject();
+                    config.setVideoId(src);
+                    config.setWidth("400");
+                    config.setHeight("260");
+
+                    player = new YouTubePlayer(config);
+
+                    player.addStateChangedHandler(new StateChangeEventHandler() {
+                        @Override
+                        public void onStateChange(StateChangeEvent event) {
+                            int stateChangeValue = event.getPlayerEvent().getData();
+                            if (stateChangeValue == 1) {
+                                timer.scheduleRepeating(100);
+                            } else {
+                                timer.cancel();
+                            }
                         }
-                    }
-                });
+                    });
 
-                videoWrapper.add(leftLabel);
-                videoWrapper.add(player);
-                videoWrapper.add(rightLabel);                
-            }
-        });
-        
+                    videoWrapper.add(leftLabel);
+                    videoWrapper.add(player);
+                    videoWrapper.add(rightLabel);
+                }
+            });
+
+        }
+
+        buttonPanel = new ButtonPanel(TranslationWorkspace.getCurrentWorkspace());
         panelWrapper.add(buttonPanel);
     }
 
@@ -232,6 +235,7 @@ public class YoutubeVideoWidget extends Composite implements VideoWidget {
 
     /**
      * removes subtitle chunks with wrong time from currentLoaded
+     *
      * @param currentTime
      */
     private void cleanList(float currentTime) {

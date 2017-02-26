@@ -243,6 +243,14 @@ public class USTranslationResult extends DatabaseObject implements Comparable<US
     private void setPartNumber(int partNumber) {
         translationResult.getSourceChunk().setPartNumber(partNumber);
     }
+    
+    public  int getOrderInDocument() {
+        return translationResult.getSourceChunk().getOrder();
+    }
+    
+    public void setOrderInDocument(int order) {
+        translationResult.getSourceChunk().setOrder(order);
+    }
 
     /**
      * Gets the index of translation pair user selected int the client in the

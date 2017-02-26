@@ -311,5 +311,17 @@ public class Document implements IsSerializable, Serializable, Comparable<Docume
         }
         return 0;
     }
+    
+    public List<TranslationResult> getSortedResultsByTime() {
+        List<TranslationResult> preSorted = new ArrayList<TranslationResult>();
+        preSorted.addAll(translationResults.values());
+        preSorted.sort(new Comparator<TranslationResult>() {
+            @Override
+            public int compare(TranslationResult o1, TranslationResult o2) {
+                return o1.getSourceChunk().compareTo(o2.getSourceChunk());
+            }
+        });
+        return preSorted;
+    }
 
 }
