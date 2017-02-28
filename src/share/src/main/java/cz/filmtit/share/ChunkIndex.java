@@ -51,22 +51,12 @@ public class ChunkIndex implements com.google.gwt.user.client.rpc.IsSerializable
         return id;
     }
 
-    private volatile int order;
-
-    /**
-     * @return the order
-     */
-    public int getOrder() {
-        return order;
-    }
-
     /**
      * Default constructor for GWT.
      */
     public ChunkIndex() {
         partNumber = 0;
         id = 0;
-        order = 0;
     }
 
     /**
@@ -86,23 +76,6 @@ public class ChunkIndex implements com.google.gwt.user.client.rpc.IsSerializable
 
         this.partNumber = partNumber;
         this.id = id;
-        this.order = id;
-    }
-
-    public ChunkIndex(Integer partNumber, Integer id, Integer order) {
-        if (partNumber == null) {
-            partNumber = 0;
-        }
-        if (id == null) {
-            id = 0;
-        }
-        if (order == null) {
-            order = 0;
-        }
-        
-        this.partNumber = partNumber;
-        this.id = id;
-        this.order = order;
     }
 
     /**
@@ -113,7 +86,6 @@ public class ChunkIndex implements com.google.gwt.user.client.rpc.IsSerializable
     public ChunkIndex(TimedChunk tc) {
         this.partNumber = tc.getPartNumber();
         this.id = tc.getId();
-        this.order = tc.getOrder();
     }
 
     @Override
@@ -126,13 +98,13 @@ public class ChunkIndex implements com.google.gwt.user.client.rpc.IsSerializable
         }
 
         ChunkIndex pol = (ChunkIndex) o;
-        return (pol.partNumber == partNumber && pol.id == id && pol.order == order);
+        return (pol.partNumber == partNumber && pol.id == id);
 
     }
 
     @Override
     public String toString() {
-        return new Integer(partNumber).toString() + " | " + new Integer(id).toString() + " | " + new Integer(order).toString();
+        return new Integer(partNumber).toString() + " | " + new Integer(id).toString();
     }
 
     /**
@@ -156,10 +128,10 @@ public class ChunkIndex implements com.google.gwt.user.client.rpc.IsSerializable
      */
     @Override
     public int compareTo(ChunkIndex other) {
-        if (other.order == order) {
+        if (other.id == id) {
             return partNumber - other.partNumber;
         } else {
-            return order - other.order;
+            return id - other.id;
         }
     }
 

@@ -679,8 +679,11 @@ public class TranslationWorkspace extends Composite {
         long endTime = System.currentTimeMillis();
         long parsingTime = endTime - startTime;
         Gui.log("parsing finished in " + parsingTime + "ms");
-
+        
+        int order = 0;
         for (TimedChunk chunk : chunklist) {
+            chunk.setOrder(order);
+            order++;
             ChunkIndex chunkIndex = chunk.getChunkIndex();
             TranslationResult tr = new TranslationResult(chunk);
             this.getCurrentDocument().translationResults.put(chunkIndex, tr);
@@ -779,6 +782,7 @@ public class TranslationWorkspace extends Composite {
     public void showSource(TimedChunk chunk) {
 
         ChunkIndex chunkIndex = chunk.getChunkIndex();
+        int order = chunk.getOrder();
 
         // create label
         Label timeslabel = new Label(chunk.getDisplayTimeInterval());
@@ -787,35 +791,35 @@ public class TranslationWorkspace extends Composite {
         // add label to map
         timeLabels.put(chunkIndex, timeslabel);
 
-        int index = lastIndex;
-        lastIndex++;
+        //int index = lastIndex;
+        //lastIndex++;
 
-        synchronizer.putSourceChunk(chunk, index, true);
+        synchronizer.putSourceChunk(chunk, order, true);
 
         //+1 because of the header
-        table.setWidget(index + 1, TIMES_COLNUMBER, timeslabel);
+        table.setWidget(order + 1, TIMES_COLNUMBER, timeslabel);
 
         //html because of <br />
         Label sourcelabel = new HTML(chunk.getSurfaceForm());
         sourcelabel.setStyleName("chunk_l1");
         sourcelabel.setTitle("double-click to change this text");
-        table.setWidget(index + 1, SOURCETEXT_COLNUMBER, sourcelabel);
+        table.setWidget(order + 1, SOURCETEXT_COLNUMBER, sourcelabel);
 
         // initializing targetbox - fakeSubgetsBox
-        SubgestBox targetbox = new SubgestBox(chunk, this, index + 1);
-        SubgestBox.FakeSubgestBox fakeSubgetsBox = targetbox.new FakeSubgestBox(index + 1);
+        SubgestBox targetbox = new SubgestBox(chunk, this, order + 1);
+        SubgestBox.FakeSubgestBox fakeSubgetsBox = targetbox.new FakeSubgestBox(order + 1);
         targetBoxes.add(fakeSubgetsBox);
-        table.setWidget(index + 1, TARGETBOX_COLNUMBER, fakeSubgetsBox);
+        table.setWidget(order + 1, TARGETBOX_COLNUMBER, fakeSubgetsBox);
 
         sourcelabel.addDoubleClickHandler(new SourceChangeHandler(chunk, sourcelabel, targetbox));
         timeslabel.addDoubleClickHandler(new TimeChangeHandler(chunk, targetbox));
 
         // initializing posteditbox - fakeSubgetsBox
         if (isPosteditOn()) {
-            PosteditBox posteditBox = new PosteditBox(chunk, this, index + 1);
-            PosteditBox.FakePosteditBox fakePosteditBox = posteditBox.new FakePosteditBox(index + 1);
+            PosteditBox posteditBox = new PosteditBox(chunk, this, order + 1);
+            PosteditBox.FakePosteditBox fakePosteditBox = posteditBox.new FakePosteditBox(order + 1);
             posteditBoxes.add(fakePosteditBox);
-            table.setWidget(index + 1, POSTEDIT_COLNUMBER, fakePosteditBox);
+            table.setWidget(order + 1, POSTEDIT_COLNUMBER, fakePosteditBox);
 
             targetbox.setPosteditBox(posteditBox);
             posteditBox.setSubgestBox(targetbox);
@@ -830,21 +834,21 @@ public class TranslationWorkspace extends Composite {
             sourcemarks.setHTML(sourcemarks.getHTML() + " &ndash; ");
         }
         if (!sourcemarks.getHTML().isEmpty()) {
-            table.setWidget(index + 1, SOURCE_DIALOGMARK_COLNUMBER, sourcemarks);
+            table.setWidget(order + 1, SOURCE_DIALOGMARK_COLNUMBER, sourcemarks);
             // and copying the same to the targets (GWT does not have .clone()):
             HTML targetmarks = new HTML(sourcemarks.getHTML());
             targetmarks.setStyleName(sourcemarks.getStyleName());
             targetmarks.setTitle(sourcemarks.getTitle());
-            table.setWidget(index + 1, TARGET_DIALOGMARK_COLNUMBER, targetmarks);
+            table.setWidget(order + 1, TARGET_DIALOGMARK_COLNUMBER, targetmarks);
         }
 
         // grouping:
         // alignment because of the grouping:
         //table.getRowFormatter().setVerticalAlign(index + 1, HasVerticalAlignment.ALIGN_BOTTOM);
         if (chunk.getPartNumber() > 1) {
-            table.getRowFormatter().addStyleName(index + 1, "row_group_continue");
+            table.getRowFormatter().addStyleName(order + 1, "row_group_continue");
         } else {
-            table.getRowFormatter().addStyleName(index + 1, "row_group_begin");
+            table.getRowFormatter().addStyleName(order + 1, "row_group_begin");
         }
 
     }

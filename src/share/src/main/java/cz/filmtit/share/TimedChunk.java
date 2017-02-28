@@ -620,7 +620,6 @@ public class TimedChunk extends Chunk implements com.google.gwt.user.client.rpc.
      */
     public void setOrder(int order) {
         this.order = order;
-        this.chunkIndex = new ChunkIndex(partNumber, id, this.order);
     }
 
 }
