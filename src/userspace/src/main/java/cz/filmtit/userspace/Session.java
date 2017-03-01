@@ -659,7 +659,9 @@ public class Session {
      * with such ID is not owned by the user.
      */
     public DocumentResponse loadDocument(long documentID) throws InvalidDocumentIdException {
-        updateLastOperationTime();
+        updateLastOperationTime();        
+        activeDocuments.remove(documentID);
+        
         USDocument activeDocument = getActiveDocument(documentID);
         DocumentUserSettings userSettings = null;
         
