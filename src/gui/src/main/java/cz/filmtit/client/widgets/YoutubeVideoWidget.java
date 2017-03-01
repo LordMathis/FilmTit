@@ -159,8 +159,10 @@ public class YoutubeVideoWidget extends Composite implements VideoWidget {
      */
     @Override
     public void playPart(int position) {
-        player.getPlayer().seekTo(position - 1, true);
-        player.getPlayer().playVideo();
+        if (player != null) {
+            player.getPlayer().seekTo(position - 1, true);
+            player.getPlayer().playVideo();
+        }
     }
 
     /**

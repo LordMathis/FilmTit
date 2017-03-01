@@ -108,8 +108,10 @@ public class FileVideoWidget extends Composite implements VideoWidget {
      */
     @Override
     public void playPart(int position) {
-        player.setCurrentTime(position);
-        player.play();
+        if (player != null) {
+            player.setCurrentTime(position);
+            player.play();
+        }
     }
 
     /**
