@@ -14,6 +14,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Widget;
 import cz.filmtit.client.YoutubeUrlParser;
 import cz.filmtit.client.callables.GetShareId;
@@ -153,7 +154,12 @@ public class SettingsDialog extends Dialog {
 
         if (!remoteURL.isEmpty()) {
             moviePath = YoutubeUrlParser.parse(remoteURL);
+            if (moviePath == null) {
+                Window.alert("The URL you have entered is not valid");
+                return;
+            }
             isLocalFile = false;
+            
         } else if (localFile != null) {
             moviePath = localFile.createObjectURL();
             isLocalFile = true;

@@ -307,6 +307,12 @@ public interface FilmTitService extends RemoteService {
             throws InvalidSessionIdException, InvalidDocumentIdException;
 
     /**
+     *
+     */
+    Void stopPosteditSuggestions(String sessionID, List<TimedChunk> chunks)
+            throws InvalidSessionIdException, InvalidDocumentIdException;
+
+    /**
      * Set the user translation of the given chunk.
      *
      * @param sessionID Session ID
@@ -323,7 +329,7 @@ public interface FilmTitService extends RemoteService {
      * @throws InvalidChunkIdException Throws an exception when such chunk does
      * not exist in the document.
      */
-    Void setUserTranslation(String sessionID, ChunkIndex chunkIndex, long documentID, String userTranslation, long chosenTranslationPairID)
+    Void setUserTranslation(String sessionID, ChunkIndex chunkIndex, long documentID, String userTranslation, long chosenTranslationPairID, String posteditedString, long chosenPosteditPairID)
             throws InvalidSessionIdException, InvalidChunkIdException, InvalidDocumentIdException;
 
     ////////////////////////////////////////
@@ -553,8 +559,10 @@ public interface FilmTitService extends RemoteService {
     Void lockTranslationResult(TranslationResult tResult, String sessionID) throws InvalidSessionIdException, AlreadyLockedException;
 
     Void unlockTranslationResult(ChunkIndex chunkIndex, Long documentId, String sessionID) throws InvalidSessionIdException;
-    
+
     Void saveSettings(String sessionId, Document doc, String moviePath, Boolean posteditOn, Boolean localFile) throws InvalidSessionIdException, InvalidDocumentIdException, InvalidUserIdException;
-    
+
     DocumentUserSettings loadDocumentSettings(String sessionId, Document doc) throws InvalidDocumentIdException, InvalidUserIdException, InvalidSessionIdException;
+
+    Void addSubtitleItem(String sessionId, TimedChunk chunk, Document doc) throws InvalidDocumentIdException, InvalidSessionIdException, InvalidChunkIdException, InvalidValueException;
 }

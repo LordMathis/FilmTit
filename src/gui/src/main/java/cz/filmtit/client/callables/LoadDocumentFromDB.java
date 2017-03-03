@@ -49,10 +49,6 @@ public class LoadDocumentFromDB extends cz.filmtit.client.Callable<DocumentRespo
     @Override
     public void onSuccessAfterLog(final DocumentResponse response) {
         
-        if (response.userSettings.getMoviePath() == null) {
-            Gui.log(LevelLogEnum.Error, "LoadDocumentFromDB", "DocumentResponse.userSettings.getMoviePath() null");
-        }
-
         // prepare empty TranslationWorkspace
         final TranslationWorkspace workspace = new TranslationWorkspace(response.document, DocumentOrigin.FROM_DB, response.userSettings);
 

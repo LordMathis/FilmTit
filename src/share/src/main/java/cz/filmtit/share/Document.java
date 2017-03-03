@@ -280,9 +280,9 @@ public class Document implements IsSerializable, Serializable, Comparable<Docume
         if (translationResults == null || translationResults.size() == 0) {
             return this;
         }
-
+        
         Document clone = new Document();
-
+        
         clone.id = id;
         clone.language = language;
         clone.movie = movie;
@@ -291,7 +291,7 @@ public class Document implements IsSerializable, Serializable, Comparable<Docume
         clone.lastChange = lastChange;
         clone.totalChunksCount = totalChunksCount;
         clone.translatedChunksCount = translatedChunksCount;
-
+        
         return clone;
     }
 
@@ -311,5 +311,25 @@ public class Document implements IsSerializable, Serializable, Comparable<Docume
         }
         return 0;
     }
-
+    
+    public List<TranslationResult> getSortedResultsByTime() {
+        List<TranslationResult> preSorted = new ArrayList<TranslationResult>();
+        preSorted.addAll(translationResults.values());
+        
+        Collections.sort(preSorted, new Comparator<TranslationResult>() {
+            @Override
+            public int compare(TranslationResult o1, TranslationResult o2) {
+                return o1.getSourceChunk().compareTo(o2.getSourceChunk());
+            }
+        });
+        
+        /*preSorted.sort(new Comparator<TranslationResult>() {
+            @Override
+            public int compare(TranslationResult o1, TranslationResult o2) {
+                return o1.getSourceChunk().compareTo(o2.getSourceChunk());
+            }
+        });*/
+        return preSorted;
+    }
+    
 }

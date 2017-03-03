@@ -25,7 +25,7 @@ public class YoutubeUrlParser {
             videoId = match.getGroup(2);
         }
         
-        Gui.log(LevelLogEnum.Error, "YoutubeUrlParser", ytUrl + " " + videoId);
+        Gui.log(LevelLogEnum.Notice, "YoutubeUrlParser", ytUrl + " " + videoId);
         
         return videoId;
     }

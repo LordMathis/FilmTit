@@ -30,7 +30,7 @@ import cz.filmtit.share.*;
  * which then can be used to improve future suggestions. If in Offline Mode, the
  * user translation is not sent to User Space but is saved in the Local Storage.
  *
- * @author rur
+ * @author rur, matus n
  *
  */
 public class SetUserTranslation extends Callable<Void> implements Storable {
@@ -48,6 +48,12 @@ public class SetUserTranslation extends Callable<Void> implements Storable {
 
     private TranslationWorkspace workspace;
 
+    private String posteditedString;
+    private long chosenPosteditPairID;
+
+    private TranslationWorkspace.SourceChangeHandler sourceChangeHandler;
+    private TranslationWorkspace.TimeChangeHandler timeChangeHandler;
+
     @Override
     public String getName() {
         return getNameWithParameters(chunkIndex, documentId, userTranslation, chosenTranslationPair);
@@ -63,7 +69,7 @@ public class SetUserTranslation extends Callable<Void> implements Storable {
 
         workspace.setLockedSubgestBox(null);
         toUnlockBox.setFocus(false);
-        
+
         // remove styling from SubgestBoxes and PosteditBoxes
         toUnlockBox.removeStyleDependentName("locked");
         PosteditBox posteditUnlockBox = toUnlockBox.getPosteditBox();
@@ -73,7 +79,11 @@ public class SetUserTranslation extends Callable<Void> implements Storable {
 
         // Setting user translation also unlocks the translation result so we only need to lock a new one
         if (toLockNext) {
-            new LockTranslationResult(toLockBox, workspace);
+            if (sourceChangeHandler != null) {
+                new LockTranslationResult(toLockBox, workspace, sourceChangeHandler);
+            } else if (timeChangeHandler != null) {
+                new LockTranslationResult(toUnlockBox, workspace, timeChangeHandler);
+            }
         }
 
     }
@@ -87,7 +97,8 @@ public class SetUserTranslation extends Callable<Void> implements Storable {
      * in the Local Storage.
      */
     public SetUserTranslation(ChunkIndex chunkIndex, long documentId,
-            String userTranslation, long chosenTranslationPair, SubgestBox toUnlockBox, TranslationWorkspace workspace) {
+            String userTranslation, long chosenTranslationPair, SubgestBox toUnlockBox, TranslationWorkspace workspace,
+            String posteditedString, long chosenPosteditPairID, TranslationWorkspace.SourceChangeHandler sourceChangeHandler, TranslationWorkspace.TimeChangeHandler timeChangeHandler) {
         super();
 
         this.chunkIndex = chunkIndex;
@@ -98,11 +109,19 @@ public class SetUserTranslation extends Callable<Void> implements Storable {
         this.toUnlockBox = toUnlockBox;
         this.workspace = workspace;
 
+        this.posteditedString = posteditedString;
+        this.chosenPosteditPairID = chosenPosteditPairID;
+
+        this.sourceChangeHandler = sourceChangeHandler;
+        this.timeChangeHandler = timeChangeHandler;
+
         enqueue();
     }
 
     public SetUserTranslation(ChunkIndex chunkIndex, long documentId,
-            String userTranslation, long chosenTranslationPair, SubgestBox toUnlockBox, TranslationWorkspace workspace, SubgestBox toLockBox) {
+            String userTranslation, long chosenTranslationPair, SubgestBox toUnlockBox, TranslationWorkspace workspace,
+            SubgestBox toLockBox, String posteditedString, long chosenPosteditPairID,
+            TranslationWorkspace.SourceChangeHandler sourceChangeHandler, TranslationWorkspace.TimeChangeHandler timeChangeHandler) {
         super();
 
         this.chunkIndex = chunkIndex;
@@ -117,13 +136,20 @@ public class SetUserTranslation extends Callable<Void> implements Storable {
 
         this.workspace = workspace;
 
+        this.posteditedString = posteditedString;
+        this.chosenPosteditPairID = chosenPosteditPairID;
+
+        this.sourceChangeHandler = sourceChangeHandler;
+        this.timeChangeHandler = timeChangeHandler;
+
         enqueue();
     }
 
     @Override
     protected void call() {
+
         filmTitService.setUserTranslation(Gui.getSessionID(), chunkIndex,
-                documentId, userTranslation, chosenTranslationPair,
+                documentId, userTranslation, chosenTranslationPair, posteditedString, chosenPosteditPairID,
                 this);
 
         /*      if (LocalStorageHandler.isOnline()) {

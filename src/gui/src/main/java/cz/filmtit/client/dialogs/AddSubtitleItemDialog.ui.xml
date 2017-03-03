@@ -1,0 +1,39 @@
+<!--
+Uncomment this for XHTML entities
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+-->
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+             xmlns:g="urn:import:com.google.gwt.user.client.ui"
+             xmlns:b="urn:import:com.github.gwtbootstrap.client.ui">
+
+    <ui:style>
+
+    </ui:style>
+    <g:HTMLPanel>
+        <b:Form ui:field="timesForm">
+            <b:Fieldset>               
+                <b:ControlGroup>
+                    <b:ControlLabel>Source timing</b:ControlLabel>
+                    <b:Controls>
+                        <b:CellTable ui:field="timesTable"/>
+                        <b:Paragraph ui:field="timeValue" />
+                    </b:Controls>
+                </b:ControlGroup>
+                
+                <b:ControlGroup>
+                    <b:ControlLabel>Source text</b:ControlLabel>
+                    <b:Controls>
+                        <b:TextBox ui:field="sourceText"></b:TextBox>
+                    </b:Controls>
+                </b:ControlGroup>
+                
+            </b:Fieldset>
+            <b:Fieldset>
+                <b:ModalFooter>
+                    <b:SubmitButton ui:field="submitButton" type="PRIMARY">Set</b:SubmitButton>
+                    <b:Button ui:field="cancelButton">Cancel</b:Button>
+                </b:ModalFooter>
+            </b:Fieldset>
+        </b:Form>
+    </g:HTMLPanel>
+</ui:UiBinder>

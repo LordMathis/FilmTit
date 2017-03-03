@@ -14,7 +14,6 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with FilmTit.  If not, see <http://www.gnu.org/licenses/>.*/
-
 package cz.filmtit.share;
 
 import java.io.Serializable;
@@ -31,11 +30,12 @@ public class ChunkIndex implements com.google.gwt.user.client.rpc.IsSerializable
 
     /**
      * Gets which part of the subtitle item is the chunk part of.
+     *
      * @return Number of part of the subtitle item is the chunk part of
      */
     public int getPartNumber() {
-		return partNumber;
-	}
+        return partNumber;
+    }
 
     /**
      * Id of a subtitle item.
@@ -44,11 +44,12 @@ public class ChunkIndex implements com.google.gwt.user.client.rpc.IsSerializable
 
     /**
      * Gets the subtitle item ID.
-     * @return  Subtitle item ID.
+     *
+     * @return Subtitle item ID.
      */
     public int getId() {
-		return id;
-	}
+        return id;
+    }
 
     /**
      * Default constructor for GWT.
@@ -60,7 +61,9 @@ public class ChunkIndex implements com.google.gwt.user.client.rpc.IsSerializable
 
     /**
      * Creates a chunk index of given properties.
-     * @param partNumber Number which part of subtitle item is the chunk part of.
+     *
+     * @param partNumber Number which part of subtitle item is the chunk part
+     * of.
      * @param id Subtitle item id.
      */
     public ChunkIndex(Integer partNumber, Integer id) {
@@ -68,24 +71,26 @@ public class ChunkIndex implements com.google.gwt.user.client.rpc.IsSerializable
             partNumber = 0;
         }
         if (id == null) {
-            id=0;
+            id = 0;
         }
-        this.partNumber=partNumber;
-        this.id=id;
+
+        this.partNumber = partNumber;
+        this.id = id;
     }
 
     /**
      * Gets chunk index of a given timed chunk
+     *
      * @param tc A timed chunk
      */
     public ChunkIndex(TimedChunk tc) {
         this.partNumber = tc.getPartNumber();
-        this.id = tc.getId();;
+        this.id = tc.getId();
     }
 
     @Override
     public boolean equals(Object o) {
-        if (o==null) {
+        if (o == null) {
             return false;
         }
         if (o.getClass() != getClass()) {
@@ -93,28 +98,31 @@ public class ChunkIndex implements com.google.gwt.user.client.rpc.IsSerializable
         }
 
         ChunkIndex pol = (ChunkIndex) o;
-        return (pol.partNumber==partNumber && pol.id == id);
+        return (pol.partNumber == partNumber && pol.id == id);
 
     }
 
     @Override
     public String toString() {
-        return new Integer(partNumber).toString()+" | "+ new Integer(id).toString();
+        return new Integer(partNumber).toString() + " | " + new Integer(id).toString();
     }
 
     /**
-     * Gets hash code as a linear combination of part number and subtitle item id.
-     * @return  Hash code
+     * Gets hash code as a linear combination of part number and subtitle item
+     * id.
+     *
+     * @return Hash code
      */
     @Override
     public int hashCode() {
-        Integer r = partNumber*13+id*53;
+        Integer r = partNumber * 13 + id * 53;
         return r.hashCode();
     }
 
     /**
-     * Compares two chunk indexes first by their subtitle items ids and
-     * then by the part number.
+     * Compares two chunk indexes first by their subtitle items ids and then by
+     * the part number.
+     *
      * @param other
      * @return
      */

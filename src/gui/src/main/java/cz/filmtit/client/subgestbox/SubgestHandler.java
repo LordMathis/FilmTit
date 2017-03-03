@@ -27,6 +27,7 @@ import cz.filmtit.client.callables.LockTranslationResult;
 import cz.filmtit.client.callables.ReloadTranslationResults;
 import cz.filmtit.client.callables.UnlockTranslationResult;
 import cz.filmtit.client.pages.TranslationWorkspace;
+import cz.filmtit.share.LevelLogEnum;
 
 /**
  * Universal event-handler for all {@link SubgestBox} instances in one
@@ -67,16 +68,27 @@ public class SubgestHandler implements FocusHandler, KeyDownHandler, KeyUpHandle
         if (event.getSource() instanceof SubgestBox) {
             final SubgestBox subbox = (SubgestBox) event.getSource();
 
+            //Gui.log(LevelLogEnum.Error, this.getClass().getName(), subbox.getTextWithNewlines());
+
             if (workspace.getLockedSubgestBox() == null) {
                 new LockTranslationResult(subbox, workspace);
             } else if (workspace.getLockedSubgestBox() != subbox) {
                 SubgestBox toSaveAndUnlock = workspace.getLockedSubgestBox();
                 toSaveAndUnlock.getTranslationResult().setUserTranslation(toSaveAndUnlock.getTextWithNewlines());
+                boolean posteditTextChanged = false;
+
+                if (workspace.isPosteditOn()) {
+                    toSaveAndUnlock.getTranslationResult().setPosteditedString(toSaveAndUnlock.getPosteditBox().getTextWithNewlines());
+                    posteditTextChanged = toSaveAndUnlock.getPosteditBox().textChanged();
+                }
 
                 // submitting only when the contents have changed
-                if (toSaveAndUnlock.textChanged()) {
-                    workspace.submitUserTranslation(toSaveAndUnlock, subbox);
+                if (toSaveAndUnlock.textChanged() || posteditTextChanged) {
+                    workspace.submitUserTranslation(toSaveAndUnlock, subbox, null, null);
                     toSaveAndUnlock.updateLastText();
+                    if (workspace.isPosteditOn()) {
+                        toSaveAndUnlock.getPosteditBox().updateLastText();
+                    }
                 } else {
                     new UnlockTranslationResult(toSaveAndUnlock, workspace, subbox);
                 }
@@ -88,6 +100,7 @@ public class SubgestHandler implements FocusHandler, KeyDownHandler, KeyUpHandle
             // hide the suggestion widget corresponding to the SubgestBox
             //   which previously had focus (if any)
             workspace.deactivateSuggestionWidget();
+            workspace.deactivatePosteditWidget();
             workspace.ensureVisible(subbox);
             // and show a new one for the current SubgestBox
             Scheduler.get().scheduleDeferred(new ScheduledCommand() {
@@ -134,10 +147,12 @@ public class SubgestHandler implements FocusHandler, KeyDownHandler, KeyUpHandle
                 // hide the suggestion widget corresponding to the SubgestBox
                 //   which previously had focus (PopupPanel does not hide on keyboard events)
                 workspace.deactivateSuggestionWidget();
+                workspace.deactivatePosteditWidget();
             } // pressing Tab:
             else if (isThisKeyEvent(event, KeyCodes.KEY_TAB)) {
                 event.preventDefault(); // e.g. in Chrome, default is to insert TAB character in the textarea
                 workspace.deactivateSuggestionWidget();
+                workspace.deactivatePosteditWidget();
                 SubgestBox subbox = (SubgestBox) event.getSource();
                 if (event.isShiftKeyDown()) {
                     workspace.goToPreviousBox(subbox);
@@ -146,7 +161,7 @@ public class SubgestHandler implements FocusHandler, KeyDownHandler, KeyUpHandle
                 }
             }
 
-        } 
+        }
     }
 
     /**

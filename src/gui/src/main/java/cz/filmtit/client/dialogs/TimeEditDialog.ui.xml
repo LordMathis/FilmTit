@@ -1,27 +1,27 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
-	xmlns:g="urn:import:com.google.gwt.user.client.ui"
-    xmlns:b="urn:import:com.github.gwtbootstrap.client.ui">
-	<ui:style>
+             xmlns:g="urn:import:com.google.gwt.user.client.ui"
+             xmlns:b="urn:import:com.github.gwtbootstrap.client.ui">
+    <ui:style>
 		
-	</ui:style>
+    </ui:style>
     <g:HTMLPanel>
-	    <b:Form ui:field="timesForm">
-	        <b:Fieldset>
+        <b:Form ui:field="timesForm">
+            <b:Fieldset>
                 <!-- <b:Legend>Original chunk</b:Legend> -->
                 <b:Paragraph ui:field="chunkText" />
-	        </b:Fieldset>
-	        <b:Fieldset>
+            </b:Fieldset>
+            <b:Fieldset>
                 <!-- <b:Legend>New timing</b:Legend> -->
                 <b:CellTable ui:field="timesTable"/>
-	            <b:Paragraph ui:field="timeValue" />
-	        </b:Fieldset>
-	        <b:Fieldset>
-	            <b:ModalFooter>
+                <b:Paragraph ui:field="timeValue" />
+            </b:Fieldset>
+            <b:Fieldset>
+                <b:ModalFooter>
                     <b:SubmitButton ui:field="submitButton" type="PRIMARY">Set</b:SubmitButton>
                     <b:Button ui:field="cancelButton">Cancel</b:Button>
-	            </b:ModalFooter>
-	        </b:Fieldset>
-	    </b:Form>
+                </b:ModalFooter>
+            </b:Fieldset>
+        </b:Form>
     </g:HTMLPanel>
 </ui:UiBinder> 

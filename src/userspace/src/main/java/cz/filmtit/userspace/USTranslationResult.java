@@ -209,6 +209,20 @@ public class USTranslationResult extends DatabaseObject implements Comparable<US
     }
 
     /**
+     *
+     */
+    public String getPosteditedString() {
+        return translationResult.getPosteditedString();
+    }
+
+    /**
+     *
+     */
+    public void setPosteditedString(String posteditedString) {
+        translationResult.setPosteditedString(posteditedString);
+    }
+
+    /**
      * Gets the order of the part of the original subtitle chunk which is this
      * translation result part of. (The original subtitle chunks -- the amount
      * of text which is displayed on the screen at one moment is split on the
@@ -228,6 +242,14 @@ public class USTranslationResult extends DatabaseObject implements Comparable<US
      */
     private void setPartNumber(int partNumber) {
         translationResult.getSourceChunk().setPartNumber(partNumber);
+    }
+    
+    public  int getOrderInDocument() {
+        return translationResult.getSourceChunk().getOrder();
+    }
+    
+    public void setOrderInDocument(int order) {
+        translationResult.getSourceChunk().setOrder(order);
     }
 
     /**
@@ -249,6 +271,20 @@ public class USTranslationResult extends DatabaseObject implements Comparable<US
      */
     public void setSelectedTranslationPairID(long selectedTranslationPairID) {
         translationResult.setSelectedTranslationPairID(selectedTranslationPairID);
+    }
+
+    /**
+     *
+     */
+    public long getSelectedPosteditPairID() {
+        return translationResult.getSelectedPosteditPairID();
+    }
+
+    /**
+     *
+     */
+    public void setSelectedPosteditPairID(long selectedPosteditPairID) {
+        translationResult.setSelectedPosteditPairID(selectedPosteditPairID);
     }
 
     /**
@@ -300,7 +336,6 @@ public class USTranslationResult extends DatabaseObject implements Comparable<US
      */
     @Override
     protected void setSharedClassDatabaseId(long setSharedDatabaseId) {
-        //logger.error("Setting translationResult.Id to " + setSharedDatabaseId);
         translationResult.setId(setSharedDatabaseId);
     }
 
@@ -320,7 +355,7 @@ public class USTranslationResult extends DatabaseObject implements Comparable<US
         if (TM == null) {
             return;
         }
-        
+
         if (user == null) {
             return;
         }
@@ -331,29 +366,30 @@ public class USTranslationResult extends DatabaseObject implements Comparable<US
 
         Set<TranslationSource> disabledSources = new HashSet<TranslationSource>();
         if (!user.getUseMoses()) {
-            
+
             logger.log(Logger.Level.ERROR, "getUseMoses = " + user.getUseMoses());
-            
+
             disabledSources.add(TranslationSource.EXTERNAL_MT);
         }
-        
+
         disabledSources.add(TranslationSource.INTERNAL_EXACT);
         disabledSources.add(TranslationSource.INTERNAL_FUZZY);
 
         scala.collection.immutable.List<TranslationPair> TMResults
                 = TM.nBest(translationResult.getSourceChunk(), document.getLanguage(), document.getMediaSource(),
                         user.getMaximumNumberOfSuggestions(), false, disabledSources);
-        
+
         // the retrieved Scala collection must be transformed to a Java collection
         // otherwise it cannot be iterated by the for loop
         List<TranslationPair> javaList = new ArrayList<TranslationPair>(
                 scala.collection.JavaConverters.asJavaListConverter(TMResults).asJava());
-        
+
         // store the collections as synchronized (to have a better feeling from this)
         translationResult.setTmSuggestions(javaList);
+        generatePosteditSuggestions();
     }
-    
-        /**
+
+    /**
      * Queries the Translation Memory for the suggestions. If there are some
      * previous suggestions they are discarded. The suggestion are stored in the
      * structure wrapped object the way as it is the client. Anyway, they are
@@ -365,16 +401,16 @@ public class USTranslationResult extends DatabaseObject implements Comparable<US
         if (TM == null) {
             return;
         }
-        
+
         // TODO: ensure none of the potential previous suggestions is in the server cache collection
         // dereference of current suggestion will force hibernate to remove them from the db as well
         translationResult.setTmSuggestions(null);
 
         Set<TranslationSource> disabledSources = new HashSet<TranslationSource>();
         if (!document.getOwner().getUseMoses()) {
-            
+
             logger.log(Logger.Level.ERROR, "getUseMoses = " + document.getOwner().getUseMoses());
-            
+
             disabledSources.add(TranslationSource.EXTERNAL_MT);
         }
 
@@ -388,6 +424,20 @@ public class USTranslationResult extends DatabaseObject implements Comparable<US
 
         // store the collections as synchronized (to have a better feeling from this)
         translationResult.setTmSuggestions(javaList);
+        generatePosteditSuggestions();
+    }
+
+    public synchronized void generatePosteditSuggestions() {
+
+        translationResult.setPosteditSuggestions(null);
+        List<PosteditPair> posteditSuggestions = new ArrayList<PosteditPair>();
+        if (getUserTranslation() != null && !getUserTranslation().isEmpty()) {
+            PosteditPair posteditPair = new PosteditPair(getUserTranslation(), getUserTranslation());
+            posteditPair.setSource(new PosteditSource("User translation"));
+            posteditSuggestions.add(posteditPair);
+        }
+        translationResult.setPosteditSuggestions(posteditSuggestions);
+
     }
 
     /**

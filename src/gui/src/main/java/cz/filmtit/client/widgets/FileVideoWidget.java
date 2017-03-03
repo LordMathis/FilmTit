@@ -13,9 +13,11 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import cz.filmtit.client.Gui;
 import cz.filmtit.client.SubtitleSynchronizer;
+import cz.filmtit.client.pages.TranslationWorkspace;
 import cz.filmtit.share.ChunkStringGenerator;
 import cz.filmtit.share.LevelLogEnum;
 import cz.filmtit.share.TranslationResult;
@@ -44,6 +46,8 @@ public class FileVideoWidget extends Composite implements VideoWidget {
 
     Timer timer;
 
+    ButtonPanel buttonPanel;
+
     private static FileVideoWidgetUiBinder uiBinder = GWT.create(FileVideoWidgetUiBinder.class);
 
     interface FileVideoWidgetUiBinder extends UiBinder<Widget, FileVideoWidget> {
@@ -52,42 +56,49 @@ public class FileVideoWidget extends Composite implements VideoWidget {
     public FileVideoWidget(String src, SubtitleSynchronizer synchronizer) {
         initWidget(uiBinder.createAndBindUi(this));
 
-        player = Video.createIfSupported();
-        player.setWidth("400px");
-        player.setHeight("260px");
-        player.addSource(src);
-        player.setControls(true);
-        player.load();
+        if (src != null && !src.isEmpty()) {
 
-        this.synchronizer = synchronizer;
+            player = Video.createIfSupported();
+            player.setWidth("400px");
+            player.setHeight("260px");
+            player.addSource(src);
+            player.setControls(true);
+            player.load();
 
-        currentTime = 0;
-        currentLoaded = new HashSet<TranslationResult>();
+            this.synchronizer = synchronizer;
 
-        timer = new Timer() {
-            @Override
-            public void run() {
-                if (!player.isPaused() && !player.hasEnded() && (player.getCurrentTime() > 0)) {
-                    updateLabels();
+            currentTime = 0;
+            currentLoaded = new HashSet<TranslationResult>();
+
+            timer = new Timer() {
+                @Override
+                public void run() {
+                    if (!player.isPaused() && !player.hasEnded() && (player.getCurrentTime() > 0)) {
+                        updateLabels();
+                    }
                 }
-            }
-        };
+            };
 
-        timer.scheduleRepeating(100);
+            timer.scheduleRepeating(100);
 
-        leftLabel = new Label("Left Label");
-        leftLabel.setWidth("292px");
-        leftLabel.setHeight("100%");
-        leftLabel.addStyleName("subtitleDisplayedLeft");
+            leftLabel = new Label("Left Label");
+            leftLabel.setWidth("292px");
+            leftLabel.setHeight("100%");
+            leftLabel.addStyleName("subtitleDisplayedLeft");
 
-        rightLabel = new Label("Right Label");
-        rightLabel.setWidth("292px");
-        rightLabel.setHeight("100%");
-        rightLabel.addStyleName("subtitleDisplayedRight");
+            rightLabel = new Label("Right Label");
+            rightLabel.setWidth("292px");
+            rightLabel.setHeight("100%");
+            rightLabel.addStyleName("subtitleDisplayedRight");
 
-        videoWrapper.add(leftLabel);
-        videoWrapper.add(player);
-        videoWrapper.add(rightLabel);
+            videoWrapper.add(leftLabel);
+            videoWrapper.add(player);
+            videoWrapper.add(rightLabel);
+
+        }
+
+        buttonPanel = new ButtonPanel(TranslationWorkspace.getCurrentWorkspace());
+        panelWrapper.add(buttonPanel);
     }
 
     /**
@@ -97,8 +108,10 @@ public class FileVideoWidget extends Composite implements VideoWidget {
      */
     @Override
     public void playPart(int position) {
-        player.setCurrentTime(position);
-        player.play();
+        if (player != null) {
+            player.setCurrentTime(position);
+            player.play();
+        }
     }
 
     /**
@@ -191,4 +204,8 @@ public class FileVideoWidget extends Composite implements VideoWidget {
 
     @UiField
     HorizontalPanel videoWrapper;
+
+    @UiField
+    VerticalPanel panelWrapper;
+
 }

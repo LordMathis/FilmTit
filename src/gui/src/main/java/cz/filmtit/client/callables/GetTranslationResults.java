@@ -82,6 +82,9 @@ public class GetTranslationResults extends Callable<List<TranslationResult>> {
         } else {
             // got suggestions alright
             for (TranslationResult newresult : newresults) {
+                if (newresult.getUserTranslation() != null && (newresult.getPosteditedString() != null)) {
+                   // Gui.log(LevelLogEnum.Error, "GetTranslationResults()", newresult.getUserTranslation() + " | " + newresult.getPosteditedString() + " | " + newresult.getPosteditSuggestions().size());
+                }
                 workspace.showResult(newresult);
             }
             // request next translations

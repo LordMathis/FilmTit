@@ -116,6 +116,11 @@ public class FilmTitBackendServer extends RemoteServiceServlet implements
         return getSessionIfCan(sessionId).loadDocumentSettings(doc.getId());
     }
 
+    @Override
+    public Void addSubtitleItem(String sessionId, TimedChunk chunk, Document doc) throws InvalidDocumentIdException, InvalidSessionIdException, InvalidChunkIdException, InvalidValueException {
+        return getSessionIfCan(sessionId).addSubtitleItem(chunk, doc);
+    }
+
     public enum CheckUserEnum {
         UserName,
         UserNamePass,
@@ -388,6 +393,15 @@ public class FilmTitBackendServer extends RemoteServiceServlet implements
             throws InvalidSessionIdException, InvalidDocumentIdException {
         return getSessionIfCan(sessionID).stopTranslationResults(chunks);
     }
+    
+    /**
+     * 
+     */
+    @Override
+    public Void stopPosteditSuggestions(String sessionID, List<TimedChunk> chunks)
+            throws InvalidSessionIdException, InvalidDocumentIdException {
+        return getSessionIfCan(sessionID).stopPosteditSuggestions(chunks);
+    }
 
     /**
      * Set the user translation of the given chunk.
@@ -403,9 +417,9 @@ public class FilmTitBackendServer extends RemoteServiceServlet implements
      */
     @Override
     public Void setUserTranslation(String sessionID, ChunkIndex chunkIndex, long documentId,
-                                   String userTranslation, long chosenTranslationPairID)
+                                   String userTranslation, long chosenTranslationPairID, String posteditedString, long chosenPosteditPairID)
             throws InvalidSessionIdException, InvalidChunkIdException, InvalidDocumentIdException {
-        return getSessionIfCan(sessionID).setUserTranslation(chunkIndex, documentId, userTranslation, chosenTranslationPairID);
+        return getSessionIfCan(sessionID).setUserTranslation(chunkIndex, documentId, userTranslation, chosenTranslationPairID, posteditedString, chosenPosteditPairID);
     }
 
     /**

@@ -55,7 +55,7 @@ public class USDocument extends DatabaseObject {
      * classes.
      */
     private SortedMap<ChunkIndex, USTranslationResult> translationResults;
-
+    
     /**
      * Flag is the the user deleted the document. It is kept in the database
      * until the feedback is provided to the core, but is not displayed to the
@@ -253,7 +253,7 @@ public class USDocument extends DatabaseObject {
         }
         return translationResults.values();
     }
-
+    
     /**
      * Removes translation result of given index.
      *
@@ -273,7 +273,7 @@ public class USDocument extends DatabaseObject {
     public USTranslationResult getTranslationResultForIndex(ChunkIndex i) {
         return translationResults.get(i);
     }
-
+    
     /**
      * Gets the time of the last change of the document (from the wrapped
      * document).
@@ -393,7 +393,7 @@ public class USDocument extends DatabaseObject {
             }
             translationResults.put(result.getTranslationResult().getSourceChunk().getChunkIndex(), result);
         }
-
+    
         usHibernateUtil.closeAndCommitSession(dbSession);
 
         // add the translation results to the inner document
@@ -465,7 +465,7 @@ public class USDocument extends DatabaseObject {
         document.getTranslationResults().put(chunkIndex, usTranslationResult.getTranslationResult());
         document.setTotalChunksCount(translationResults.size());
     }
-
+    
     /**
      * @return the documentUsers
      */

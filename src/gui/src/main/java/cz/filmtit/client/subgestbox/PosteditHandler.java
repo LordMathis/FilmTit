@@ -16,10 +16,14 @@ import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.Focusable;
+import com.google.gwt.user.client.ui.SimplePanel;
+import cz.filmtit.client.Gui;
 import cz.filmtit.client.callables.LockTranslationResult;
 import cz.filmtit.client.callables.ReloadTranslationResults;
 import cz.filmtit.client.callables.UnlockTranslationResult;
 import cz.filmtit.client.pages.TranslationWorkspace;
+import cz.filmtit.share.LevelLogEnum;
 
 /**
  *
@@ -40,8 +44,8 @@ public class PosteditHandler implements FocusHandler, KeyDownHandler, KeyUpHandl
     }
 
     @Override
-    public void onFocus(FocusEvent event) {
-
+    public void onFocus(FocusEvent event) {      
+        
         SubgestBox unlockedSubgestBox = workspace.getUnlockedSubgestBox();
 
         if (unlockedSubgestBox != null) {
@@ -59,25 +63,40 @@ public class PosteditHandler implements FocusHandler, KeyDownHandler, KeyUpHandl
 
         if (event.getSource() instanceof PosteditBox) {
             final PosteditBox posteditBox = (PosteditBox) event.getSource();
-
+            
+            //Gui.log(LevelLogEnum.Error, this.getClass().getName(), posteditBox.getTextWithNewlines());
+            
             if (workspace.getLockedSubgestBox() == null) {
                 new LockTranslationResult(posteditBox.getSubgestBox(), workspace);
             } else if (workspace.getLockedSubgestBox() != posteditBox.getSubgestBox()) {
                 SubgestBox toSaveAndUnlock = workspace.getLockedSubgestBox();
                 toSaveAndUnlock.getTranslationResult().setUserTranslation(toSaveAndUnlock.getTextWithNewlines());
+                toSaveAndUnlock.getTranslationResult().setPosteditedString(posteditBox.getTextWithNewlines());
 
                 // submitting only when the contents have changed
-                if (toSaveAndUnlock.textChanged()) {
-                    workspace.submitUserTranslation(toSaveAndUnlock, posteditBox.getSubgestBox());
+                if (toSaveAndUnlock.textChanged() || posteditBox.textChanged()) {
+                    workspace.submitUserTranslation(toSaveAndUnlock, posteditBox.getSubgestBox(), null, null);
                     toSaveAndUnlock.updateLastText();
+                    posteditBox.updateLastText();
                 } else {
                     new UnlockTranslationResult(toSaveAndUnlock, workspace, posteditBox.getSubgestBox());
                 }
 
             }
 
-            //workspace.deactivateSuggestionWidget();
+            posteditBox.loadSuggestions();
+
+            workspace.deactivatePosteditWidget();
+            workspace.deactivateSuggestionWidget();
             workspace.ensureVisible(posteditBox);
+
+            Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
+                @Override
+                public void execute() {
+                    posteditBox.showSuggestions();
+                    workspace.setActivePosteditWidget(posteditBox.getPosteditWidget());
+                }
+            });
 
             if (Window.Navigator.getUserAgent().matches(".*Firefox.*")) {
                 // In Firefox - resetting focus needed:
@@ -88,6 +107,15 @@ public class PosteditHandler implements FocusHandler, KeyDownHandler, KeyUpHandl
                     }
                 });
             }
+
+            int position = (int) (posteditBox.getSubgestBox().getChunk().getStartTimeLong() / 1000);
+            if (workspace.getYtVideoPlayer() != null) {
+                workspace.getYtVideoPlayer().playPart(position);
+            } else if (workspace.getFileVideoPlayer() != null) {
+                workspace.getFileVideoPlayer().playPart(position);
+            }
+
+            posteditBox.updateVerticalSize();
         }
     }
 
@@ -96,19 +124,21 @@ public class PosteditHandler implements FocusHandler, KeyDownHandler, KeyUpHandl
         if (event.getSource() instanceof PosteditBox) {
             if (isThisKeyEvent(event, KeyCodes.KEY_DOWN)) {
                 event.preventDefault(); // default is to scroll down the page or to move to the next line in the textarea
-                /*PosteditBox posteditBox = (PosteditBox) event.getSource();
-                Focusable suggestionsList = ((Focusable) ((SimplePanel) subbox.getSuggestionWidget()).getWidget());
-                Gui.log("setting focus to suggestions");
-                suggestionsList.setFocus(true);*/
+                PosteditBox posteditBox = (PosteditBox) event.getSource();
+                Focusable suggestionsList = ((Focusable) ((SimplePanel) posteditBox.getPosteditWidget()).getWidget());
+                Gui.log("setting focus to postedit suggestions");
+                suggestionsList.setFocus(true);
             } // pressing Esc:
             else if (isThisKeyEvent(event, KeyCodes.KEY_ESCAPE)) {
                 // hide the suggestion widget corresponding to the SubgestBox
                 //   which previously had focus (PopupPanel does not hide on keyboard events)
                 workspace.deactivateSuggestionWidget();
+                workspace.deactivatePosteditWidget();
             } // pressing Tab:
             else if (isThisKeyEvent(event, KeyCodes.KEY_TAB)) {
                 event.preventDefault(); // e.g. in Chrome, default is to insert TAB character in the textarea
-                //workspace.deactivateSuggestionWidget();
+                workspace.deactivateSuggestionWidget();
+                workspace.deactivatePosteditWidget();
                 PosteditBox posteditBox = (PosteditBox) event.getSource();
                 if (event.isShiftKeyDown()) {
                     workspace.goToPreviousBox(posteditBox);
