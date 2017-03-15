@@ -445,7 +445,7 @@ public class USTranslationResult extends DatabaseObject implements Comparable<US
      *
      * @param dbSession An opened database session.
      */
-    public void saveToDatabase(Session dbSession) {
+    public void saveToDatabase(Session dbSession) {        
         saveJustObject(dbSession);
     }
 

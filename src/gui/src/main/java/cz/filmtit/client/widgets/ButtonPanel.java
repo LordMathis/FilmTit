@@ -14,6 +14,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 import cz.filmtit.client.dialogs.AddSubtitleItemDialog;
+import cz.filmtit.client.dialogs.LoadPreviousVersionsDialog;
 import cz.filmtit.client.pages.TranslationWorkspace;
 
 /**
@@ -33,13 +34,22 @@ public class ButtonPanel extends Composite {
         initWidget(uiBinder.createAndBindUi(this));
         this.workspace = workspace;
         addSubtitleItemBtn.addStyleName("btn btn-primary");
+        previousVersionsBtn.addStyleName("btn btn-primary");
     }
     
     @UiField
     Button addSubtitleItemBtn; 
     
+    @UiField
+    Button previousVersionsBtn;
+    
     @UiHandler("addSubtitleItemBtn")
     void click(ClickEvent e) {
         new AddSubtitleItemDialog(workspace);
+    }
+    
+    @UiHandler("previousVersionsBtn")
+    void getPrevVersionsDialog(ClickEvent e) {
+        new LoadPreviousVersionsDialog(workspace);
     }
 }

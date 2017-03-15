@@ -35,6 +35,10 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.hibernate.Query;
 import org.hibernate.annotations.Entity;
+import org.hibernate.envers.AuditReader;
+import org.hibernate.envers.AuditReaderFactory;
+import org.hibernate.envers.query.AuditEntity;
+import org.hibernate.envers.query.AuditQuery;
 
 /**
  * Represents a running session.
@@ -162,6 +166,13 @@ public class Session {
         updateLastOperationTime();
         state = SessionState.active;
         this.user = user;
+        
+        /*AuditReader auditReader = AuditReaderFactory.get(usHibernateUtil.getSessionWithActiveTransaction());
+        //auditReader.createQuery().forRevisionsOfEntity(USTranslationResult.class, false, true)
+        //        .addProjection(AuditEntity.revisionNumber().min())
+        //        .add(AuditEntity.property(propertyName))
+        
+        auditReader.getRevi*/
     }
 
     /**

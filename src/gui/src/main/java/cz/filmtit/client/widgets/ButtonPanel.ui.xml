@@ -10,6 +10,7 @@ Uncomment this for XHTML entities
 
     </ui:style>
     <g:HTMLPanel>
-        <b:Button ui:field="addSubtitleItemBtn" >Add Subtitle Item</b:Button>        
+        <b:Button ui:field="addSubtitleItemBtn" >Add Subtitle Item</b:Button>
+        <b:Button ui:field="previousVersionsBtn" >Load Previous Versions</b:Button>         
     </g:HTMLPanel>
 </ui:UiBinder>
