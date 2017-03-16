@@ -9,6 +9,7 @@ import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.Form;
 import com.github.gwtbootstrap.client.ui.SubmitButton;
 import com.github.gwtbootstrap.client.ui.TextBox;
+import com.github.gwtbootstrap.datetimepicker.client.ui.DateTimeBoxAppended;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.i18n.client.DateTimeFormat;
@@ -45,10 +46,7 @@ public class LoadPreviousVersionsDialog extends Dialog {
     Form dateForm;
     
     @UiField
-    TextBox dateText;
-    
-    @UiField
-    TextBox timeText;
+    DateTimeBoxAppended dateTimeBox;
     
     @UiField
     Button cancelButton;
@@ -63,16 +61,9 @@ public class LoadPreviousVersionsDialog extends Dialog {
 
     @UiHandler("dateForm")
     void submit(Form.SubmitEvent e) {
-        List<TranslationResult> results = new ArrayList<TranslationResult>();
-        results.addAll(workspace.getCurrentDocument().getTranslationResults().values());
         
-        String dateString = dateText.getValue();
-        String timeString = timeText.getValue();
-        
-        DateTimeFormat dateFormat = DateTimeFormat.getFormat("dd.MM.yyyy HH:mm");
-        
-        Date date = dateFormat.parse(dateString + " " + timeString);       
-        
+        List<TranslationResult> results = workspace.getCurrentDocument().getSortedTranslationResults();
+        Date date = dateTimeBox.getValue();
         
         new LoadPreviousVersions(results, date, workspace);
         

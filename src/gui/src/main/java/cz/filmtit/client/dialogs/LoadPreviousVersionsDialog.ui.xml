@@ -5,6 +5,7 @@ Uncomment this for XHTML entities
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
              xmlns:g="urn:import:com.google.gwt.user.client.ui"
              xmlns:b="urn:import:com.github.gwtbootstrap.client.ui"
+             xmlns:b2="urn:import:com.github.gwtbootstrap.datetimepicker.client.ui"
              xmlns:my="urn:import:cz.filmtit.client.dialogs"
 >
     <ui:style>
@@ -18,24 +19,16 @@ Uncomment this for XHTML entities
                     The document will be reloaded with the latest versions of subtitle items edited <strong>before</strong>
                     the date and time you entered. 
                 </b:Paragraph>
+                
                 <b:Fieldset>               
                     <b:ControlGroup>
                         <b:ControlLabel>Date</b:ControlLabel>
                         <b:Controls>
-                            <b:TextBox ui:field="dateText"></b:TextBox>
-                            <b:Label>Enter date in dd.mm.yyyy format</b:Label>
+                            <b2:DateTimeBoxAppended ui:field="dateTimeBox" format="yyyy/mm/dd hh:ii" autoClose="true" icon="CALENDAR"/>
                         </b:Controls>
-                    </b:ControlGroup>
-                
-                    <b:ControlGroup>
-                        <b:ControlLabel>Time</b:ControlLabel>
-                        <b:Controls>
-                            <b:TextBox ui:field="timeText"></b:TextBox>
-                            <b:Label>Enter time in hh:mm format</b:Label>
-                        </b:Controls>
-                    </b:ControlGroup>
-                
+                    </b:ControlGroup>                                
                 </b:Fieldset>
+                
                 <b:Fieldset>
                     <b:ModalFooter>
                         <b:SubmitButton ui:field="submitButton" type="PRIMARY">Submit</b:SubmitButton>

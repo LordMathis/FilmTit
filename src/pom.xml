@@ -135,17 +135,22 @@
             <name>Typesafe Repository</name>
             <url>http://repo.typesafe.com/typesafe/releases/</url>
         </repository>
-
-        <repository>
-            <id>gwt-bootstrap</id>
-            <name>GWT-Bootstrap SNAPSHOTS</name>
-            <url>http://gwtbootstrap.github.com/maven/snapshots</url>
-        </repository>
         
         <repository>
             <id>JBoss Repository</id>
             <url>https://repository.jboss.org/nexus/content/repositories/releases</url>
             <name>JBoss Repository</name>
+        </repository>
+        
+        <repository>
+            <id>sonatype</id>
+            <url>http://oss.sonatype.org/content/repositories/snapshots</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
         </repository>
         
         <repository>
