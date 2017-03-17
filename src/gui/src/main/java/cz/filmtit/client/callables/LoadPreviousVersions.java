@@ -7,6 +7,7 @@ package cz.filmtit.client.callables;
 
 import com.google.gwt.user.client.Window;
 import cz.filmtit.client.Callable;
+import cz.filmtit.client.Gui;
 import cz.filmtit.client.pages.TranslationWorkspace;
 import cz.filmtit.share.TranslationResult;
 import java.util.Date;
@@ -32,7 +33,7 @@ public class LoadPreviousVersions extends Callable<List<TranslationResult>>{
 
     @Override
     protected void call() {
-        Window.alert("Hello");
+        filmTitService.loadPreviousVersions(Gui.getSessionID(), currentResults, date, this);
     }
     
 }

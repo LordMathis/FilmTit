@@ -132,6 +132,27 @@ public class Session {
         return null;
     }
 
+    public List<TranslationResult> loadPreviousVersions(List<TranslationResult> results, Date date) {
+        AuditReader auditReader = AuditReaderFactory.get(usHibernateUtil.getSessionWithActiveTransaction());
+        Number revisionNumber = auditReader.getRevisionNumberForDate(date);
+        
+        for (TranslationResult result : results) {
+            USTranslationResult singleResult = (USTranslationResult) auditReader.createQuery().forRevisionsOfEntity(USTranslationResult.class, true, false)
+                    .add(AuditEntity.id().eq(result.getId()))
+                    .add(AuditEntity.revisionNumber().le(revisionNumber))
+                    .addOrder(AuditEntity.revisionNumber().desc())
+                    .getResultList()
+                    .get(0);
+            
+            //USTranslationResult firstResult = (USTranslationResult) singleResult[0];
+            logger.log(Logger.Level.ERROR, singleResult.toString());
+        }
+        
+        return new ArrayList<TranslationResult>();
+        
+        
+    }
+
     /**
      * Type for describing the stae of the session. <b>active</b> means the
      * session is running, <b>loggedOut</b>
@@ -167,12 +188,6 @@ public class Session {
         state = SessionState.active;
         this.user = user;
         
-        /*AuditReader auditReader = AuditReaderFactory.get(usHibernateUtil.getSessionWithActiveTransaction());
-        //auditReader.createQuery().forRevisionsOfEntity(USTranslationResult.class, false, true)
-        //        .addProjection(AuditEntity.revisionNumber().min())
-        //        .add(AuditEntity.property(propertyName))
-        
-        auditReader.getRevi*/
     }
 
     /**

@@ -121,6 +121,11 @@ public class FilmTitBackendServer extends RemoteServiceServlet implements
         return getSessionIfCan(sessionId).addSubtitleItem(chunk, doc);
     }
 
+    @Override
+    public List<TranslationResult> loadPreviousVersions(String sessionId, List<TranslationResult> results, Date date) throws InvalidSessionIdException {
+        return getSessionIfCan(sessionId).loadPreviousVersions(results, date);
+    }
+
     public enum CheckUserEnum {
         UserName,
         UserNamePass,

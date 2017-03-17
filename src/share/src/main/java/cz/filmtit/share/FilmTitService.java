@@ -19,6 +19,7 @@ package cz.filmtit.share;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import cz.filmtit.share.exceptions.*;
+import java.util.Date;
 
 import java.util.List;
 
@@ -565,4 +566,6 @@ public interface FilmTitService extends RemoteService {
     DocumentUserSettings loadDocumentSettings(String sessionId, Document doc) throws InvalidDocumentIdException, InvalidUserIdException, InvalidSessionIdException;
 
     Void addSubtitleItem(String sessionId, TimedChunk chunk, Document doc) throws InvalidDocumentIdException, InvalidSessionIdException, InvalidChunkIdException, InvalidValueException;
+    
+    List<TranslationResult> loadPreviousVersions(String sessionId, List<TranslationResult> results, Date date) throws InvalidSessionIdException;
 }
