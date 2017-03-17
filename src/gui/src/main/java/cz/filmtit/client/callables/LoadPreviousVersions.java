@@ -17,17 +17,26 @@ import java.util.List;
  *
  * @author matus
  */
-public class LoadPreviousVersions extends Callable<List<TranslationResult>>{
-    
+public class LoadPreviousVersions extends Callable<List<TranslationResult>> {
+
     List<TranslationResult> currentResults;
     Date date;
     TranslationWorkspace workspace;
-    
+
+    @Override
+    public void onSuccessAfterLog(List<TranslationResult> results) {
+        if (results.size() != 0) {
+            workspace.fillTranslationResults(results);
+        } else {
+            Window.alert("No previous versions of subtitles found for selected date");
+        }
+    }
+
     public LoadPreviousVersions(List<TranslationResult> currentResults, Date date, TranslationWorkspace workspace) {
         this.currentResults = currentResults;
         this.date = date;
         this.workspace = workspace;
-        
+
         enqueue();
     }
 
@@ -35,5 +44,5 @@ public class LoadPreviousVersions extends Callable<List<TranslationResult>>{
     protected void call() {
         filmTitService.loadPreviousVersions(Gui.getSessionID(), currentResults, date, this);
     }
-    
+
 }
