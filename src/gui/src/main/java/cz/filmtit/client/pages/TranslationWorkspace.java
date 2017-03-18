@@ -16,9 +16,12 @@ You should have received a copy of the GNU General Public License
 along with FilmTit.  If not, see <http://www.gnu.org/licenses/>.*/
 package cz.filmtit.client.pages;
 
+import com.github.gwtbootstrap.client.ui.constants.IconType;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.RepeatingCommand;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.DoubleClickEvent;
 import com.google.gwt.event.dom.client.DoubleClickHandler;
 import com.google.gwt.event.dom.client.ScrollEvent;
@@ -131,6 +134,9 @@ public class TranslationWorkspace extends Composite {
     private static final int SOURCE_DIALOGMARK_COLNUMBER = 1;
     private static final int TARGET_DIALOGMARK_COLNUMBER = 3;
     private static final int POSTEDIT_DIALOGMARK_COLNUMBER = 5;
+    
+    // Undo Button
+    private static int UNDO_BUTTON_COLNUMBER;
 
     /**
      * True if user selected MediaSource
@@ -479,8 +485,14 @@ public class TranslationWorkspace extends Composite {
 
         table.setWidget(0, SOURCE_DIALOGMARK_COLNUMBER, new Label(""));
         table.setWidget(0, TARGET_DIALOGMARK_COLNUMBER, new Label(""));
-
+        
         table.getRowFormatter().setStyleName(0, "header");
+        
+        if (isPosteditOn()) {
+            UNDO_BUTTON_COLNUMBER = 7;
+        } else {
+            UNDO_BUTTON_COLNUMBER = 5;
+        }
 
         Gui.getGuiStructure().contentPanel.setWidget(this);
         Gui.getGuiStructure().contentPanel.setStyleName("translating");
@@ -841,6 +853,17 @@ public class TranslationWorkspace extends Composite {
             targetmarks.setTitle(sourcemarks.getTitle());
             table.setWidget(order + 1, TARGET_DIALOGMARK_COLNUMBER, targetmarks);
         }
+        
+        final int currentIndex = order + 1;
+        com.github.gwtbootstrap.client.ui.Button undoButton = new com.github.gwtbootstrap.client.ui.Button("", IconType.UNDO, new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                // hello maven please dont compile cached shit
+                Window.alert(String.valueOf(currentIndex));
+                
+            }
+        });
+        table.setWidget(order + 1, UNDO_BUTTON_COLNUMBER, undoButton);
 
         // grouping:
         // alignment because of the grouping:
