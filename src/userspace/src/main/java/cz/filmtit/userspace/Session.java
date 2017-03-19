@@ -149,7 +149,6 @@ public class Session {
                         .add(AuditEntity.revisionNumber().le(revisionNumber))
                         .addOrder(AuditEntity.revisionNumber().desc())
                         .getResultList();
-                        
 
                 if (resultList != null && !resultList.isEmpty()) {
                     USTranslationResult singleResult = (USTranslationResult) resultList.get(0);
@@ -981,13 +980,17 @@ public class Session {
             document.setTranslatedChunksCount(document.getTranslatedChunksCount() - 1);
         }
 
+        logger.log(Logger.Level.ERROR, tr.toString() + " " + tr.getOrderInDocument());
+
         // set the translation
         tr.setUserTranslation(userTranslation);
         tr.setSelectedTranslationPairID(chosenTranslationPairID);
         tr.setPosteditedString(posteditedString);
         tr.setSelectedPosteditPairID(chosenPosteditPairID);
+        tr.setOrderInDocument(tr.getOrderInDocument());
         saveTranslationResult(document, tr);
 
+        logger.log(Logger.Level.ERROR, tr.toString() + " " + tr.getOrderInDocument());
         return null;
     }
 
@@ -1175,10 +1178,10 @@ public class Session {
      *
      * @param document Document to be saved.
      */
-    public void saveAllTranslationResults(USDocument document) {
+ /*   public void saveAllTranslationResults(USDocument document) {
         Collection<USTranslationResult> results = document.getTranslationResultValues();
         saveTranslationResults(document, results);
-    }
+    }*/
 
     /**
      * Adds the given (exatcly one) translation result to the document (or
@@ -1193,7 +1196,7 @@ public class Session {
         updateLastOperationTime();
         ArrayList<USTranslationResult> al = new ArrayList<USTranslationResult>(1);
         al.add(result);
-        saveTranslationResults(document, al);
+        saveTResultsWithoutOrder(document, al);
     }
 
     /**
@@ -1302,6 +1305,25 @@ public class Session {
     }
 
     /**
+     *
+     * @param document
+     * @param results
+     */
+    public synchronized void saveTResultsWithoutOrder(USDocument document, Collection<USTranslationResult> results) {
+        org.hibernate.Session session = usHibernateUtil.getSessionWithActiveTransaction();
+
+        document.saveToDatabaseJustDocument(session);
+        
+        for (USTranslationResult result : results) {
+            document.addOrReplaceTranslationResult(result);
+            result.saveToDatabase(session);
+        }
+
+        usHibernateUtil.closeAndCommitSession(session);
+
+    }
+
+    /**
      * Adds the given translation results to the document (or updates if they
      * already exist - they are identified by ChunkIndex) and saves the updated
      * document to the database.
@@ -1324,12 +1346,6 @@ public class Session {
                 return o1.getTranslationResult().getSourceChunk().compareTo(o2.getTranslationResult().getSourceChunk());
             }
         });
-        /*sorted.sort(new Comparator<USTranslationResult>() {
-            @Override
-            public int compare(USTranslationResult o1, USTranslationResult o2) {
-                return o1.getTranslationResult().getSourceChunk().compareTo(o2.getTranslationResult().getSourceChunk());
-            }
-        });*/
 
         for (int i = 0; i < sorted.size(); i++) {
             USTranslationResult tr = sorted.get(i);

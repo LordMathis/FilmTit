@@ -134,7 +134,7 @@ public class TranslationWorkspace extends Composite {
     private static final int SOURCE_DIALOGMARK_COLNUMBER = 1;
     private static final int TARGET_DIALOGMARK_COLNUMBER = 3;
     private static final int POSTEDIT_DIALOGMARK_COLNUMBER = 5;
-    
+
     // Undo Button
     private static int UNDO_BUTTON_COLNUMBER;
 
@@ -485,9 +485,9 @@ public class TranslationWorkspace extends Composite {
 
         table.setWidget(0, SOURCE_DIALOGMARK_COLNUMBER, new Label(""));
         table.setWidget(0, TARGET_DIALOGMARK_COLNUMBER, new Label(""));
-        
+
         table.getRowFormatter().setStyleName(0, "header");
-        
+
         if (isPosteditOn()) {
             UNDO_BUTTON_COLNUMBER = 7;
         } else {
@@ -691,7 +691,7 @@ public class TranslationWorkspace extends Composite {
         long endTime = System.currentTimeMillis();
         long parsingTime = endTime - startTime;
         Gui.log("parsing finished in " + parsingTime + "ms");
-        
+
         int order = 0;
         for (TimedChunk chunk : chunklist) {
             chunk.setOrder(order);
@@ -766,10 +766,6 @@ public class TranslationWorkspace extends Composite {
         Scheduler.get().scheduleIncremental(new ShowOriginalCommand(original));
         Scheduler.get().scheduleIncremental(new ShowUserTranslatedCommand(translated));
 
-        if (isPosteditOn()) {
-            //Scheduler.get().scheduleIncremental(new ShowPosteditedCommand(postedited));
-        }
-
         prepareSendChunkCommand(unedited);
         startShowingTranslationsIfReady();
     }
@@ -795,7 +791,6 @@ public class TranslationWorkspace extends Composite {
 
         ChunkIndex chunkIndex = chunk.getChunkIndex();
         int order = chunk.getOrder();
-
         // create label
         Label timeslabel = new Label(chunk.getDisplayTimeInterval());
         timeslabel.setStyleName("chunk_timing");
@@ -805,7 +800,6 @@ public class TranslationWorkspace extends Composite {
 
         //int index = lastIndex;
         //lastIndex++;
-
         synchronizer.putSourceChunk(chunk, order, true);
 
         //+1 because of the header
@@ -837,6 +831,7 @@ public class TranslationWorkspace extends Composite {
             posteditBox.setSubgestBox(targetbox);
 
         }
+
         // chunk-marking (dialogs):
         // setting sourcemarks:
         HTML sourcemarks = new HTML();
@@ -853,14 +848,14 @@ public class TranslationWorkspace extends Composite {
             targetmarks.setTitle(sourcemarks.getTitle());
             table.setWidget(order + 1, TARGET_DIALOGMARK_COLNUMBER, targetmarks);
         }
-        
+
         final int currentIndex = order + 1;
         com.github.gwtbootstrap.client.ui.Button undoButton = new com.github.gwtbootstrap.client.ui.Button("", IconType.UNDO, new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
                 // hello maven please dont compile cached shit
                 Window.alert(String.valueOf(currentIndex));
-                
+
             }
         });
         table.setWidget(order + 1, UNDO_BUTTON_COLNUMBER, undoButton);
