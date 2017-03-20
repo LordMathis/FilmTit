@@ -121,6 +121,8 @@ public class TranslationWorkspace extends Composite {
      * Currently active PosteditBox
      */
     private Widget activePosteditWidget = null;
+    
+    private Map<TranslationResult, Number> loadedRevisions;
 
     /**
      * column numbers in the subtitle-table
@@ -185,19 +187,9 @@ public class TranslationWorkspace extends Composite {
     private boolean translationStarted = false;
 
     /**
-     *
-     */
-    private boolean posteditStarted = false;
-
-    /**
      * List of RPC calls to get TranslationResults from Translation Memory
      */
     private Map<Integer, GetTranslationResults> sentGetTranslationsResultsCalls;
-
-    /**
-     * Last processed index of subtitle chunks
-     */
-    private int lastIndex = 0;
 
     /**
      * Handles the subtitles of the current document.
@@ -282,6 +274,14 @@ public class TranslationWorkspace extends Composite {
      */
     public Map<TimedChunk, LockTranslationResult> getLockTranslationResultCalls() {
         return lockTranslationResultCalls;
+    }
+    
+    public Number getLoadedRevision(TranslationResult result) {
+        return loadedRevisions.get(result);
+    }
+    
+    public void addLoadedRevision(TranslationResult result, Number number) {
+        loadedRevisions.put(result, number);
     }
 
     /**
@@ -436,6 +436,8 @@ public class TranslationWorkspace extends Composite {
         targetBoxes = new ArrayList<SubgestBox.FakeSubgestBox>();
         posteditBoxes = new ArrayList<PosteditBox.FakePosteditBox>();
         timeLabels = new HashMap<ChunkIndex, Label>();
+        
+        loadedRevisions = new HashMap<TranslationResult, Number>();
 
         // Gui initialization
         Gui.getPageHandler().setPageUrl(Page.TranslationWorkspace);
@@ -575,7 +577,7 @@ public class TranslationWorkspace extends Composite {
         }
 
         List<TimedChunk> unedited = new LinkedList<TimedChunk>();
-        List<TimedChunk> allChunks = new LinkedList<TimedChunk>();
+        List<TranslationResult> allResults = new LinkedList<TranslationResult>();
         List<TranslationResult> results = new LinkedList<TranslationResult>();
 
         for (TranslationResult tr : translations) {
@@ -589,7 +591,7 @@ public class TranslationWorkspace extends Composite {
 
             this.getCurrentDocument().translationResults.put(chunkIndex, tr);
 
-            allChunks.add(sourceChunk);
+            allResults.add(tr);
 
             if (userTranslation == null || userTranslation.isEmpty()) {
                 unedited.add(sourceChunk);
@@ -601,7 +603,7 @@ public class TranslationWorkspace extends Composite {
             }
         }
 
-        dealWithChunks(allChunks, results, unedited);
+        dealWithChunks(allResults, results, unedited);
 
     }
 
@@ -691,6 +693,8 @@ public class TranslationWorkspace extends Composite {
         long endTime = System.currentTimeMillis();
         long parsingTime = endTime - startTime;
         Gui.log("parsing finished in " + parsingTime + "ms");
+        
+        List<TranslationResult> tResults = new ArrayList<TranslationResult>();
 
         int order = 0;
         for (TimedChunk chunk : chunklist) {
@@ -698,13 +702,14 @@ public class TranslationWorkspace extends Composite {
             order++;
             ChunkIndex chunkIndex = chunk.getChunkIndex();
             TranslationResult tr = new TranslationResult(chunk);
+            tResults.add(tr);
             this.getCurrentDocument().translationResults.put(chunkIndex, tr);
             synchronizer.putTranslationResult(tr);
             synchronizer.putSourceChunk(tr, -1, false);
         }
 
         // save the chunks
-        new SaveSourceChunks(chunklist, this, createDocumentCall);
+        new SaveSourceChunks(tResults, this, createDocumentCall);
         // now the user can close the browser, chunks are safely saved
     }
 
@@ -761,7 +766,7 @@ public class TranslationWorkspace extends Composite {
         synchronizer.putTranslationResult(transResult);
     }
 
-    private void dealWithChunks(List<TimedChunk> original, List<TranslationResult> translated, List<TimedChunk> unedited) {
+    private void dealWithChunks(List<TranslationResult> original, List<TranslationResult> translated, List<TimedChunk> unedited) {
 
         Scheduler.get().scheduleIncremental(new ShowOriginalCommand(original));
         Scheduler.get().scheduleIncremental(new ShowUserTranslatedCommand(translated));
@@ -775,8 +780,12 @@ public class TranslationWorkspace extends Composite {
      *
      * @param chunks
      */
-    public void showSources(List<TimedChunk> chunks) {
-        dealWithChunks(chunks, new LinkedList<TranslationResult>(), chunks);
+    public void showSources(List<TranslationResult> results) {
+        List<TimedChunk> chunks = new ArrayList<TimedChunk>();
+        for (TranslationResult result : results) {
+            chunks.add(result.getSourceChunk());
+        }
+        dealWithChunks(results, new LinkedList<TranslationResult>(), chunks);
     }
 
     /**
@@ -787,9 +796,10 @@ public class TranslationWorkspace extends Composite {
      *
      * @param chunk - source-language chunk to show
      */
-    public void showSource(TimedChunk chunk) {
+    public void showSource(final TranslationResult result) {
 
-        ChunkIndex chunkIndex = chunk.getChunkIndex();
+        final TimedChunk chunk = result.getSourceChunk();
+        final ChunkIndex chunkIndex = chunk.getChunkIndex();
         int order = chunk.getOrder();
         // create label
         Label timeslabel = new Label(chunk.getDisplayTimeInterval());
@@ -848,14 +858,12 @@ public class TranslationWorkspace extends Composite {
             targetmarks.setTitle(sourcemarks.getTitle());
             table.setWidget(order + 1, TARGET_DIALOGMARK_COLNUMBER, targetmarks);
         }
-
-        final int currentIndex = order + 1;
+        
         com.github.gwtbootstrap.client.ui.Button undoButton = new com.github.gwtbootstrap.client.ui.Button("", IconType.UNDO, new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                // hello maven please dont compile cached shit
-                Window.alert(String.valueOf(currentIndex));
-
+                Number revisionNumber = getLoadedRevision(result);
+                new LoadOldSubtitleItem(result, currentWorkspace, revisionNumber);
             }
         });
         table.setWidget(order + 1, UNDO_BUTTON_COLNUMBER, undoButton);
@@ -1262,7 +1270,7 @@ public class TranslationWorkspace extends Composite {
      */
     private class ShowOriginalCommand implements RepeatingCommand {
 
-        LinkedList<TimedChunk> chunksToDisplay = new LinkedList<TimedChunk>();
+        LinkedList<TranslationResult> resultsToDisplay = new LinkedList<TranslationResult>();
 
         /**
          * for a new document (all chunks are sent to be translated, none of the
@@ -1270,8 +1278,8 @@ public class TranslationWorkspace extends Composite {
          *
          * @param chunks all chunks
          */
-        public ShowOriginalCommand(List<TimedChunk> chunks) {
-            this.chunksToDisplay.addAll(chunks);
+        public ShowOriginalCommand(List<TranslationResult> results) {
+            this.resultsToDisplay.addAll(results);
         }
 
         @Override
@@ -1280,9 +1288,9 @@ public class TranslationWorkspace extends Composite {
                 return false;
             }
 
-            if (!chunksToDisplay.isEmpty()) {
-                TimedChunk timedchunk = chunksToDisplay.removeFirst();
-                showSource(timedchunk);
+            if (!resultsToDisplay.isEmpty()) {
+                TranslationResult tResult = resultsToDisplay.removeFirst();
+                showSource(tResult);
                 return true;
             }
             Gui.getGuiStructure().contentPanel.removeStyleName("parsing");

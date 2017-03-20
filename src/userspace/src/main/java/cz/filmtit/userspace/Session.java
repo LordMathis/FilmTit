@@ -39,7 +39,6 @@ import org.hibernate.envers.AuditReader;
 import org.hibernate.envers.AuditReaderFactory;
 import org.hibernate.envers.exception.RevisionDoesNotExistException;
 import org.hibernate.envers.query.AuditEntity;
-import org.hibernate.envers.query.AuditQuery;
 
 /**
  * Represents a running session.
@@ -979,9 +978,6 @@ public class Session {
             // decrement if wasn't empty and now it is
             document.setTranslatedChunksCount(document.getTranslatedChunksCount() - 1);
         }
-
-        logger.log(Logger.Level.ERROR, tr.toString() + " " + tr.getOrderInDocument());
-
         // set the translation
         tr.setUserTranslation(userTranslation);
         tr.setSelectedTranslationPairID(chosenTranslationPairID);
@@ -989,8 +985,6 @@ public class Session {
         tr.setSelectedPosteditPairID(chosenPosteditPairID);
         tr.setOrderInDocument(tr.getOrderInDocument());
         saveTranslationResult(document, tr);
-
-        logger.log(Logger.Level.ERROR, tr.toString() + " " + tr.getOrderInDocument());
         return null;
     }
 
@@ -1178,11 +1172,10 @@ public class Session {
      *
      * @param document Document to be saved.
      */
- /*   public void saveAllTranslationResults(USDocument document) {
+    /*   public void saveAllTranslationResults(USDocument document) {
         Collection<USTranslationResult> results = document.getTranslationResultValues();
         saveTranslationResults(document, results);
     }*/
-
     /**
      * Adds the given (exatcly one) translation result to the document (or
      * updates if it already exists - it is identified by ChunkIndex) and saves
@@ -1313,7 +1306,7 @@ public class Session {
         org.hibernate.Session session = usHibernateUtil.getSessionWithActiveTransaction();
 
         document.saveToDatabaseJustDocument(session);
-        
+
         for (USTranslationResult result : results) {
             document.addOrReplaceTranslationResult(result);
             result.saveToDatabase(session);
@@ -1453,7 +1446,6 @@ public class Session {
     }
 
     public Void addSubtitleItem(TimedChunk chunk, Document doc) throws InvalidChunkIdException, InvalidValueException, InvalidDocumentIdException {
-        logger.log(Logger.Level.ERROR, chunk.toString());
         updateLastOperationTime();
 
         USDocument document = getActiveDocument(doc.getId());
@@ -1488,4 +1480,40 @@ public class Session {
         return null;
     }
 
+    public AuditResponse loadOldTranslationResult(TranslationResult result, Number number) {
+        AuditReader auditReader = AuditReaderFactory.get(usHibernateUtil.getSessionWithActiveTransaction());
+
+        if (number == null) {
+            number = Integer.MAX_VALUE;
+        }
+
+        Number revisionNumber = (Number) auditReader.createQuery()
+                .forRevisionsOfEntity(USTranslationResult.class, true, false)
+                .add(AuditEntity.id().eq(result.getId()))
+                .addProjection(AuditEntity.revisionNumber().max())
+                .add(AuditEntity.revisionNumber().lt(number))
+                .add(AuditEntity.or(AuditEntity.property("userTranslation").hasChanged(), AuditEntity.property("posteditedString").hasChanged()))
+                .getSingleResult();
+        
+        
+        
+        if (revisionNumber == null) {
+            return new AuditResponse();
+            
+            
+        }
+        
+        USTranslationResult singleResult = (USTranslationResult) auditReader.createQuery()
+                .forEntitiesAtRevision(USTranslationResult.class, revisionNumber)
+                .add(AuditEntity.id().eq(result.getId()))
+                .getSingleResult();
+
+        if (singleResult == null) {
+            logger.log(Logger.Level.ERROR, "loadOldTranslationResult.resultListEmpty");
+            return new AuditResponse();       }
+        
+        logger.log(Logger.Level.ERROR, singleResult.getTranslationResult().getSourceChunk() + " " + revisionNumber);      
+
+        return new AuditResponse(singleResult.getTranslationResult(), revisionNumber);
+    }
 }

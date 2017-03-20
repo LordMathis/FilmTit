@@ -54,7 +54,6 @@ public class LoadDocumentFromDB extends cz.filmtit.client.Callable<DocumentRespo
 
         // prepare the TranslationResults
         final List<TranslationResult> results = response.document.getSortedTranslationResults();
-        Gui.log(LevelLogEnum.Error, "LoadDocumentFromDB", results.get(0).toString());
         Gui.log("There are " + results.size() + " TranslationResults in the document");
 
         // show the TranslationResults

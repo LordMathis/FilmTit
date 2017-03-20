@@ -45,6 +45,7 @@ public class SaveSourceChunks extends Callable<Void> {
 
     // parameters
     private List<TimedChunk> chunks;
+    private List<TranslationResult> results;
     private TranslationWorkspace workspace;
     private CreateDocument createDocumentCall;
 
@@ -56,7 +57,7 @@ public class SaveSourceChunks extends Callable<Void> {
     @Override
     public void onSuccessAfterLog(Void o) {
         if (workspace != null) {
-            workspace.showSources(chunks);
+            workspace.showSources(results);
         }
     }
 
@@ -89,13 +90,19 @@ public class SaveSourceChunks extends Callable<Void> {
      * @param createDocument reference to the call that created the document and
      * now probably holds a reference to an open MediaSelector
      */
-    public SaveSourceChunks(List<TimedChunk> chunks, TranslationWorkspace workspace, CreateDocument createDocumentCall) {
+    public SaveSourceChunks(List<TranslationResult> results, TranslationWorkspace workspace, CreateDocument createDocumentCall) {
         super();
-
-        if (chunks == null || chunks.isEmpty()) {
+        
+        if (results == null || results.isEmpty()) {
             return;
         } else {
-            this.chunks = chunks;
+            this.chunks = new ArrayList<TimedChunk>();
+            this.results = results;
+            
+            for (TranslationResult result : results) {
+                chunks.add(result.getSourceChunk());
+            }
+            
             this.workspace = workspace;
             this.createDocumentCall = createDocumentCall;
 

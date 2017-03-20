@@ -568,4 +568,6 @@ public interface FilmTitService extends RemoteService {
     Void addSubtitleItem(String sessionId, TimedChunk chunk, Document doc) throws InvalidDocumentIdException, InvalidSessionIdException, InvalidChunkIdException, InvalidValueException;
     
     List<TranslationResult> loadPreviousVersions(String sessionId, List<TranslationResult> results, Date date) throws InvalidSessionIdException;
+    
+    AuditResponse loadOldSubtitleItem(String sessionId, TranslationResult result, Number number) throws InvalidSessionIdException;
 }

@@ -21,7 +21,6 @@ import cz.filmtit.share.*;
 import org.hibernate.Session;
 
 import java.util.*;
-import org.hibernate.annotations.Entity;
 import org.hibernate.envers.Audited;
 import org.jboss.logging.Logger;
 
@@ -37,7 +36,6 @@ import org.jboss.logging.Logger;
  *
  * @author Jindřich Libovický
  */
-@Entity
 @Audited
 public class USTranslationResult extends DatabaseObject implements Comparable<USTranslationResult> {
 
@@ -191,6 +189,7 @@ public class USTranslationResult extends DatabaseObject implements Comparable<US
      *
      * @return The user translation.
      */
+    @Audited(withModifiedFlag = true)
     public String getUserTranslation() {
         return translationResult.getUserTranslation();
     }
@@ -211,6 +210,7 @@ public class USTranslationResult extends DatabaseObject implements Comparable<US
     /**
      *
      */
+    @Audited(withModifiedFlag = true)
     public String getPosteditedString() {
         return translationResult.getPosteditedString();
     }
