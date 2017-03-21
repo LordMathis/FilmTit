@@ -170,7 +170,7 @@ public class PosteditBox extends RichTextArea implements Comparable<PosteditBox>
      * @param translationResult the translationResult to set
      */
     public void setTranslationResult(TranslationResult translationResult) {
-
+        
         this.translationResult = translationResult;
         String posteditedString = translationResult.getPosteditedString();
 

@@ -1486,21 +1486,21 @@ public class Session {
         if (number == null) {
             number = Integer.MAX_VALUE;
         }
-
+        
         Number revisionNumber = (Number) auditReader.createQuery()
                 .forRevisionsOfEntity(USTranslationResult.class, true, false)
                 .add(AuditEntity.id().eq(result.getId()))
                 .addProjection(AuditEntity.revisionNumber().max())
+                
                 .add(AuditEntity.revisionNumber().lt(number))
+                
                 .add(AuditEntity.or(AuditEntity.property("userTranslation").hasChanged(), AuditEntity.property("posteditedString").hasChanged()))
                 .getSingleResult();
         
         
         
         if (revisionNumber == null) {
-            return new AuditResponse();
-            
-            
+            return new AuditResponse();           
         }
         
         USTranslationResult singleResult = (USTranslationResult) auditReader.createQuery()
@@ -1509,10 +1509,10 @@ public class Session {
                 .getSingleResult();
 
         if (singleResult == null) {
-            logger.log(Logger.Level.ERROR, "loadOldTranslationResult.resultListEmpty");
-            return new AuditResponse();       }
+            return new AuditResponse();       
+        }
         
-        logger.log(Logger.Level.ERROR, singleResult.getTranslationResult().getSourceChunk() + " " + revisionNumber);      
+        logger.log(Logger.Level.ERROR, singleResult.getTranslationResult() + " " + revisionNumber);      
 
         return new AuditResponse(singleResult.getTranslationResult(), revisionNumber);
     }

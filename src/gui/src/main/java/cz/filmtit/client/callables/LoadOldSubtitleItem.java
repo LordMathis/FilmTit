@@ -41,13 +41,12 @@ public class LoadOldSubtitleItem extends Callable<AuditResponse> {
         TranslationResult translationResult = response.getTranslationResult();
         Number number = response.getNumber();
         
-        workspace.addLoadedRevision(translationResult, number);
+        workspace.addLoadedRevision(translationResult.getSourceChunk().getChunkIndex(), number);
         workspace.showResult(translationResult);
     }
 
     @Override
     protected void call() {
-        Gui.log(LevelLogEnum.Error, this.getClassName(), result + " " + revisionNumber);
         filmTitService.loadOldSubtitleItem(Gui.getSessionID(), result, revisionNumber, this);
     }
     

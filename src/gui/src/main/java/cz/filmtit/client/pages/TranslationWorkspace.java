@@ -122,7 +122,7 @@ public class TranslationWorkspace extends Composite {
      */
     private Widget activePosteditWidget = null;
     
-    private Map<TranslationResult, Number> loadedRevisions;
+    private Map<ChunkIndex, Number> loadedRevisions;
 
     /**
      * column numbers in the subtitle-table
@@ -276,12 +276,12 @@ public class TranslationWorkspace extends Composite {
         return lockTranslationResultCalls;
     }
     
-    public Number getLoadedRevision(TranslationResult result) {
-        return loadedRevisions.get(result);
+    public Number getLoadedRevision(ChunkIndex index) {
+        return loadedRevisions.get(index);
     }
     
-    public void addLoadedRevision(TranslationResult result, Number number) {
-        loadedRevisions.put(result, number);
+    public void addLoadedRevision(ChunkIndex index, Number number) {
+        loadedRevisions.put(index, number);
     }
 
     /**
@@ -437,7 +437,7 @@ public class TranslationWorkspace extends Composite {
         posteditBoxes = new ArrayList<PosteditBox.FakePosteditBox>();
         timeLabels = new HashMap<ChunkIndex, Label>();
         
-        loadedRevisions = new HashMap<TranslationResult, Number>();
+        loadedRevisions = new HashMap<ChunkIndex, Number>();
 
         // Gui initialization
         Gui.getPageHandler().setPageUrl(Page.TranslationWorkspace);
@@ -862,7 +862,7 @@ public class TranslationWorkspace extends Composite {
         com.github.gwtbootstrap.client.ui.Button undoButton = new com.github.gwtbootstrap.client.ui.Button("", IconType.UNDO, new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                Number revisionNumber = getLoadedRevision(result);
+                Number revisionNumber = getLoadedRevision(result.getSourceChunk().getChunkIndex());                                
                 new LoadOldSubtitleItem(result, currentWorkspace, revisionNumber);
             }
         });
@@ -926,6 +926,8 @@ public class TranslationWorkspace extends Composite {
      * @param transresult - the TranslationResult to be shown
      */
     public void showResult(final TranslationResult transresult) {
+        
+        Gui.log(LevelLogEnum.Error, "showResult", transresult.toString());
 
         if (!synchronizer.isChunkDisplayed(transresult)) {
             //try it again after some time
