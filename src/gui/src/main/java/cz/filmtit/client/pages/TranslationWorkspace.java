@@ -26,6 +26,8 @@ import com.google.gwt.event.dom.client.DoubleClickEvent;
 import com.google.gwt.event.dom.client.DoubleClickHandler;
 import com.google.gwt.event.dom.client.ScrollEvent;
 import com.google.gwt.event.dom.client.ScrollHandler;
+import com.google.gwt.regexp.shared.MatchResult;
+import com.google.gwt.regexp.shared.RegExp;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Element;
@@ -121,7 +123,7 @@ public class TranslationWorkspace extends Composite {
      * Currently active PosteditBox
      */
     private Widget activePosteditWidget = null;
-    
+
     private Map<ChunkIndex, Number> loadedRevisions;
 
     /**
@@ -275,11 +277,11 @@ public class TranslationWorkspace extends Composite {
     public Map<TimedChunk, LockTranslationResult> getLockTranslationResultCalls() {
         return lockTranslationResultCalls;
     }
-    
+
     public Number getLoadedRevision(ChunkIndex index) {
         return loadedRevisions.get(index);
     }
-    
+
     public void addLoadedRevision(ChunkIndex index, Number number) {
         loadedRevisions.put(index, number);
     }
@@ -436,7 +438,7 @@ public class TranslationWorkspace extends Composite {
         targetBoxes = new ArrayList<SubgestBox.FakeSubgestBox>();
         posteditBoxes = new ArrayList<PosteditBox.FakePosteditBox>();
         timeLabels = new HashMap<ChunkIndex, Label>();
-        
+
         loadedRevisions = new HashMap<ChunkIndex, Number>();
 
         // Gui initialization
@@ -693,7 +695,7 @@ public class TranslationWorkspace extends Composite {
         long endTime = System.currentTimeMillis();
         long parsingTime = endTime - startTime;
         Gui.log("parsing finished in " + parsingTime + "ms");
-        
+
         List<TranslationResult> tResults = new ArrayList<TranslationResult>();
 
         int order = 0;
@@ -858,11 +860,11 @@ public class TranslationWorkspace extends Composite {
             targetmarks.setTitle(sourcemarks.getTitle());
             table.setWidget(order + 1, TARGET_DIALOGMARK_COLNUMBER, targetmarks);
         }
-        
+
         com.github.gwtbootstrap.client.ui.Button undoButton = new com.github.gwtbootstrap.client.ui.Button("", IconType.UNDO, new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                Number revisionNumber = getLoadedRevision(result.getSourceChunk().getChunkIndex());                                
+                Number revisionNumber = getLoadedRevision(result.getSourceChunk().getChunkIndex());
                 new LoadOldSubtitleItem(result, currentWorkspace, revisionNumber);
             }
         });
@@ -926,8 +928,6 @@ public class TranslationWorkspace extends Composite {
      * @param transresult - the TranslationResult to be shown
      */
     public void showResult(final TranslationResult transresult) {
-        
-        Gui.log(LevelLogEnum.Error, "showResult", transresult.toString());
 
         if (!synchronizer.isChunkDisplayed(transresult)) {
             //try it again after some time
@@ -1163,16 +1163,46 @@ public class TranslationWorkspace extends Composite {
         return chunks;
     }
 
+    public void searchAndReplace(RegExp searchExp, String replace,
+            Boolean searchFirstClm, Boolean searchSecondClm,
+            Boolean replaceSecondClm, Boolean replaceThordClm) {
+
+        Gui.log(LevelLogEnum.Error, "TranslationWorkspace.searchAndReplace", searchExp.toString());
+
+        Map<ChunkIndex, TranslationResult> translationResults = currentDocument.getTranslationResults();
+
+        for (Map.Entry<ChunkIndex, TranslationResult> result : translationResults.entrySet()) {
+            TranslationResult value = result.getValue();
+
+            if (searchFirstClm) {
+                MatchResult matchResult = searchExp.exec(value.getSourceChunk().getSurfaceForm());
+
+                if (matchResult == null) {
+                    continue;
+                }
+
+                if (matchResult.getGroupCount() > 0) {
+                    Gui.log(LevelLogEnum.Error, "searchAndReplace", "found " + searchExp.toString() + " in 1st clm: " + value.toString() + "\n" + matchResult);
+                }
+            } else {
+                MatchResult matchResult = searchExp.exec(value.getUserTranslation());
+
+                if (matchResult == null) {
+                    continue;
+                }
+
+                if (matchResult.getGroupCount() > 0) {
+                    Gui.log(LevelLogEnum.Error, "searchAndReplace", "found " + searchExp.toString() + " in 2nd clm: " + value.toString() + "\n" + matchResult);
+                }
+            }
+        }
+    }
+
     ////////////////////////////
     //                        //
     //   Native Methods       //
     //                        //
     ////////////////////////////
-    public native void alert(String message)/*-{
-        $wnd.alert(message);
-            
-    }-*/;
-
     private native int getScrollOffsetY(Element e) /*-{
         if (!e)
           return;
