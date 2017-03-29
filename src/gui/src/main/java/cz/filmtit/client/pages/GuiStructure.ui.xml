@@ -4,7 +4,7 @@
              xmlns:b="urn:import:com.github.gwtbootstrap.client.ui">
     <g:HTMLPanel styleName="filmtit_container">
 
-        <b:Navbar position="TOP">
+        <b:Navbar ui:field="navbar" position="TOP">
             <b:Brand ui:field="brand">FilmTit</b:Brand>
             <b:Brand ui:field="brandOffline" visible="false">FilmTit in Offline Mode</b:Brand>
             <b:Nav>

@@ -105,9 +105,13 @@ public class SubgestBox extends RichTextArea implements Comparable<SubgestBox> {
      * it is focused (and worked with)
      */
     public class FakeSubgestBox extends TextArea implements Comparable<FakeSubgestBox> {
+        
+        private boolean replaced;
 
         public FakeSubgestBox(int tabIndex) {
             SubgestBox.this.substitute = SubgestBox.FakeSubgestBox.this;
+            
+            replaced = false;
 
             this.addFocusHandler(new FocusHandler() {
                 @Override
@@ -152,6 +156,20 @@ public class SubgestBox extends RichTextArea implements Comparable<SubgestBox> {
         @Override
         public int compareTo(FakeSubgestBox that) {
             return getFather().compareTo(that.getFather());
+        }
+
+        /**
+         * @return the replaced
+         */
+        public boolean isReplaced() {
+            return replaced;
+        }
+
+        /**
+         * @param replaced the replaced to set
+         */
+        public void setReplaced(boolean replaced) {
+            this.replaced = replaced;
         }
 
     }

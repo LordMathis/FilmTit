@@ -433,7 +433,7 @@ public class USTranslationResult extends DatabaseObject implements Comparable<US
         List<PosteditPair> posteditSuggestions = new ArrayList<PosteditPair>();
         if (getUserTranslation() != null && !getUserTranslation().isEmpty()) {
             PosteditPair posteditPair = new PosteditPair(getUserTranslation(), getUserTranslation());
-            posteditPair.setSource(new PosteditSource("User translation"));
+            posteditPair.setSource(PosteditSource.USERTRANSLATION);
             posteditSuggestions.add(posteditPair);
         }
         translationResult.setPosteditSuggestions(posteditSuggestions);

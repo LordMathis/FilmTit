@@ -63,15 +63,15 @@ public class SubgestHandler implements FocusHandler, KeyDownHandler, KeyUpHandle
             }
         }
 
-        new ReloadTranslationResults(workspace.getCurrentDocument().getId(), workspace);
-
         if (event.getSource() instanceof SubgestBox) {
             final SubgestBox subbox = (SubgestBox) event.getSource();
 
             //Gui.log(LevelLogEnum.Error, this.getClass().getName(), subbox.getTextWithNewlines());
-
             if (workspace.getLockedSubgestBox() == null) {
+                
                 new LockTranslationResult(subbox, workspace);
+                new ReloadTranslationResults(workspace.getCurrentDocument().getId(), workspace);
+                
             } else if (workspace.getLockedSubgestBox() != subbox) {
                 SubgestBox toSaveAndUnlock = workspace.getLockedSubgestBox();
                 toSaveAndUnlock.getTranslationResult().setUserTranslation(toSaveAndUnlock.getTextWithNewlines());
@@ -91,6 +91,7 @@ public class SubgestHandler implements FocusHandler, KeyDownHandler, KeyUpHandle
                     }
                 } else {
                     new UnlockTranslationResult(toSaveAndUnlock, workspace, subbox);
+                    new ReloadTranslationResults(workspace.getCurrentDocument().getId(), workspace);
                 }
 
             }

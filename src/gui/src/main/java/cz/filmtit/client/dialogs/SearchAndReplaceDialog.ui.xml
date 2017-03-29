@@ -14,7 +14,6 @@ Uncomment this for XHTML entities
             <b:Form ui:field="form">
                 <b:Fieldset>                    
 
-                    <b:Legend>Search</b:Legend>
                     <b:ControlGroup>
                         <b:ControlLabel>Search for</b:ControlLabel>
                         <b:Controls>
@@ -24,34 +23,19 @@ Uncomment this for XHTML entities
                             </b:Paragraph>
                         </b:Controls>
                     </b:ControlGroup>
-                    
-                    <b:ControlGroup>
-                        <b:ControlLabel>Search in</b:ControlLabel>
-                        <b:Controls>
-                            <b:RadioButton ui:field="searchFirstClm" name="search">First Column (Source text)</b:RadioButton>
-                            <b:RadioButton ui:field="searchSecondClm" name="search">Second Column (Translated text)</b:RadioButton>
-                        </b:Controls>
-                    </b:ControlGroup>
-                    
+                                        
                 </b:Fieldset>
-                <b:Fieldset>
-                    
-                    <b:Legend>Replace</b:Legend>
+                <b:Fieldset>                   
                     <b:ControlGroup>
                         <b:ControlLabel>Replace with</b:ControlLabel>
                         <b:Controls>
                             <b:TextBox ui:field="replaceBox"></b:TextBox>
+                            <b:Paragraph>
+                                Program will search in second column (User Translated) and output the result as a suggestion for third column (Postedit). For this to work correctly you need to have turned postedit API on.
+                            </b:Paragraph>
                         </b:Controls>
                     </b:ControlGroup>
-                    
-                    <b:ControlGroup>
-                        <b:ControlLabel>Replace in</b:ControlLabel>
-                        <b:Controls>
-                            <b:RadioButton ui:field="replaceSecondClm" name="replace">Second Column (Translated text)</b:RadioButton>
-                            <b:RadioButton ui:field="replaceThirdClm" name="replace">Third Column (Postedited text)</b:RadioButton>
-                        </b:Controls>
-                    </b:ControlGroup>
-                                        
+                                                            
                 </b:Fieldset>                
                 
                 <b:Fieldset>

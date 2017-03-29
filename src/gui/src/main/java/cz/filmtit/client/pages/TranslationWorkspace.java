@@ -905,6 +905,7 @@ public class TranslationWorkspace extends Composite {
         table.remove(fake);
         int id = synchronizer.getIndexOf(chunk);
         table.setWidget(id + 1, TARGETBOX_COLNUMBER, real);
+        fake.setReplaced(true);
 
         real.setFocus(true);
         if (isPosteditOn()) {
@@ -919,6 +920,7 @@ public class TranslationWorkspace extends Composite {
         table.remove(fake);
         int id = synchronizer.getIndexOf(chunk);
         table.setWidget(id + 1, POSTEDIT_COLNUMBER, real);
+        fake.setReplaced(true);
         real.setFocus(true);
     }
 
@@ -1163,46 +1165,46 @@ public class TranslationWorkspace extends Composite {
         return chunks;
     }
 
-    public void searchAndReplace(RegExp searchExp, String replace,
-            Boolean searchFirstClm, Boolean searchSecondClm,
-            Boolean replaceSecondClm, Boolean replaceThordClm) {
+    public void searchAndReplace(RegExp searchExp, String replace) {
 
         Gui.log(LevelLogEnum.Error, "TranslationWorkspace.searchAndReplace", searchExp.toString());
 
         Map<ChunkIndex, TranslationResult> translationResults = currentDocument.getTranslationResults();
 
-        for (Map.Entry<ChunkIndex, TranslationResult> result : translationResults.entrySet()) {
-            TranslationResult value = result.getValue();
+        Collection<TranslationResult> results = translationResults.values();
 
-            if (searchFirstClm) {
-                MatchResult matchResult = searchExp.exec(value.getSourceChunk().getSurfaceForm());
+        for (TranslationResult result : results) {
+            MatchResult matchResult = searchExp.exec(result.getUserTranslation());
 
-                if (matchResult == null) {
-                    continue;
-                }
+            if (matchResult == null) {
+                continue;
+            }
 
-                if (matchResult.getGroupCount() > 0) {
-                    Gui.log(LevelLogEnum.Error, "searchAndReplace", "found " + searchExp.toString() + " in 1st clm: " + value.toString() + "\n" + matchResult);
-                }
-            } else {
-                MatchResult matchResult = searchExp.exec(value.getUserTranslation());
+            if (matchResult.getGroupCount() > 0) {
+                String replacedString = searchExp.replace(result.getUserTranslation(), replace);
 
-                if (matchResult == null) {
-                    continue;
-                }
+                Gui.log(LevelLogEnum.Error, "searchAndReplace", "found " + searchExp.toString() + " : " + result.getUserTranslation() + "\n" + replacedString);
 
-                if (matchResult.getGroupCount() > 0) {
-                    Gui.log(LevelLogEnum.Error, "searchAndReplace", "found " + searchExp.toString() + " in 2nd clm: " + value.toString() + "\n" + matchResult);
+                PosteditPair replacePair = new PosteditPair(result.getUserTranslation(), replacedString);
+                replacePair.setSource(PosteditSource.SEARCHANDREPLACE);
+                
+                result.getPosteditSuggestions().add(replacePair);
+                int index = synchronizer.getIndexOf(result);
+                PosteditBox.FakePosteditBox posteditBox = posteditBoxes.get(index);
+                if (posteditBox.isReplaced()) {
+                    posteditBox.getFather().addStyleDependentName("replace");
+                } else {
+                    posteditBox.addStyleDependentName("replace");
                 }
             }
         }
     }
-
     ////////////////////////////
     //                        //
     //   Native Methods       //
     //                        //
     ////////////////////////////
+
     private native int getScrollOffsetY(Element e) /*-{
         if (!e)
           return;

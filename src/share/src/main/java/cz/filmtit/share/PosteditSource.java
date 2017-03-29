@@ -11,17 +11,15 @@ import java.io.Serializable;
  *
  * @author matus
  */
-public class PosteditSource implements com.google.gwt.user.client.rpc.IsSerializable, Serializable {
+public enum PosteditSource implements com.google.gwt.user.client.rpc.IsSerializable, Serializable {
 
+    SEARCHANDREPLACE ("Search and Replace"),
+    USERTRANSLATION ("User translation");
+    
     private String description;
 
-    /**
-     * Default GWT constructor
-     */
-    public PosteditSource() {
-    }  
     
-    public PosteditSource(String description) {
+    PosteditSource(String description) {
         this.description = description;
     }
 

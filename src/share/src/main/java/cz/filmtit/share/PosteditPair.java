@@ -30,8 +30,8 @@ public class PosteditPair implements com.google.gwt.user.client.rpc.IsSerializab
         this.chunk2 = chunk2;
     }
 
-    public PosteditPair(String userTranslation, String userTranslation1) {
-        this(new Chunk(userTranslation), new Chunk(userTranslation1));
+    public PosteditPair(String userTranslation, String posteditedString) {
+        this(new Chunk(userTranslation), new Chunk(posteditedString));
     }
 
     /**
@@ -106,6 +106,11 @@ public class PosteditPair implements com.google.gwt.user.client.rpc.IsSerializab
      */
     public void setSource(PosteditSource source) {
         this.source = source;
+    }
+    
+    @Override
+    public String toString() {
+        return "[PosteditPair: " + chunk1.getSurfaceForm() + " -> " + chunk2.getSurfaceForm() + "]";
     }
 
 }

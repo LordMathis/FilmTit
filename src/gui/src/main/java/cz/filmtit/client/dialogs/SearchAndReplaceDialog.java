@@ -57,14 +57,10 @@ public class SearchAndReplaceDialog extends Dialog {
     @UiHandler("form")
     void submit(Form.SubmitEvent e) {
 
-        if (((searchFirstClm.getValue() || searchSecondClm.getValue())                
-                && (replaceSecondClm.getValue() || replaceThirdClm.getValue())                
-                && !searchBox.getValue().isEmpty() && !replaceBox.getValue().isEmpty())) {
+        if (!searchBox.getValue().isEmpty() && !replaceBox.getValue().isEmpty()) {
             try {
-                RegExp searchExp = RegExp.compile(searchBox.getValue(),  "g" );
-                workspace.searchAndReplace(searchExp, replaceBox.getValue(),
-                        searchFirstClm.getValue(), searchSecondClm.getValue(),
-                        replaceSecondClm.getValue(), replaceThirdClm.getValue());
+                RegExp searchExp = RegExp.compile(searchBox.getValue(), "g");
+                workspace.searchAndReplace(searchExp, replaceBox.getValue());
                 close();
             } catch (RuntimeException exception) {
                 Window.alert("Search pattern is not valid regular expression\n" + searchBox.getValue());
@@ -82,15 +78,4 @@ public class SearchAndReplaceDialog extends Dialog {
     @UiField
     TextBox replaceBox;
 
-    @UiField
-    RadioButton searchFirstClm;
-
-    @UiField
-    RadioButton searchSecondClm;
-
-    @UiField
-    RadioButton replaceSecondClm;
-
-    @UiField
-    RadioButton replaceThirdClm;
 }

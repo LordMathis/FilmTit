@@ -85,6 +85,8 @@ public class SetUserTranslation extends Callable<Void> implements Storable {
                 new LockTranslationResult(toUnlockBox, workspace, timeChangeHandler);
             }
         }
+        
+        new ReloadTranslationResults(workspace.getCurrentDocument().getId(), workspace);
 
     }
 

@@ -175,16 +175,19 @@ public class PosteditBox extends RichTextArea implements Comparable<PosteditBox>
         String posteditedString = translationResult.getPosteditedString();
 
         if (posteditedString != null && !posteditedString.equals("")) {
-            getSubstitute().setText(posteditedString);
-            this.setHTML(subgestBoxHTML(posteditedString));
+            getSubstitute().setText(posteditedString);                        
+            this.setHTML(posteditBoxHTML(posteditedString));
             updateLastText();
         }
     }
 
     public class FakePosteditBox extends TextArea implements Comparable<FakePosteditBox> {
+        
+        private boolean replaced;
 
         public FakePosteditBox(int tabIndex) {
             PosteditBox.this.substitute = PosteditBox.FakePosteditBox.this;
+            replaced = false;
 
             this.addFocusHandler(new FocusHandler() {
                 @Override
@@ -225,6 +228,20 @@ public class PosteditBox extends RichTextArea implements Comparable<PosteditBox>
         @Override
         public int compareTo(FakePosteditBox that) {
             return getFather().compareTo(that.getFather());
+        }
+
+        /**
+         * @return the replaced
+         */
+        public boolean isReplaced() {
+            return replaced;
+        }
+
+        /**
+         * @param replaced the replaced to set
+         */
+        public void setReplaced(boolean replaced) {
+            this.replaced = replaced;
         }
 
     }
@@ -291,11 +308,14 @@ public class PosteditBox extends RichTextArea implements Comparable<PosteditBox>
         cellList.setSelectionModel(selectionModel);
         selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
             public void onSelectionChange(SelectionChangeEvent event) {
-                PosteditPair selected = selectionModel.getSelectedObject();
+                PosteditPair selected = selectionModel.getSelectedObject();                
                 if (selected != null) {
+                    
+                    Gui.log(LevelLogEnum.Error, "PosteditBox.onSelectionChange", selected.getChunk1().getSurfaceForm() + " " + selected.getChunk2().getSurfaceForm());
+                    
                     //translationResult.setSelectedTranslationPairID(selected.getId());
                     // copy the selected suggestion into the richtextarea with the annotation highlighting:
-                    setHTML(subgestBoxHTML(selected.getChunk2().getSurfaceForm()));
+                    setHTML(posteditBoxHTML(selected.getChunk2().getSurfaceForm()));
                     // contents have changed - resize if necessary:
                     updateVerticalSize();
 
@@ -313,11 +333,6 @@ public class PosteditBox extends RichTextArea implements Comparable<PosteditBox>
         posteditPanel.setWidget(cellList);
 
         this.setPosteditWidget(posteditPanel);
-    }
-
-    private String subgestBoxHTML(String content) {
-        content = content.replaceAll("\n", "<br>");
-        return content;
     }
 
     /**
