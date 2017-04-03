@@ -8,17 +8,17 @@ package cz.filmtit.share;
 import java.io.Serializable;
 
 /**
+ * Source of Postedit changes
  *
- * @author matus
+ * @author Matúš Námešný
  */
 public enum PosteditSource implements com.google.gwt.user.client.rpc.IsSerializable, Serializable {
 
-    SEARCHANDREPLACE ("Search and Replace"),
-    USERTRANSLATION ("User translation");
-    
+    SEARCHANDREPLACE("Search and Replace"),
+    USERTRANSLATION("User translation");
+
     private String description;
 
-    
     PosteditSource(String description) {
         this.description = description;
     }

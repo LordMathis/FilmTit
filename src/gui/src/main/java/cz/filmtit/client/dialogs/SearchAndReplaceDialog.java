@@ -5,11 +5,13 @@
  */
 package cz.filmtit.client.dialogs;
 
+import com.github.gwtbootstrap.client.ui.Alert;
 import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.Form;
-import com.github.gwtbootstrap.client.ui.RadioButton;
+import com.github.gwtbootstrap.client.ui.Label;
 import com.github.gwtbootstrap.client.ui.SubmitButton;
 import com.github.gwtbootstrap.client.ui.TextBox;
+import com.github.gwtbootstrap.client.ui.constants.LabelType;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.regexp.shared.RegExp;
@@ -18,13 +20,11 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Widget;
-import cz.filmtit.client.Gui;
 import cz.filmtit.client.pages.TranslationWorkspace;
-import cz.filmtit.share.LevelLogEnum;
 
 /**
  *
- * @author matus
+ * @author Matúš Námešný
  */
 public class SearchAndReplaceDialog extends Dialog {
 
@@ -36,9 +36,18 @@ public class SearchAndReplaceDialog extends Dialog {
     public SearchAndReplaceDialog(TranslationWorkspace workspace) {
         initWidget(uiBinder.createAndBindUi(this));
         this.workspace = workspace;
+        
+        if (!workspace.isPosteditOn()) {
+            submitButton.setEnabled(false);
+            alertPostedit.setText("WARNING: Postedit API is turned off. Search & Replace will only work when postedit API is turned on.");
+            alertPostedit.setVisible(true);
+        }
     }
 
     TranslationWorkspace workspace;
+    
+    @UiField
+    Alert alertPostedit;
 
     @UiField
     Form form;

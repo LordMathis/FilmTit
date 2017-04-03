@@ -20,8 +20,8 @@ import cz.filmtit.client.dialogs.SearchAndReplaceDialog;
 import cz.filmtit.client.pages.TranslationWorkspace;
 
 /**
- *
- * @author matus
+ * 
+ * @author Matúš Námešný
  */
 public class ButtonPanel extends Composite {
     

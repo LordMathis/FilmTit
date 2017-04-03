@@ -34,7 +34,6 @@ import java.util.*;
 import java.util.regex.Pattern;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.hibernate.Query;
-import org.hibernate.annotations.Entity;
 import org.hibernate.envers.AuditReader;
 import org.hibernate.envers.AuditReaderFactory;
 import org.hibernate.envers.exception.RevisionDoesNotExistException;
@@ -43,9 +42,8 @@ import org.hibernate.envers.query.AuditEntity;
 /**
  * Represents a running session.
  *
- * @author Jindřich Libovický
+ * @author Jindřich Libovický, Matúš Námešný
  */
-@Entity
 public class Session {
 
     /**
@@ -86,6 +84,12 @@ public class Session {
      */
     private static USHibernateUtil usHibernateUtil = USHibernateUtil.getInstance();
 
+    /**
+     * Locks the Translation Result so that it cannot be edited by another user
+     *
+     * @param tResult Translation Result to lock
+     * @throws AlreadyLockedException
+     */
     public synchronized Void lockTranslationResult(TranslationResult tResult) throws AlreadyLockedException {
         org.hibernate.Session session = usHibernateUtil.getSessionWithActiveTransaction();
 
@@ -109,6 +113,13 @@ public class Session {
 
     }
 
+    /**
+     * Unlocks previously locked Translation Result
+     *
+     * @param chunkIndex Chunk Index of the Translation Result to unlock
+     * @param documentId Id of a document to which the Translation Result
+     * belongs
+     */
     public synchronized Void unlockTranslationResult(ChunkIndex chunkIndex, Long documentId) {
 
         org.hibernate.Session session = usHibernateUtil.getSessionWithActiveTransaction();
@@ -132,6 +143,14 @@ public class Session {
         return null;
     }
 
+    /**
+     * Loads previous versions of subtitle items
+     *
+     * @param results list of currently loaded Translation Results
+     * @param date date before which the translation results to load were
+     * created
+     * @return returns list of old Translation Results created before given date
+     */
     public List<TranslationResult> loadPreviousVersions(List<TranslationResult> results, Date date) {
         AuditReader auditReader = AuditReaderFactory.get(usHibernateUtil.getSessionWithActiveTransaction());
         List<TranslationResult> tResults = new ArrayList<TranslationResult>();
@@ -366,6 +385,7 @@ public class Session {
 
         List list = query.list();
 
+        // Unlock all Translation Results locked by this user
         for (Object o : list) {
             USTranslationResult translationResult = (USTranslationResult) o;
             translationResult.setLockedByUser(null);
@@ -472,9 +492,9 @@ public class Session {
     public DocumentResponse createNewDocument(String documentTitle, String movieTitle, String language, MediaSourceFactory mediaSourceFactory, String moviePath, Boolean posteditOn, Boolean islocalFile) {
         updateLastOperationTime();
 
-        List<USDocumentUsers> documentUsers = new ArrayList<USDocumentUsers>();
+        List<USDocumentUser> documentUsers = new ArrayList<USDocumentUser>();
 
-        USDocumentUsers docUser = new USDocumentUsers(this.getUserDatabaseId(), moviePath, posteditOn, islocalFile);
+        USDocumentUser docUser = new USDocumentUser(this.getUserDatabaseId(), moviePath, posteditOn, islocalFile);
         documentUsers.add(docUser);
 
         //  usDocument.getDocument().setDocumentUsers(documentUsers);
@@ -514,10 +534,10 @@ public class Session {
             throw new InvalidDocumentIdException("Document " + documentId + "does not exist");
         }
 
-        List<USDocumentUsers> documentUsers = usdoc.getDocumentUsers();
+        List<USDocumentUser> documentUsers = usdoc.getDocumentUsers();
 
-        for (Iterator<USDocumentUsers> it = documentUsers.iterator(); it.hasNext();) {
-            USDocumentUsers documentUser = it.next();
+        for (Iterator<USDocumentUser> it = documentUsers.iterator(); it.hasNext();) {
+            USDocumentUser documentUser = it.next();
             if (documentUser.getUserId() == this.getUserDatabaseId()) {
                 it.remove();
                 session.delete(documentUser);
@@ -534,6 +554,14 @@ public class Session {
         return null;
     }
 
+    /**
+     * loads user's settings for a given document
+     *
+     * @param documentId Id of the document
+     * @return User's settings
+     * @throws InvalidDocumentIdException
+     * @throws InvalidUserIdException
+     */
     public DocumentUserSettings loadDocumentSettings(long documentId) throws InvalidUserIdException, InvalidDocumentIdException {
         updateLastOperationTime();
 
@@ -544,10 +572,10 @@ public class Session {
             throw new InvalidDocumentIdException("Document " + documentId + "does not exist");
         }
 
-        List<USDocumentUsers> documentUsers = usdoc.getDocumentUsers();
+        List<USDocumentUser> documentUsers = usdoc.getDocumentUsers();
         DocumentUserSettings docSettings = null;
 
-        for (USDocumentUsers documentUser : documentUsers) {
+        for (USDocumentUser documentUser : documentUsers) {
             if (documentUser.getUserId() == this.getUserDatabaseId()) {
                 docSettings = new DocumentUserSettings(this.getUserDatabaseId(), documentUser.getMoviePath(), documentUser.getPosteditOn(), documentUser.getLocalFile());
                 break;
@@ -701,9 +729,9 @@ public class Session {
         USDocument activeDocument = getActiveDocument(documentID);
         DocumentUserSettings userSettings = null;
 
-        List<USDocumentUsers> documentUsers = activeDocument.getDocumentUsers();
+        List<USDocumentUser> documentUsers = activeDocument.getDocumentUsers();
 
-        for (USDocumentUsers documentUser : documentUsers) {
+        for (USDocumentUser documentUser : documentUsers) {
 
             if (documentUser.getUserId() == this.getUserDatabaseId()) {
                 userSettings = new DocumentUserSettings(documentUser.getId(), documentUser.getMoviePath(), documentUser.getPosteditOn(), documentUser.getLocalFile());
@@ -921,7 +949,13 @@ public class Session {
     }
 
     /**
+     * Stops the postedit suggestion generation in the Translation Memory Core.
+     * (Called directly from an RPC call.)
      *
+     * @param chunks List of timed chunks to be stopped.
+     * @return Void
+     * @throws InvalidDocumentIdException Throws an exception if the session
+     * user does not own document with given ID.
      */
     public Void stopPosteditSuggestions(List<TimedChunk> chunks) throws InvalidDocumentIdException {
         if (chunks == null || chunks.isEmpty()) {
@@ -1166,16 +1200,6 @@ public class Session {
         return user.getOwnedDocuments().containsKey(id);
     }
 
-    // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-    /**
-     * Saves all translation results in a document.
-     *
-     * @param document Document to be saved.
-     */
-    /*   public void saveAllTranslationResults(USDocument document) {
-        Collection<USTranslationResult> results = document.getTranslationResultValues();
-        saveTranslationResults(document, results);
-    }*/
     /**
      * Adds the given (exatcly one) translation result to the document (or
      * updates if it already exists - it is identified by ChunkIndex) and saves
@@ -1225,6 +1249,12 @@ public class Session {
         return shareId;
     }
 
+    /**
+     * Adds document of the given Share Id to the list of users documents
+     *
+     * @param shareId Share Id of the shared document
+     * @throws InvalidShareIdException
+     */
     public synchronized Void addDocument(String shareId) throws InvalidShareIdException {
         updateLastOperationTime();
 
@@ -1243,7 +1273,7 @@ public class Session {
         } else {
 
             USDocument doc = (USDocument) list.get(0);
-            doc.getDocumentUsers().add(new USDocumentUsers(this.getUserDatabaseId()));
+            doc.getDocumentUsers().add(new USDocumentUser(this.getUserDatabaseId()));
             session.update(doc);
 
         }
@@ -1252,6 +1282,13 @@ public class Session {
         return null;
     }
 
+    /**
+     * Reloads Translation Results from database
+     *
+     * @param documentId Document Id
+     * @return returns Document with fresh translation results
+     * @throws InvalidDocumentIdException
+     */
     public synchronized Document reloadTranslationResult(Long documentId) throws InvalidDocumentIdException {
 
         updateLastOperationTime();
@@ -1269,6 +1306,16 @@ public class Session {
         return usdoc.getDocument();
     }
 
+    /**
+     * Saves user's settings for a given document
+     *
+     * @param doc Document to which the settings apply
+     * @param moviePath path of the video file
+     * @param posteditOn whether postedit API (third column) is turned on or not
+     * @param localFile true if the video file is on the users computer, false
+     * otherwise
+     * @throws InvalidDocumentIdException
+     */
     public synchronized Void saveSettings(Document doc, String moviePath, Boolean posteditOn, Boolean localFile) throws InvalidDocumentIdException {
         updateLastOperationTime();
 
@@ -1280,8 +1327,8 @@ public class Session {
         }
 
         boolean found = false;
-        List<USDocumentUsers> documentUsers = usdoc.getDocumentUsers();
-        for (USDocumentUsers documentUser : documentUsers) {
+        List<USDocumentUser> documentUsers = usdoc.getDocumentUsers();
+        for (USDocumentUser documentUser : documentUsers) {
             if (documentUser.getUserId() == this.getUserDatabaseId()) {
                 documentUser.setMoviePath(moviePath);
                 documentUser.setPosteditOn(posteditOn);
@@ -1298,9 +1345,10 @@ public class Session {
     }
 
     /**
+     * Saves Translation Results without changing their order in document
      *
-     * @param document
-     * @param results
+     * @param document Document to which Translation Results belong
+     * @param results Translation Results
      */
     public synchronized void saveTResultsWithoutOrder(USDocument document, Collection<USTranslationResult> results) {
         org.hibernate.Session session = usHibernateUtil.getSessionWithActiveTransaction();
@@ -1319,7 +1367,7 @@ public class Session {
     /**
      * Adds the given translation results to the document (or updates if they
      * already exist - they are identified by ChunkIndex) and saves the updated
-     * document to the database.
+     * document to the database and reorders them according to their timing.
      *
      * @param document USDocument do be saved to the database
      * @param results Collection of translation results to be saved or updated
@@ -1439,12 +1487,27 @@ public class Session {
         return null;
     }
 
+    /**
+     * Sets password
+     *
+     * @param password Password to set
+     */
     public Void setPassword(String password) {
         user.setPassword(FilmTitBackendServer.passHash(password));
         saveUser();
         return null;
     }
 
+    /**
+     * Adds subtitle item to a document
+     *
+     * @param chunk Source chunk for new Translation Result
+     * @param doc Document to which the subtitle item (Translation Result) will
+     * be added
+     * @throws InvalidDocumentIdException
+     * @throws InvalidChunkIdException
+     * @throws InvalidValueException
+     */
     public Void addSubtitleItem(TimedChunk chunk, Document doc) throws InvalidChunkIdException, InvalidValueException, InvalidDocumentIdException {
         updateLastOperationTime();
 
@@ -1480,39 +1543,44 @@ public class Session {
         return null;
     }
 
+    /**
+     * Loads old Subtitle Item for a given Translation Result created before
+     * revision number
+     *
+     * @param result Translation Result of which to load old version
+     * @param number Revision Number
+     * @return returns an object containing old version of Translation Result
+     * and number of revision at which it was created
+     */
     public AuditResponse loadOldTranslationResult(TranslationResult result, Number number) {
         AuditReader auditReader = AuditReaderFactory.get(usHibernateUtil.getSessionWithActiveTransaction());
 
         if (number == null) {
             number = Integer.MAX_VALUE;
         }
-        
+
         Number revisionNumber = (Number) auditReader.createQuery()
                 .forRevisionsOfEntity(USTranslationResult.class, true, false)
                 .add(AuditEntity.id().eq(result.getId()))
                 .addProjection(AuditEntity.revisionNumber().max())
-                
                 .add(AuditEntity.revisionNumber().lt(number))
-                
                 .add(AuditEntity.or(AuditEntity.property("userTranslation").hasChanged(), AuditEntity.property("posteditedString").hasChanged()))
                 .getSingleResult();
-        
-        
-        
+
         if (revisionNumber == null) {
-            return new AuditResponse();           
+            return new AuditResponse();
         }
-        
+
         USTranslationResult singleResult = (USTranslationResult) auditReader.createQuery()
                 .forEntitiesAtRevision(USTranslationResult.class, revisionNumber)
                 .add(AuditEntity.id().eq(result.getId()))
                 .getSingleResult();
 
         if (singleResult == null) {
-            return new AuditResponse();       
+            return new AuditResponse();
         }
-        
-        logger.log(Logger.Level.ERROR, singleResult.getTranslationResult() + " " + revisionNumber);      
+
+        logger.log(Logger.Level.ERROR, singleResult.getTranslationResult() + " " + revisionNumber);
 
         return new AuditResponse(singleResult.getTranslationResult(), revisionNumber);
     }

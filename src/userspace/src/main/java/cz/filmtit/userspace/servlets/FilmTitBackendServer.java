@@ -78,57 +78,6 @@ public class FilmTitBackendServer extends RemoteServiceServlet implements
      */
     protected static USHibernateUtil usHibernateUtil = USHibernateUtil.getInstance();
 
-    @Override
-    public synchronized String getShareId(String sessionId, Document doc) throws InvalidSessionIdException {
-        return getSessionIfCan(sessionId).getShareId(doc);
-    }
-
-    @Override
-    public synchronized Void addDocument(String sessionId, String shareId) throws InvalidShareIdException, InvalidSessionIdException {
-        return getSessionIfCan(sessionId).addDocument(shareId);
-
-    }
-
-    @Override
-    public synchronized Void lockTranslationResult(TranslationResult tResult, String sessionID) throws InvalidSessionIdException, AlreadyLockedException {
-        return getSessionIfCan(sessionID).lockTranslationResult(tResult);
-    }
-
-    @Override
-    public synchronized Void unlockTranslationResult(ChunkIndex chunkIndex, Long documentId, String sessionID) throws InvalidSessionIdException {
-        return getSessionIfCan(sessionID).unlockTranslationResult(chunkIndex, documentId);
-    }
-
-    @Override
-    public synchronized Document reloadTranslationResults(String sessionId, Long documentId) throws InvalidDocumentIdException, InvalidSessionIdException {
-        return getSessionIfCan(sessionId).reloadTranslationResult(documentId);
-    }
-
-    @Override
-    public Void saveSettings(String sessionId, Document doc, String moviePath, Boolean posteditOn, Boolean localFile) throws InvalidDocumentIdException, InvalidUserIdException, InvalidSessionIdException {
-        return getSessionIfCan(sessionId).saveSettings(doc, moviePath, posteditOn, localFile);
-    }
-
-    @Override
-    public DocumentUserSettings loadDocumentSettings(String sessionId, Document doc) throws InvalidDocumentIdException, InvalidUserIdException, InvalidSessionIdException {
-        return getSessionIfCan(sessionId).loadDocumentSettings(doc.getId());
-    }
-
-    @Override
-    public Void addSubtitleItem(String sessionId, TimedChunk chunk, Document doc) throws InvalidDocumentIdException, InvalidSessionIdException, InvalidChunkIdException, InvalidValueException {
-        return getSessionIfCan(sessionId).addSubtitleItem(chunk, doc);
-    }
-
-    @Override
-    public List<TranslationResult> loadPreviousVersions(String sessionId, List<TranslationResult> results, Date date) throws InvalidSessionIdException {
-        return getSessionIfCan(sessionId).loadPreviousVersions(results, date);
-    }
-
-    @Override
-    public AuditResponse loadOldSubtitleItem(String sessionId, TranslationResult result, Number number) throws InvalidSessionIdException {
-        return getSessionIfCan(sessionId).loadOldTranslationResult(result, number);
-    }
-
     public enum CheckUserEnum {
         UserName,
         UserNamePass,
@@ -438,7 +387,19 @@ public class FilmTitBackendServer extends RemoteServiceServlet implements
     }
 
     /**
+     * Stop generating postedit suggestions results for the given chunks (to be used when
+     * the getPosteditResults call has been called with the given chunks).
+     * The call is propagated further to the core where the actual stopping
+     * happens.
      *
+     * @param sessionID Session ID
+     * @param chunks List of timed chunks for which the suggestion generation
+     * should be stopped.
+     * @return Void
+     * @throws InvalidSessionIdException Throws an exception when there does not
+     * exist a session of given ID.
+     * @throws InvalidDocumentIdException Throws an exception when the user does
+     * not have document of given ID.
      */
     @Override
     public Void stopPosteditSuggestions(String sessionID, List<TimedChunk> chunks)
@@ -1481,5 +1442,153 @@ public class FilmTitBackendServer extends RemoteServiceServlet implements
             logger.log(level, "GUI: " + context, message);
         }
         return null;
+    }
+
+    /**
+     * Get the Share Id of the document
+     *
+     * @param sessionId Session Id
+     * @param doc Document to share
+     * @return Share Id of the document
+     * @throws InvalidSessionIdException
+     */
+    @Override
+    public synchronized String getShareId(String sessionId, Document doc) throws InvalidSessionIdException {
+        return getSessionIfCan(sessionId).getShareId(doc);
+    }
+
+    /**
+     * Adds document of the given Share Id to the list of users documents
+     *
+     * @param sessionId Session Id
+     * @param shareId Share Id of the shared document
+     * @throws InvalidShareIdException
+     * @throws InvalidSessionIdException
+     */
+    @Override
+    public synchronized Void addDocument(String sessionId, String shareId) throws InvalidShareIdException, InvalidSessionIdException {
+        return getSessionIfCan(sessionId).addDocument(shareId);
+
+    }
+
+    /**
+     * Locks the given translation result so it cannot be edited by other users
+     *
+     * @param tResult Translation Result to lock
+     * @param sessionID Session Id
+     * @throws InvalidSessionIdException
+     * @throws AlreadyLockedException
+     */
+    @Override
+    public synchronized Void lockTranslationResult(TranslationResult tResult, String sessionID) throws InvalidSessionIdException, AlreadyLockedException {
+        return getSessionIfCan(sessionID).lockTranslationResult(tResult);
+    }
+
+    /**
+     * Unlocks the given translation result
+     *
+     * @param chunkIndex Chunk Index of the Translation Result to unlock
+     * @param documentId Id of the document the Translation Result belongs to
+     * @param sessionID Session Id
+     * @throws InvalidSessionIdException
+     */
+    @Override
+    public synchronized Void unlockTranslationResult(ChunkIndex chunkIndex, Long documentId, String sessionID) throws InvalidSessionIdException {
+        return getSessionIfCan(sessionID).unlockTranslationResult(chunkIndex, documentId);
+    }
+
+    /**
+     * Reloads Translation Results from database
+     *
+     * @param sessionId Session Id
+     * @param documentId Document Id
+     * @return returns Document with fresh translation results
+     * @throws InvalidDocumentIdException
+     * @throws InvalidSessionIdException
+     */
+    @Override
+    public synchronized Document reloadTranslationResults(String sessionId, Long documentId) throws InvalidDocumentIdException, InvalidSessionIdException {
+        return getSessionIfCan(sessionId).reloadTranslationResult(documentId);
+    }
+
+    /**
+     * Saves user's settings for a given document
+     *
+     * @param sessionId Session Id
+     * @param doc Document to which the settings apply
+     * @param moviePath path of the video file
+     * @param posteditOn whether postedit API (third column) is turned on or not
+     * @param localFile true if the video file is on the users computer, false
+     * otherwise
+     * @throws InvalidDocumentIdException
+     * @throws InvalidUserIdException
+     * @throws InvalidSessionIdException
+     */
+    @Override
+    public synchronized Void saveSettings(String sessionId, Document doc, String moviePath, Boolean posteditOn, Boolean localFile) throws InvalidDocumentIdException, InvalidUserIdException, InvalidSessionIdException {
+        return getSessionIfCan(sessionId).saveSettings(doc, moviePath, posteditOn, localFile);
+    }
+
+    /**
+     * loads user's settings for a given document
+     *
+     * @param sessionId Session Id
+     * @param doc Document to which the settings apply
+     * @return User's settings
+     * @throws InvalidDocumentIdException
+     * @throws InvalidUserIdException
+     * @throws InvalidSessionIdException
+     */
+    @Override
+    public synchronized DocumentUserSettings loadDocumentSettings(String sessionId, Document doc) throws InvalidDocumentIdException, InvalidUserIdException, InvalidSessionIdException {
+        return getSessionIfCan(sessionId).loadDocumentSettings(doc.getId());
+    }
+
+    /**
+     * Adds subtitle item to a document
+     *
+     * @param sessionId Session Id
+     * @param chunk Source chunk for new Translation Result
+     * @param doc Document to which the subtitle item (Translation Result) will
+     * be added
+     * @throws InvalidDocumentIdException
+     * @throws InvalidSessionIdException
+     * @throws InvalidChunkIdException
+     * @throws InvalidValueException
+     */
+    @Override
+    public synchronized Void addSubtitleItem(String sessionId, TimedChunk chunk, Document doc) throws InvalidDocumentIdException, InvalidSessionIdException, InvalidChunkIdException, InvalidValueException {
+        return getSessionIfCan(sessionId).addSubtitleItem(chunk, doc);
+    }
+
+    /**
+     * Loads previous versions of subtitle items
+     *
+     * @param sessionId Session Id
+     * @param results list of currently loaded Translation Results
+     * @param date date before which the translation results to load were
+     * created
+     * @return returns list of old Translation Results created before given date
+     * @throws InvalidSessionIdException
+     */
+    @Override
+    public synchronized List<TranslationResult> loadPreviousVersions(String sessionId, List<TranslationResult> results, Date date) throws InvalidSessionIdException {
+        return getSessionIfCan(sessionId).loadPreviousVersions(results, date);
+    }
+
+    /**
+     * Loads old Subtitle Item for a given Translation Result created before
+     * revision number
+     *
+     * @param sessionId Session Id
+     * @param result Translation Result of which to load old version
+     * @param number Revision Number
+     * @return returns an object containing old version of Translation Result
+     * and number of revision at which it was created
+     * @throws InvalidSessionIdException
+     */
+    @Override
+    public synchronized AuditResponse loadOldSubtitleItem(String sessionId, TranslationResult result, Number number) throws InvalidSessionIdException {
+        return getSessionIfCan(sessionId).loadOldTranslationResult(result, number);
     }
 }

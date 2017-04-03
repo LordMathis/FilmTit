@@ -10,13 +10,13 @@ import java.io.Serializable;
 
 /**
  *
- * @author matus
+ * @author Matúš Námešný
  */
-public class InvalidUserIdException extends Exception implements Serializable, IsSerializable{
+public class InvalidUserIdException extends Exception implements Serializable, IsSerializable {
 
     InvalidUserIdException() {
     }
-    
+
     public InvalidUserIdException(String message) {
         super(message);
     }

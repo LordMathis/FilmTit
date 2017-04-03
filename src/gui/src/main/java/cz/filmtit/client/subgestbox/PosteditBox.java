@@ -37,8 +37,24 @@ import cz.filmtit.share.*;
 import java.util.List;
 
 /**
+ * Variant of a TextBox with pop-up postedit suggestions taken from the given
+ * TranslationResult.
  *
- * @author matus
+ * The Postedit Box provides a textbox-like interface and visualizes the
+ * postedit results, offering a variety of means of navigation through them. It
+ * is based on the IFrame HTML element to support also multi-line and formatted
+ * inputs.
+ *
+ * The postedit results are shown as a pop-up suggestion list when the textbox
+ * is focused in a {@link SubgestPopupStructure}.
+ *
+ * Another features like auto-scrolling to a certain place of the screen and
+ * height auto-adjustment for multi-line inputs were added to improve the user
+ * experience. The behaviour and features mentioned requires a custom event
+ * handling, this is provided by a {@link PosteditHandler} instance (common to
+ * all the PosteditBoxes within a {@link TranslationWorkspace}).
+ *
+ * @author Matúš Námešný
  */
 public class PosteditBox extends RichTextArea implements Comparable<PosteditBox> {
 
@@ -170,19 +186,23 @@ public class PosteditBox extends RichTextArea implements Comparable<PosteditBox>
      * @param translationResult the translationResult to set
      */
     public void setTranslationResult(TranslationResult translationResult) {
-        
+
         this.translationResult = translationResult;
         String posteditedString = translationResult.getPosteditedString();
 
         if (posteditedString != null && !posteditedString.equals("")) {
-            getSubstitute().setText(posteditedString);                        
+            getSubstitute().setText(posteditedString);
             this.setHTML(posteditBoxHTML(posteditedString));
             updateLastText();
         }
     }
 
+    /**
+     * Lightweight input area serving as a substitute for the PosteditBox before
+     * it is focused (and worked with)
+     */
     public class FakePosteditBox extends TextArea implements Comparable<FakePosteditBox> {
-        
+
         private boolean replaced;
 
         public FakePosteditBox(int tabIndex) {
@@ -308,14 +328,14 @@ public class PosteditBox extends RichTextArea implements Comparable<PosteditBox>
         cellList.setSelectionModel(selectionModel);
         selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
             public void onSelectionChange(SelectionChangeEvent event) {
-                PosteditPair selected = selectionModel.getSelectedObject();                
+                PosteditPair selected = selectionModel.getSelectedObject();
                 if (selected != null) {
-                    
-                    Gui.log(LevelLogEnum.Error, "PosteditBox.onSelectionChange", selected.getChunk1().getSurfaceForm() + " " + selected.getChunk2().getSurfaceForm());
-                    
+
+                    Gui.log(LevelLogEnum.Error, "PosteditBox.onSelectionChange", selected.getOriginChunk().getSurfaceForm() + " " + selected.getPosteditedChunk().getSurfaceForm());
+
                     //translationResult.setSelectedTranslationPairID(selected.getId());
                     // copy the selected suggestion into the richtextarea with the annotation highlighting:
-                    setHTML(posteditBoxHTML(selected.getChunk2().getSurfaceForm()));
+                    setHTML(posteditBoxHTML(selected.getPosteditedChunk().getSurfaceForm()));
                     // contents have changed - resize if necessary:
                     updateVerticalSize();
 

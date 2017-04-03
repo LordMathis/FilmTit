@@ -132,11 +132,72 @@ public interface FilmTitService extends RemoteService {
     Void deleteDocument(String sessionID, long documentID)
             throws InvalidSessionIdException, InvalidDocumentIdException;
 
+    /**
+     * Get the Share Id of the document
+     *
+     * @param sessionId Session Id
+     * @param doc Document to share
+     * @return Share Id of the document
+     * @throws InvalidSessionIdException
+     */
+    String getShareId(String sessionId, Document doc) throws InvalidSessionIdException;
+
+    /**
+     * Adds document of the given Share Id to the list of users documents
+     *
+     * @param sessionId Session Id
+     * @param shareId Share Id of the shared document
+     * @throws InvalidShareIdException
+     * @throws InvalidSessionIdException
+     */
+    Void addDocument(String sessionId, String shareId) throws InvalidSessionIdException, InvalidShareIdException;
+
+    /**
+     * Saves user's settings for a given document
+     *
+     * @param sessionId Session Id
+     * @param doc Document to which the settings apply
+     * @param moviePath path of the video file
+     * @param posteditOn whether postedit API (third column) is turned on or not
+     * @param localFile true if the video file is on the users computer, false
+     * otherwise
+     * @throws InvalidDocumentIdException
+     * @throws InvalidUserIdException
+     * @throws InvalidSessionIdException
+     */
+    Void saveSettings(String sessionId, Document doc, String moviePath, Boolean posteditOn, Boolean localFile) throws InvalidSessionIdException, InvalidDocumentIdException, InvalidUserIdException;
+
+    /**
+     * loads user's settings for a given document
+     *
+     * @param sessionId Session Id
+     * @param doc Document to which the settings apply
+     * @return User's settings
+     * @throws InvalidDocumentIdException
+     * @throws InvalidUserIdException
+     * @throws InvalidSessionIdException
+     */
+    DocumentUserSettings loadDocumentSettings(String sessionId, Document doc) throws InvalidDocumentIdException, InvalidUserIdException, InvalidSessionIdException;
+
     ////////////////////////////////////////
     //                                    //
     //  Source subtitles handling         //
     //                                    //
     ////////////////////////////////////////
+    /**
+     * Adds subtitle item to a document
+     *
+     * @param sessionId Session Id
+     * @param chunk Source chunk for new Translation Result
+     * @param doc Document to which the subtitle item (Translation Result) will
+     * be added
+     * @throws InvalidDocumentIdException
+     * @throws InvalidSessionIdException
+     * @throws InvalidChunkIdException
+     * @throws InvalidValueException
+     */
+    Void addSubtitleItem(String sessionId, TimedChunk chunk, Document doc) throws InvalidDocumentIdException, InvalidSessionIdException, InvalidChunkIdException, InvalidValueException;
+
     /**
      * Save the given source chunks as the contents of the given document (which
      * was already created by calling createNewDocument)
@@ -282,12 +343,13 @@ public interface FilmTitService extends RemoteService {
             throws InvalidSessionIdException, InvalidDocumentIdException;
 
     /**
-     * Reloads translation results from database
+     * Reloads Translation Results from database
      *
-     * @param sessioId
-     * @param documentId
-     * @return
+     * @param sessionId Session Id
+     * @param documentId Document Id
+     * @return returns Document with fresh translation results
      * @throws InvalidDocumentIdException
+     * @throws InvalidSessionIdException
      */
     Document reloadTranslationResults(String sessioId, Long documentId) throws InvalidSessionIdException, InvalidDocumentIdException;
 
@@ -332,6 +394,51 @@ public interface FilmTitService extends RemoteService {
      */
     Void setUserTranslation(String sessionID, ChunkIndex chunkIndex, long documentID, String userTranslation, long chosenTranslationPairID, String posteditedString, long chosenPosteditPairID)
             throws InvalidSessionIdException, InvalidChunkIdException, InvalidDocumentIdException;
+
+    /**
+     * Locks the given translation result so it cannot be edited by other users
+     *
+     * @param tResult Translation Result to lock
+     * @param sessionID Session Id
+     * @throws InvalidSessionIdException
+     * @throws AlreadyLockedException
+     */
+    Void lockTranslationResult(TranslationResult tResult, String sessionID) throws InvalidSessionIdException, AlreadyLockedException;
+
+    /**
+     * Unlocks the given translation result
+     *
+     * @param chunkIndex Chunk Index of the Translation Result to unlock
+     * @param documentId Id of the document the Translation Result belongs to
+     * @param sessionID Session Id
+     * @throws InvalidSessionIdException
+     */
+    Void unlockTranslationResult(ChunkIndex chunkIndex, Long documentId, String sessionID) throws InvalidSessionIdException;
+
+    /**
+     * Loads previous versions of subtitle items
+     *
+     * @param sessionId Session Id
+     * @param results list of currently loaded Translation Results
+     * @param date date before which the translation results to load were
+     * created
+     * @return returns list of old Translation Results created before given date
+     * @throws InvalidSessionIdException
+     */
+    List<TranslationResult> loadPreviousVersions(String sessionId, List<TranslationResult> results, Date date) throws InvalidSessionIdException;
+
+    /**
+     * Loads old Subtitle Item for a given Translation Result created before
+     * revision number
+     *
+     * @param sessionId Session Id
+     * @param result Translation Result of which to load old version
+     * @param number Revision Number
+     * @return returns an object containing old version of Translation Result
+     * and number of revision at which it was created
+     * @throws InvalidSessionIdException
+     */
+    AuditResponse loadOldSubtitleItem(String sessionId, TranslationResult result, Number number) throws InvalidSessionIdException;
 
     ////////////////////////////////////////
     //                                    //
@@ -552,22 +659,4 @@ public interface FilmTitService extends RemoteService {
      * user was looged in that time
      */
     Void logGuiMessage(LevelLogEnum level, String context, String message, String sessionID);
-
-    String getShareId(String sessionId, Document doc) throws InvalidSessionIdException;
-
-    Void addDocument(String sessionId, String shareId) throws InvalidSessionIdException, InvalidShareIdException;
-
-    Void lockTranslationResult(TranslationResult tResult, String sessionID) throws InvalidSessionIdException, AlreadyLockedException;
-
-    Void unlockTranslationResult(ChunkIndex chunkIndex, Long documentId, String sessionID) throws InvalidSessionIdException;
-
-    Void saveSettings(String sessionId, Document doc, String moviePath, Boolean posteditOn, Boolean localFile) throws InvalidSessionIdException, InvalidDocumentIdException, InvalidUserIdException;
-
-    DocumentUserSettings loadDocumentSettings(String sessionId, Document doc) throws InvalidDocumentIdException, InvalidUserIdException, InvalidSessionIdException;
-
-    Void addSubtitleItem(String sessionId, TimedChunk chunk, Document doc) throws InvalidDocumentIdException, InvalidSessionIdException, InvalidChunkIdException, InvalidValueException;
-    
-    List<TranslationResult> loadPreviousVersions(String sessionId, List<TranslationResult> results, Date date) throws InvalidSessionIdException;
-    
-    AuditResponse loadOldSubtitleItem(String sessionId, TranslationResult result, Number number) throws InvalidSessionIdException;
 }

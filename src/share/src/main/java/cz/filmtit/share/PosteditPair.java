@@ -8,16 +8,16 @@ package cz.filmtit.share;
 import java.io.Serializable;
 
 /**
- *
- * @author matus
+ * Represents pair of chunks used in Postedit API
+ * @author Matúš Námešný
  */
 public class PosteditPair implements com.google.gwt.user.client.rpc.IsSerializable, Serializable {
 
     private Long id = (long) - 1;
 
-    private Chunk chunk1;
+    private Chunk originChunk;
 
-    private Chunk chunk2;
+    private Chunk posteditedChunk;
     
     private PosteditSource source;
 
@@ -26,8 +26,8 @@ public class PosteditPair implements com.google.gwt.user.client.rpc.IsSerializab
     }
 
     public PosteditPair(Chunk chunk1, Chunk chunk2) {
-        this.chunk1 = chunk1;
-        this.chunk2 = chunk2;
+        this.originChunk = chunk1;
+        this.posteditedChunk = chunk2;
     }
 
     public PosteditPair(String userTranslation, String posteditedString) {
@@ -49,45 +49,45 @@ public class PosteditPair implements com.google.gwt.user.client.rpc.IsSerializab
     }
 
     /**
-     * @return the chunk1
+     * @return the originChunk
      */
-    public Chunk getChunk1() {
-        return chunk1;
+    public Chunk getOriginChunk() {
+        return originChunk;
     }
 
     /**
-     * @param chunk1 the chunk1 to set
+     * @param originChunk the originChunk to set
      */
-    public void setChunk1(Chunk chunk1) {
-        this.chunk1 = chunk1;
+    public void setOriginChunk(Chunk originChunk) {
+        this.originChunk = originChunk;
     }
 
     /**
-     * @return the chunk2
+     * @return the posteditedChunk
      */
-    public Chunk getChunk2() {
-        return chunk2;
+    public Chunk getPosteditedChunk() {
+        return posteditedChunk;
     }
 
     /**
-     * @param chunk2 the chunk2 to set
+     * @param posteditedChunk the posteditedChunk to set
      */
-    public void setChunk2(Chunk chunk2) {
-        this.chunk2 = chunk2;
+    public void setPosteditedChunk(Chunk posteditedChunk) {
+        this.posteditedChunk = posteditedChunk;
     }
 
     public String getString2() {
-        if (chunk2 == null) {
+        if (posteditedChunk == null) {
             return "";
         }
-        return chunk2.getSurfaceForm();
+        return posteditedChunk.getSurfaceForm();
     }
 
     public String getString1() {
-        if (chunk1 == null) {
+        if (originChunk == null) {
             return "";
         }
-        return chunk1.getSurfaceForm();
+        return originChunk.getSurfaceForm();
     }
 
     public Double getScore() {
@@ -110,7 +110,7 @@ public class PosteditPair implements com.google.gwt.user.client.rpc.IsSerializab
     
     @Override
     public String toString() {
-        return "[PosteditPair: " + chunk1.getSurfaceForm() + " -> " + chunk2.getSurfaceForm() + "]";
+        return "[PosteditPair: " + originChunk.getSurfaceForm() + " -> " + posteditedChunk.getSurfaceForm() + "]";
     }
 
 }

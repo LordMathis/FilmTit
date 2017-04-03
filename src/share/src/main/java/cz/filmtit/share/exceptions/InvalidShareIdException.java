@@ -9,8 +9,8 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 import java.io.Serializable;
 
 /**
- *
- * @author matus
+ * The exception is thrown if the user wants to add a non-existing document
+ * @author Matúš Námešný
  */
 public class InvalidShareIdException extends Exception implements Serializable, IsSerializable{
 

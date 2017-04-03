@@ -9,11 +9,15 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 import java.io.Serializable;
 
 /**
- *
- * @author matus
+ * Represents response to Envers query
+ * @author Matúš Námešný
  */
 public class AuditResponse implements Serializable, IsSerializable{
+    
+    // Old version of Translation Result
     private TranslationResult translationResult;
+    
+    // Revision Number at which the old Translation Result was saved
     private Number number;
 
     public AuditResponse(TranslationResult result, Number number) {
@@ -40,14 +44,14 @@ public class AuditResponse implements Serializable, IsSerializable{
     }
 
     /**
-     * @return the number
+     * @return the revision number
      */
     public Number getNumber() {
         return number;
     }
 
     /**
-     * @param number the number to set
+     * @param number the revision number to set
      */
     public void setNumber(Number number) {
         this.number = number;

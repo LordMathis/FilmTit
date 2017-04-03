@@ -39,11 +39,13 @@ Uncomment this for XHTML entities
                 </b:Fieldset>                
                 
                 <b:Fieldset>
+                    <b:Alert ui:field="alertPostedit" type="ERROR" close="false" animation="true" visible="false" ></b:Alert>
                     <b:ModalFooter>
                         <b:SubmitButton ui:field="submitButton" type="PRIMARY">Submit</b:SubmitButton>
                         <b:Button ui:field="cancelButton">Cancel</b:Button>
                     </b:ModalFooter>
-                </b:Fieldset>
+                </b:Fieldset>                
+                
                 
             </b:Form>
         </my:CustomModal>
