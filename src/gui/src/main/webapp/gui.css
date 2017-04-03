@@ -307,6 +307,7 @@ iframe.gwt-RichTextArea, .pre_subgestbox {
 }
 .new_document_button {
     float: right;
+    margin-left: 5px;
 }
 
 

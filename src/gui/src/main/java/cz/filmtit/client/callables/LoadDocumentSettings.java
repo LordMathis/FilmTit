@@ -40,7 +40,8 @@ public class LoadDocumentSettings extends Callable<DocumentUserSettings> {
         if (settingsDialog != null) {
             settingsDialog.getSetPostedit().setValue(result.getPosteditOn());
             
-            if (!result.isLocalFile()) {
+            if (!result.isLocalFile() && !result.getMoviePath().isEmpty()) {
+                
                 settingsDialog.getYtURL().setValue("https://www.youtube.com/watch?v=" + result.getMoviePath());
             }
             
