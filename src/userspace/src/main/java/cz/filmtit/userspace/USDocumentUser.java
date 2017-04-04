@@ -8,34 +8,57 @@ package cz.filmtit.userspace;
 import java.io.Serializable;
 
 /**
- *
- * @author matus
+ * Holds User Id and User's settings for a particular document
+ * @author Matúš Námešný
  */
-public class USDocumentUsers implements Serializable {
+public class USDocumentUser implements Serializable {
 
+    // Id of the USDocumentUser object
     private volatile Long id;
+    
+    // Id of the user
     private volatile Long userId;
+    
+    /*
+        User's settings
+    */
+    
+    // Path to video file
     private volatile String moviePath;
+    
+    // true if the postedit API is turned on (third column)
     private volatile Boolean posteditOn;
+    
+    // true if video file is on User's computer, false otherwise
     private volatile Boolean localFile;
-
-    public USDocumentUsers() {
+    
+    /*
+        Constructors
+    */
+    
+    // default constructor
+    public USDocumentUser() {
         //nothing;
     }
 
-    public USDocumentUsers(Long userId) {
+    public USDocumentUser(Long userId) {
         this.userId = userId;
         this.moviePath = "";
         this.localFile = true;
         this.posteditOn = false;
     }
 
-    public USDocumentUsers(Long userId, String moviePath, Boolean posteditOn, Boolean localFile) {
+    public USDocumentUser(Long userId, String moviePath, Boolean posteditOn, Boolean localFile) {
         this.userId = userId;
         this.moviePath = moviePath;
         this.posteditOn = posteditOn;
         this.localFile = localFile;
     }
+    
+    /*
+        Getters and setters
+    */
+    
 
     /**
      * @return the id

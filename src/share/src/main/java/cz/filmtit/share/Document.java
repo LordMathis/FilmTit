@@ -86,7 +86,7 @@ public class Document implements IsSerializable, Serializable, Comparable<Docume
     /**
      * Sets the document title
      *
-     * @return The document title
+     * @param title The document title to set
      */
     public void setTitle(String title) {
         this.title = title;
@@ -312,6 +312,10 @@ public class Document implements IsSerializable, Serializable, Comparable<Docume
         return 0;
     }
     
+    /**
+     * Sorts Translation Results by their timing
+     * @return sorted Translation Results
+     */
     public List<TranslationResult> getSortedResultsByTime() {
         List<TranslationResult> preSorted = new ArrayList<TranslationResult>();
         preSorted.addAll(translationResults.values());
@@ -323,12 +327,6 @@ public class Document implements IsSerializable, Serializable, Comparable<Docume
             }
         });
         
-        /*preSorted.sort(new Comparator<TranslationResult>() {
-            @Override
-            public int compare(TranslationResult o1, TranslationResult o2) {
-                return o1.getSourceChunk().compareTo(o2.getSourceChunk());
-            }
-        });*/
         return preSorted;
     }
     

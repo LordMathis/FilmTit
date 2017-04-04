@@ -92,6 +92,10 @@ public class SubtitleDownloadServlet extends HttpServlet {
             way = ChunkStringGenerator.TARGET_SIDE;
         } else if (wayString.equals("targetthrowback")) {
             way = ChunkStringGenerator.TARGET_SIDE_WITH_THROWBACK;
+        } else if (wayString.equals("postedit")) {
+            way = ChunkStringGenerator.POSTEDIT_SIDE;
+        } else if (wayString.equals("posteditthrowback")) {
+            way = ChunkStringGenerator.POSTEDIT_SIDE_WITH_THROWBACK;
         } else {
             writeError(response, "no such way as " + wayString);
             return;

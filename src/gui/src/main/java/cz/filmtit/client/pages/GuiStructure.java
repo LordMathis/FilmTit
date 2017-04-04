@@ -21,6 +21,7 @@ package cz.filmtit.client.pages;
 import com.github.gwtbootstrap.client.ui.Brand;
 import com.github.gwtbootstrap.client.ui.NavLink;
 import com.github.gwtbootstrap.client.ui.NavText;
+import com.github.gwtbootstrap.client.ui.Navbar;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -59,6 +60,7 @@ public class GuiStructure extends Composite {
 		welcomeScreen.addClickHandler(new MenuClickHandler(Page.WelcomeScreen));
 		userPage.addClickHandler(new MenuClickHandler(Page.UserPage));
 		settings.addClickHandler(new MenuClickHandler(Page.Settings));
+                navbar.setInverse(true);
 		
         // top menu handlers
         login.addClickHandler(new ClickHandler() {
@@ -186,6 +188,8 @@ public class GuiStructure extends Composite {
     //                                   //
     ///////////////////////////////////////
 
+        @UiField
+        Navbar navbar;
 	
 	@UiField
 	NavLink welcomeScreen;

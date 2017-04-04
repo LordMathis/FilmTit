@@ -12,13 +12,16 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Widget;
 import cz.filmtit.client.dialogs.AddSubtitleItemDialog;
+import cz.filmtit.client.dialogs.LoadPreviousVersionsDialog;
+import cz.filmtit.client.dialogs.SearchAndReplaceDialog;
 import cz.filmtit.client.pages.TranslationWorkspace;
 
 /**
- *
- * @author matus
+ * 
+ * @author Matúš Námešný
  */
 public class ButtonPanel extends Composite {
     
@@ -33,13 +36,37 @@ public class ButtonPanel extends Composite {
         initWidget(uiBinder.createAndBindUi(this));
         this.workspace = workspace;
         addSubtitleItemBtn.addStyleName("btn btn-primary");
+        previousVersionsBtn.addStyleName("btn btn-primary");
+        searchReplaceBtn.addStyleName("btn btn-primary");
+        buttonPanel.addStyleName("text-center");
+        searchReplaceBtn.setText("Search & Replace");
     }
     
     @UiField
     Button addSubtitleItemBtn; 
     
+    @UiField
+    Button previousVersionsBtn;
+    
+    @UiField
+    Button searchReplaceBtn;
+    
     @UiHandler("addSubtitleItemBtn")
     void click(ClickEvent e) {
         new AddSubtitleItemDialog(workspace);
     }
+    
+    @UiHandler("previousVersionsBtn")
+    void getPrevVersionsDialog(ClickEvent e) {
+        new LoadPreviousVersionsDialog(workspace);
+    }
+    
+    @UiHandler("searchReplaceBtn")
+    void searchAndReplace(ClickEvent e) {
+        new SearchAndReplaceDialog(workspace);
+    }
+    
+    @UiField
+    HTMLPanel buttonPanel;
+    
 }

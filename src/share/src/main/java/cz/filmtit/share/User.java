@@ -57,7 +57,7 @@ public class User implements Serializable, IsSerializable {
      */
     private volatile boolean useMoses;
     /**
-     * List of documents the user owsn.
+     * List of documents the user owns.
      */
     public List<Document> ownedDocuments;
 

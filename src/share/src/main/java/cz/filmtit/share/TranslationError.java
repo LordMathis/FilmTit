@@ -9,8 +9,9 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 import java.io.Serializable;
 
 /**
+ * Represents errors in translation
  *
- * @author matus
+ * @author Matúš Námešný
  */
 public class TranslationError extends TranslationPair implements IsSerializable, Serializable {
 
@@ -50,11 +51,11 @@ public class TranslationError extends TranslationPair implements IsSerializable,
     public void setErrorMessage(String errorMessage) {
         this.errorMessage = errorMessage;
     }
-    
+
     public TranslationError() {
         // do nothing
     }
-    
+
     public TranslationError(int errorCode, String errorMessage) {
         this.errorCode = errorCode;
         this.errorMessage = errorMessage;

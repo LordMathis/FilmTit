@@ -9,8 +9,8 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 import java.io.Serializable;
 
 /**
- *
- * @author matus
+ * Holds user§s settings for a given document
+ * @author Matúš Námešný
  */
 public class DocumentUserSettings implements Serializable, IsSerializable {
 

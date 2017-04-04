@@ -22,7 +22,6 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.Widget;
 import cz.filmtit.client.callables.AddSubtitleItem;
@@ -41,7 +40,7 @@ import java.util.logging.Logger;
  *
  * @author matus
  */
-public class AddSubtitleItemDialog extends Composite {
+public class AddSubtitleItemDialog extends Dialog {
 
     private SrtTime startTimeWorking;
     private SrtTime endTimeWorking;
@@ -70,7 +69,6 @@ public class AddSubtitleItemDialog extends Composite {
         }
 
         initTable();
-        showDialog();
     }
 
     /**
@@ -172,8 +170,6 @@ public class AddSubtitleItemDialog extends Composite {
         timesTable.redraw();
     }
 
-    DialogBox dialogBox;
-
     @UiField
     Form timesForm;
 
@@ -188,7 +184,7 @@ public class AddSubtitleItemDialog extends Composite {
 
     @UiField
     Button cancelButton;
-
+    
     @UiHandler("cancelButton")
     void cancel(ClickEvent e) {
         dialogBox.hide();
@@ -200,7 +196,7 @@ public class AddSubtitleItemDialog extends Composite {
     @UiHandler("timesForm")
     void submit(Form.SubmitEvent e) {
 
-        deactivate();
+        deactivateBtn();
 
         if (checkTimes() && checkSourceString()) {
             
@@ -218,22 +214,9 @@ public class AddSubtitleItemDialog extends Composite {
 
             dialogBox.hide();
         } else {
-            reactivate();
+            reactivateBtn();
         }
 
-    }
-
-    /**
-     * show the dialog
-     */
-    private void showDialog() {
-        dialogBox = new DialogBox();
-        dialogBox.setAnimationEnabled(true);
-        dialogBox.setGlassEnabled(true);
-        dialogBox.addStyleName("timeEditDialog");
-        dialogBox.setHTML("<h3>Add Subtitle Item</h3>");
-        dialogBox.setWidget(this);
-        dialogBox.center();
     }
 
     private int getMaxId() {
@@ -281,11 +264,11 @@ public class AddSubtitleItemDialog extends Composite {
         }
     }
 
-    private void deactivate() {
+    private void deactivateBtn() {
         submitButton.setEnabled(false);
     }
 
-    private void reactivate() {
+    private void reactivateBtn() {
         submitButton.setEnabled(true);
     }
 }

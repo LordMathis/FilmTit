@@ -43,7 +43,7 @@ public class TimedChunk extends Chunk implements com.google.gwt.user.client.rpc.
      */
     private volatile int partNumber;
     /**
-     *
+     * Order in document by timing
      */
     private volatile int order;
 

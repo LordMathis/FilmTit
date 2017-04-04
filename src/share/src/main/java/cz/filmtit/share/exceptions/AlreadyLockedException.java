@@ -9,14 +9,16 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 import java.io.Serializable;
 
 /**
+ * The exception is thrown if the Translation Result that the user wants to lock
+ * is already locked by another user
  *
- * @author matus
+ * @author Matúš Námešný
  */
 public class AlreadyLockedException extends Exception implements Serializable, IsSerializable {
 
     AlreadyLockedException() {
     }
-    
+
     public AlreadyLockedException(String message) {
         super(message);
     }

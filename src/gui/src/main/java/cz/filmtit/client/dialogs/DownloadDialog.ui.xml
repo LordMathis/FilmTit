@@ -19,6 +19,8 @@
                             <b:RadioButton ui:field="target" name="way">Translated version (untranslated parts left out)</b:RadioButton>
                             <b:RadioButton ui:field="targetthrowback" name="way">Translated with original where untranslated</b:RadioButton>
                             <b:RadioButton ui:field="source" name="way">Source</b:RadioButton>
+                            <b:RadioButton ui:field="postedit" name="way">Postedited version (unpostedited parts left out)</b:RadioButton>
+                            <b:RadioButton ui:field="posteditthrowback" name="way">Postedited with translated where unpostedited</b:RadioButton>
                         </b:Controls>
                     </b:ControlGroup>
 

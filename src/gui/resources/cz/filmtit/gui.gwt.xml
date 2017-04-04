@@ -21,7 +21,9 @@
     <inherits name='org.vectomatic.libgwtfile' />
 
     <!-- Inherit the twitter-bootstrap design                       -->
-    <inherits name='com.github.gwtbootstrap.Bootstrap' />
+    <inherits name='com.github.gwtbootstrap.Bootstrap' />  
+    
+    <inherits name='com.github.gwtbootstrap.datetimepicker.Datetimepicker' />
 
 
     <!-- Specify the app entry point class.                         -->

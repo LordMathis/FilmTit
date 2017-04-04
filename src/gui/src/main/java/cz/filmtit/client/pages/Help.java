@@ -47,9 +47,7 @@ public class Help extends UIObject {
 		
 		HTMLPanel htmlWrapper = new HTMLPanel(this.getElement().getInnerHTML());
 		Gui.getGuiStructure().contentPanel.setWidget(htmlWrapper);
-		
-		// Document.get().getBody().appendChild(this.getElement());
-		// Gui.getGuiStructure().contentPanel.setWidget(this);
+
 	}
 
 }

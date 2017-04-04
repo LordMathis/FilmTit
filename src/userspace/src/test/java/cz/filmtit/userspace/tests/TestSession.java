@@ -335,7 +335,7 @@ public class TestSession {
         LoremIpsum loremIpsum = new LoremIpsum();
 
         for (int i = 0; i < 3; ++i) {
-            USDocument usDocument = new USDocument(new Document("Test", "en"), sampleUser, new ArrayList<USDocumentUsers>());
+            USDocument usDocument = new USDocument(new Document("Test", "en"), sampleUser, new ArrayList<USDocumentUser>());
             usDocument.setOwner(sampleUser);
             long documentID = usDocument.getDatabaseId();
 

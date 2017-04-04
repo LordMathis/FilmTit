@@ -44,8 +44,8 @@ public class PosteditHandler implements FocusHandler, KeyDownHandler, KeyUpHandl
     }
 
     @Override
-    public void onFocus(FocusEvent event) {      
-        
+    public void onFocus(FocusEvent event) {
+
         SubgestBox unlockedSubgestBox = workspace.getUnlockedSubgestBox();
 
         if (unlockedSubgestBox != null) {
@@ -59,15 +59,14 @@ public class PosteditHandler implements FocusHandler, KeyDownHandler, KeyUpHandl
             }
         }
 
-        new ReloadTranslationResults(workspace.getCurrentDocument().getId(), workspace);
-
         if (event.getSource() instanceof PosteditBox) {
             final PosteditBox posteditBox = (PosteditBox) event.getSource();
-            
-            //Gui.log(LevelLogEnum.Error, this.getClass().getName(), posteditBox.getTextWithNewlines());
-            
+
+            Gui.log(LevelLogEnum.Error, this.getClass().getName(), posteditBox.getTextWithNewlines());
+
             if (workspace.getLockedSubgestBox() == null) {
                 new LockTranslationResult(posteditBox.getSubgestBox(), workspace);
+                new ReloadTranslationResults(workspace.getCurrentDocument().getId(), workspace);
             } else if (workspace.getLockedSubgestBox() != posteditBox.getSubgestBox()) {
                 SubgestBox toSaveAndUnlock = workspace.getLockedSubgestBox();
                 toSaveAndUnlock.getTranslationResult().setUserTranslation(toSaveAndUnlock.getTextWithNewlines());
@@ -80,6 +79,7 @@ public class PosteditHandler implements FocusHandler, KeyDownHandler, KeyUpHandl
                     posteditBox.updateLastText();
                 } else {
                     new UnlockTranslationResult(toSaveAndUnlock, workspace, posteditBox.getSubgestBox());
+                    new ReloadTranslationResults(workspace.getCurrentDocument().getId(), workspace);
                 }
 
             }

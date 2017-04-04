@@ -22,7 +22,7 @@ import cz.filmtit.core.ConfigurationSingleton;
 import cz.filmtit.core.model.TranslationMemory;
 import cz.filmtit.core.tests.TestUtil;
 import cz.filmtit.share.Document;
-import cz.filmtit.userspace.USDocumentUsers;
+import cz.filmtit.userspace.USDocumentUser;
 import cz.filmtit.share.TimedChunk;
 import cz.filmtit.userspace.USDocument;
 import cz.filmtit.userspace.USHibernateUtil;
@@ -132,7 +132,7 @@ public class TestUSTranslationResult {
     @Test
     public void testGenerateMTSuggestions() {
         USUser user = new USUser("name");
-        USDocument document = new USDocument(new Document("Hannah and Her Sisters", "en"), user, new ArrayList<USDocumentUsers>());
+        USDocument document = new USDocument(new Document("Hannah and Her Sisters", "en"), user, new ArrayList<USDocumentUser>());
         document.setOwner(new USUser("user"));
 
         USTranslationResult usTranslationResult = new USTranslationResult(new TimedChunk("001", "002", 1,
@@ -152,7 +152,7 @@ public class TestUSTranslationResult {
 
         USUser testUser = new USUser("user");
         Document doc = new Document("Movie title", "en");
-        USDocument testDoc = new USDocument(doc, testUser, new ArrayList<USDocumentUsers>());
+        USDocument testDoc = new USDocument(doc, testUser, new ArrayList<USDocumentUser>());
         testDoc.setOwner(testUser);
         testDoc.saveToDatabase(dbSession);
         dbSession.getTransaction().commit();

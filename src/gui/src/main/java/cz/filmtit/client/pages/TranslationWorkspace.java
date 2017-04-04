@@ -16,13 +16,18 @@ You should have received a copy of the GNU General Public License
 along with FilmTit.  If not, see <http://www.gnu.org/licenses/>.*/
 package cz.filmtit.client.pages;
 
+import com.github.gwtbootstrap.client.ui.constants.IconType;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.RepeatingCommand;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.DoubleClickEvent;
 import com.google.gwt.event.dom.client.DoubleClickHandler;
 import com.google.gwt.event.dom.client.ScrollEvent;
 import com.google.gwt.event.dom.client.ScrollHandler;
+import com.google.gwt.regexp.shared.MatchResult;
+import com.google.gwt.regexp.shared.RegExp;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Element;
@@ -119,6 +124,8 @@ public class TranslationWorkspace extends Composite {
      */
     private Widget activePosteditWidget = null;
 
+    private Map<ChunkIndex, Number> loadedRevisions;
+
     /**
      * column numbers in the subtitle-table
      */
@@ -131,6 +138,9 @@ public class TranslationWorkspace extends Composite {
     private static final int SOURCE_DIALOGMARK_COLNUMBER = 1;
     private static final int TARGET_DIALOGMARK_COLNUMBER = 3;
     private static final int POSTEDIT_DIALOGMARK_COLNUMBER = 5;
+
+    // Undo Button
+    private static int UNDO_BUTTON_COLNUMBER;
 
     /**
      * True if user selected MediaSource
@@ -179,19 +189,9 @@ public class TranslationWorkspace extends Composite {
     private boolean translationStarted = false;
 
     /**
-     *
-     */
-    private boolean posteditStarted = false;
-
-    /**
      * List of RPC calls to get TranslationResults from Translation Memory
      */
     private Map<Integer, GetTranslationResults> sentGetTranslationsResultsCalls;
-
-    /**
-     * Last processed index of subtitle chunks
-     */
-    private int lastIndex = 0;
 
     /**
      * Handles the subtitles of the current document.
@@ -276,6 +276,14 @@ public class TranslationWorkspace extends Composite {
      */
     public Map<TimedChunk, LockTranslationResult> getLockTranslationResultCalls() {
         return lockTranslationResultCalls;
+    }
+
+    public Number getLoadedRevision(ChunkIndex index) {
+        return loadedRevisions.get(index);
+    }
+
+    public void addLoadedRevision(ChunkIndex index, Number number) {
+        loadedRevisions.put(index, number);
     }
 
     /**
@@ -431,6 +439,8 @@ public class TranslationWorkspace extends Composite {
         posteditBoxes = new ArrayList<PosteditBox.FakePosteditBox>();
         timeLabels = new HashMap<ChunkIndex, Label>();
 
+        loadedRevisions = new HashMap<ChunkIndex, Number>();
+
         // Gui initialization
         Gui.getPageHandler().setPageUrl(Page.TranslationWorkspace);
         Gui.getGuiStructure().activateMenuItem(Page.TranslationWorkspace);
@@ -481,6 +491,12 @@ public class TranslationWorkspace extends Composite {
         table.setWidget(0, TARGET_DIALOGMARK_COLNUMBER, new Label(""));
 
         table.getRowFormatter().setStyleName(0, "header");
+
+        if (isPosteditOn()) {
+            UNDO_BUTTON_COLNUMBER = 7;
+        } else {
+            UNDO_BUTTON_COLNUMBER = 5;
+        }
 
         Gui.getGuiStructure().contentPanel.setWidget(this);
         Gui.getGuiStructure().contentPanel.setStyleName("translating");
@@ -563,7 +579,7 @@ public class TranslationWorkspace extends Composite {
         }
 
         List<TimedChunk> unedited = new LinkedList<TimedChunk>();
-        List<TimedChunk> allChunks = new LinkedList<TimedChunk>();
+        List<TranslationResult> allResults = new LinkedList<TranslationResult>();
         List<TranslationResult> results = new LinkedList<TranslationResult>();
 
         for (TranslationResult tr : translations) {
@@ -577,7 +593,7 @@ public class TranslationWorkspace extends Composite {
 
             this.getCurrentDocument().translationResults.put(chunkIndex, tr);
 
-            allChunks.add(sourceChunk);
+            allResults.add(tr);
 
             if (userTranslation == null || userTranslation.isEmpty()) {
                 unedited.add(sourceChunk);
@@ -589,7 +605,7 @@ public class TranslationWorkspace extends Composite {
             }
         }
 
-        dealWithChunks(allChunks, results, unedited);
+        dealWithChunks(allResults, results, unedited);
 
     }
 
@@ -679,20 +695,23 @@ public class TranslationWorkspace extends Composite {
         long endTime = System.currentTimeMillis();
         long parsingTime = endTime - startTime;
         Gui.log("parsing finished in " + parsingTime + "ms");
-        
+
+        List<TranslationResult> tResults = new ArrayList<TranslationResult>();
+
         int order = 0;
         for (TimedChunk chunk : chunklist) {
             chunk.setOrder(order);
             order++;
             ChunkIndex chunkIndex = chunk.getChunkIndex();
             TranslationResult tr = new TranslationResult(chunk);
+            tResults.add(tr);
             this.getCurrentDocument().translationResults.put(chunkIndex, tr);
             synchronizer.putTranslationResult(tr);
             synchronizer.putSourceChunk(tr, -1, false);
         }
 
         // save the chunks
-        new SaveSourceChunks(chunklist, this, createDocumentCall);
+        new SaveSourceChunks(tResults, this, createDocumentCall);
         // now the user can close the browser, chunks are safely saved
     }
 
@@ -749,14 +768,10 @@ public class TranslationWorkspace extends Composite {
         synchronizer.putTranslationResult(transResult);
     }
 
-    private void dealWithChunks(List<TimedChunk> original, List<TranslationResult> translated, List<TimedChunk> unedited) {
+    private void dealWithChunks(List<TranslationResult> original, List<TranslationResult> translated, List<TimedChunk> unedited) {
 
         Scheduler.get().scheduleIncremental(new ShowOriginalCommand(original));
         Scheduler.get().scheduleIncremental(new ShowUserTranslatedCommand(translated));
-
-        if (isPosteditOn()) {
-            //Scheduler.get().scheduleIncremental(new ShowPosteditedCommand(postedited));
-        }
 
         prepareSendChunkCommand(unedited);
         startShowingTranslationsIfReady();
@@ -767,8 +782,12 @@ public class TranslationWorkspace extends Composite {
      *
      * @param chunks
      */
-    public void showSources(List<TimedChunk> chunks) {
-        dealWithChunks(chunks, new LinkedList<TranslationResult>(), chunks);
+    public void showSources(List<TranslationResult> results) {
+        List<TimedChunk> chunks = new ArrayList<TimedChunk>();
+        for (TranslationResult result : results) {
+            chunks.add(result.getSourceChunk());
+        }
+        dealWithChunks(results, new LinkedList<TranslationResult>(), chunks);
     }
 
     /**
@@ -779,11 +798,11 @@ public class TranslationWorkspace extends Composite {
      *
      * @param chunk - source-language chunk to show
      */
-    public void showSource(TimedChunk chunk) {
+    public void showSource(final TranslationResult result) {
 
-        ChunkIndex chunkIndex = chunk.getChunkIndex();
+        final TimedChunk chunk = result.getSourceChunk();
+        final ChunkIndex chunkIndex = chunk.getChunkIndex();
         int order = chunk.getOrder();
-
         // create label
         Label timeslabel = new Label(chunk.getDisplayTimeInterval());
         timeslabel.setStyleName("chunk_timing");
@@ -793,7 +812,6 @@ public class TranslationWorkspace extends Composite {
 
         //int index = lastIndex;
         //lastIndex++;
-
         synchronizer.putSourceChunk(chunk, order, true);
 
         //+1 because of the header
@@ -825,6 +843,7 @@ public class TranslationWorkspace extends Composite {
             posteditBox.setSubgestBox(targetbox);
 
         }
+
         // chunk-marking (dialogs):
         // setting sourcemarks:
         HTML sourcemarks = new HTML();
@@ -841,6 +860,15 @@ public class TranslationWorkspace extends Composite {
             targetmarks.setTitle(sourcemarks.getTitle());
             table.setWidget(order + 1, TARGET_DIALOGMARK_COLNUMBER, targetmarks);
         }
+
+        com.github.gwtbootstrap.client.ui.Button undoButton = new com.github.gwtbootstrap.client.ui.Button("", IconType.UNDO, new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                Number revisionNumber = getLoadedRevision(result.getSourceChunk().getChunkIndex());
+                new LoadOldSubtitleItem(result, currentWorkspace, revisionNumber);
+            }
+        });
+        table.setWidget(order + 1, UNDO_BUTTON_COLNUMBER, undoButton);
 
         // grouping:
         // alignment because of the grouping:
@@ -877,6 +905,7 @@ public class TranslationWorkspace extends Composite {
         table.remove(fake);
         int id = synchronizer.getIndexOf(chunk);
         table.setWidget(id + 1, TARGETBOX_COLNUMBER, real);
+        fake.setReplaced(true);
 
         real.setFocus(true);
         if (isPosteditOn()) {
@@ -891,6 +920,7 @@ public class TranslationWorkspace extends Composite {
         table.remove(fake);
         int id = synchronizer.getIndexOf(chunk);
         table.setWidget(id + 1, POSTEDIT_COLNUMBER, real);
+        fake.setReplaced(true);
         real.setFocus(true);
     }
 
@@ -1135,15 +1165,45 @@ public class TranslationWorkspace extends Composite {
         return chunks;
     }
 
+    public void searchAndReplace(RegExp searchExp, String replace) {
+
+        Gui.log(LevelLogEnum.Error, "TranslationWorkspace.searchAndReplace", searchExp.toString());
+
+        Map<ChunkIndex, TranslationResult> translationResults = currentDocument.getTranslationResults();
+
+        Collection<TranslationResult> results = translationResults.values();
+
+        for (TranslationResult result : results) {
+            MatchResult matchResult = searchExp.exec(result.getUserTranslation());
+
+            if (matchResult == null) {
+                continue;
+            }
+
+            if (matchResult.getGroupCount() > 0) {
+                String replacedString = searchExp.replace(result.getUserTranslation(), replace);
+
+                Gui.log(LevelLogEnum.Error, "searchAndReplace", "found " + searchExp.toString() + " : " + result.getUserTranslation() + "\n" + replacedString);
+
+                PosteditPair replacePair = new PosteditPair(result.getUserTranslation(), replacedString);
+                replacePair.setSource(PosteditSource.SEARCHANDREPLACE);
+                
+                result.getPosteditSuggestions().add(replacePair);
+                int index = synchronizer.getIndexOf(result);
+                PosteditBox.FakePosteditBox posteditBox = posteditBoxes.get(index);
+                if (posteditBox.isReplaced()) {
+                    posteditBox.getFather().addStyleDependentName("replace");
+                } else {
+                    posteditBox.addStyleDependentName("replace");
+                }
+            }
+        }
+    }
     ////////////////////////////
     //                        //
     //   Native Methods       //
     //                        //
     ////////////////////////////
-    public native void alert(String message)/*-{
-        $wnd.alert(message);
-            
-    }-*/;
 
     private native int getScrollOffsetY(Element e) /*-{
         if (!e)
@@ -1244,7 +1304,7 @@ public class TranslationWorkspace extends Composite {
      */
     private class ShowOriginalCommand implements RepeatingCommand {
 
-        LinkedList<TimedChunk> chunksToDisplay = new LinkedList<TimedChunk>();
+        LinkedList<TranslationResult> resultsToDisplay = new LinkedList<TranslationResult>();
 
         /**
          * for a new document (all chunks are sent to be translated, none of the
@@ -1252,8 +1312,8 @@ public class TranslationWorkspace extends Composite {
          *
          * @param chunks all chunks
          */
-        public ShowOriginalCommand(List<TimedChunk> chunks) {
-            this.chunksToDisplay.addAll(chunks);
+        public ShowOriginalCommand(List<TranslationResult> results) {
+            this.resultsToDisplay.addAll(results);
         }
 
         @Override
@@ -1262,9 +1322,9 @@ public class TranslationWorkspace extends Composite {
                 return false;
             }
 
-            if (!chunksToDisplay.isEmpty()) {
-                TimedChunk timedchunk = chunksToDisplay.removeFirst();
-                showSource(timedchunk);
+            if (!resultsToDisplay.isEmpty()) {
+                TranslationResult tResult = resultsToDisplay.removeFirst();
+                showSource(tResult);
                 return true;
             }
             Gui.getGuiStructure().contentPanel.removeStyleName("parsing");

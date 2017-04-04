@@ -21,7 +21,6 @@ import cz.filmtit.share.*;
 import org.hibernate.Session;
 
 import java.util.*;
-import org.hibernate.annotations.Entity;
 import org.hibernate.envers.Audited;
 import org.jboss.logging.Logger;
 
@@ -35,9 +34,8 @@ import org.jboss.logging.Logger;
  * does not contain the suggestions itfself which are thrown away as soon they
  * are sent to the client.
  *
- * @author Jindřich Libovický
+ * @author Jindřich Libovický, Matúš Námešný
  */
-@Entity
 @Audited
 public class USTranslationResult extends DatabaseObject implements Comparable<USTranslationResult> {
 
@@ -53,7 +51,9 @@ public class USTranslationResult extends DatabaseObject implements Comparable<US
      * A reference to the document this translation result is part of.
      */
     private USDocument document;
-
+    /**
+     * Id of the user who locked this Translation Result null if its unlocked
+     */
     private volatile Long lockedByUser;
 
     /**
@@ -191,6 +191,7 @@ public class USTranslationResult extends DatabaseObject implements Comparable<US
      *
      * @return The user translation.
      */
+    @Audited(withModifiedFlag = true)
     public String getUserTranslation() {
         return translationResult.getUserTranslation();
     }
@@ -209,14 +210,17 @@ public class USTranslationResult extends DatabaseObject implements Comparable<US
     }
 
     /**
-     *
+     * Returns posteditedString
      */
+    @Audited(withModifiedFlag = true)
     public String getPosteditedString() {
         return translationResult.getPosteditedString();
     }
 
     /**
+     * Sets posteditedString
      *
+     * @param posteditedString posteditedString to set
      */
     public void setPosteditedString(String posteditedString) {
         translationResult.setPosteditedString(posteditedString);
@@ -243,11 +247,19 @@ public class USTranslationResult extends DatabaseObject implements Comparable<US
     private void setPartNumber(int partNumber) {
         translationResult.getSourceChunk().setPartNumber(partNumber);
     }
-    
-    public  int getOrderInDocument() {
+
+    /**
+     * @return returns the Translation Result's order in document
+     */
+    public int getOrderInDocument() {
         return translationResult.getSourceChunk().getOrder();
     }
-    
+
+    /**
+     * Sets the order in document
+     *
+     * @param order order to set
+     */
     public void setOrderInDocument(int order) {
         translationResult.getSourceChunk().setOrder(order);
     }
@@ -274,14 +286,20 @@ public class USTranslationResult extends DatabaseObject implements Comparable<US
     }
 
     /**
+     * Gets the index of postedit pair user selected int the client in the
+     * wrapped object.
      *
+     * @return The index of selected postedit pair.
      */
     public long getSelectedPosteditPairID() {
         return translationResult.getSelectedPosteditPairID();
     }
 
     /**
+     * Sets the index of postedit pair the user selected in the client in the
+     * wrapped object.
      *
+     * @param selectedPosteditPairID The index of the selected postedit pair.
      */
     public void setSelectedPosteditPairID(long selectedPosteditPairID) {
         translationResult.setSelectedPosteditPairID(selectedPosteditPairID);
@@ -433,7 +451,7 @@ public class USTranslationResult extends DatabaseObject implements Comparable<US
         List<PosteditPair> posteditSuggestions = new ArrayList<PosteditPair>();
         if (getUserTranslation() != null && !getUserTranslation().isEmpty()) {
             PosteditPair posteditPair = new PosteditPair(getUserTranslation(), getUserTranslation());
-            posteditPair.setSource(new PosteditSource("User translation"));
+            posteditPair.setSource(PosteditSource.USERTRANSLATION);
             posteditSuggestions.add(posteditPair);
         }
         translationResult.setPosteditSuggestions(posteditSuggestions);

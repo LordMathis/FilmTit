@@ -14,7 +14,6 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with FilmTit.  If not, see <http://www.gnu.org/licenses/>.*/
-
 package cz.filmtit.client.dialogs;
 
 import com.github.gwtbootstrap.client.ui.Button;
@@ -30,35 +29,36 @@ import com.google.gwt.user.client.ui.Widget;
 import cz.filmtit.client.Gui;
 import cz.filmtit.share.Document;
 
-
 /**
  * A dialog that enables the user to download the subtitles.
- * @author rur
+ *
+ * @author rur, Matúš Námešný
  *
  */
 public class DownloadDialog extends Dialog {
 
-	private static DownloadDialogUiBinder uiBinder = GWT
-			.create(DownloadDialogUiBinder.class);
+    private static DownloadDialogUiBinder uiBinder = GWT
+            .create(DownloadDialogUiBinder.class);
 
-	interface DownloadDialogUiBinder extends UiBinder<Widget, DownloadDialog> {
-	}
-	
+    interface DownloadDialogUiBinder extends UiBinder<Widget, DownloadDialog> {
+    }
+
     private Document document;
 
     /**
      * Shows the dialog.
+     *
      * @param document
      */
-	public DownloadDialog(Document document) {
-		super();
+    public DownloadDialog(Document document) {
+        super();
         initWidget(uiBinder.createAndBindUi(this));
         target.setValue(true);
         this.document = document;
-        
+
         srtButton.addClickHandler(new HandlerForFormat("srt"));
         txtButton.addClickHandler(new HandlerForFormat("txt"));
-	}
+    }
 
     private String detectWay() {
         if (source.getValue()) {
@@ -67,26 +67,32 @@ public class DownloadDialog extends Dialog {
         if (target.getValue()) {
             return "target";
         }
-        return "targetthrowback";
+        if (targetthrowback.getValue()) {
+            return "targetthrowback";
+        }
+        if (postedit.getValue()) {
+            return "postedit";
+        }
+        return "posteditthrowback";
     }
 
     private String generateUrl(String way, String format) {
-        return "/download/download?docId="+document.getId()+"&sessionId="+Gui.getSessionID()+"&type="+format+"&way="+way;
+        return "/download/download?docId=" + document.getId() + "&sessionId=" + Gui.getSessionID() + "&type=" + format + "&way=" + way;
     }
 
     private class HandlerForFormat implements ClickHandler {
 
-    	private String format;
+        private String format;
 
-		public HandlerForFormat(String format) {
-    		this.format = format;
-		}
-    	
-		public void onClick(ClickEvent event) {
+        public HandlerForFormat(String format) {
+            this.format = format;
+        }
+
+        public void onClick(ClickEvent event) {
             Window.Location.assign(generateUrl(detectWay(), format));
             close();
-		}
-    	
+        }
+
     }
 
     @UiField
@@ -99,7 +105,13 @@ public class DownloadDialog extends Dialog {
     RadioButton targetthrowback;
 
     @UiField
-	Button srtButton;
+    RadioButton postedit;
+
+    @UiField
+    RadioButton posteditthrowback;
+
+    @UiField
+    Button srtButton;
 
     @UiField
     Button txtButton;

@@ -66,7 +66,7 @@ public class USDocument extends DatabaseObject {
     /**
      * List of users who can access this docunment
      */
-    private volatile List<USDocumentUsers> documentUsers;
+    private volatile List<USDocumentUser> documentUsers;
     
     /**
      * Document id to be shared with other users
@@ -81,7 +81,7 @@ public class USDocument extends DatabaseObject {
      * @param document Shared document object.
      * @param user Owner of the document.
      */
-    public USDocument(Document document, USUser user, List<USDocumentUsers> documentUsers) {
+    public USDocument(Document document, USUser user, List<USDocumentUser> documentUsers) {
         this.document = document;
         document.setLastChange(new Date().getTime()); // current time, not be 1970 by default
         translationResults = Collections.synchronizedSortedMap(new TreeMap<ChunkIndex, USTranslationResult>());
@@ -97,7 +97,7 @@ public class USDocument extends DatabaseObject {
     }
 
     /**
-     * A private default constructor (for Hibernate).
+     * A public default constructor (for Hibernate).
      */
     public USDocument() {
         document = new Document();
@@ -469,14 +469,14 @@ public class USDocument extends DatabaseObject {
     /**
      * @return the documentUsers
      */
-    public List<USDocumentUsers> getDocumentUsers() {
+    public List<USDocumentUser> getDocumentUsers() {
         return documentUsers;
     }
 
     /**
      * @param documentUsers the documentUsers to set
      */
-    public void setDocumentUsers(List<USDocumentUsers> documentUsers) {
+    public void setDocumentUsers(List<USDocumentUser> documentUsers) {
         this.documentUsers = documentUsers;
     }
 

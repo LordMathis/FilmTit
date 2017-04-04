@@ -21,7 +21,7 @@ import cz.filmtit.core.Configuration;
 import cz.filmtit.core.ConfigurationSingleton;
 import cz.filmtit.share.Document;
 import cz.filmtit.share.TimedChunk;
-import cz.filmtit.userspace.USDocumentUsers;
+import cz.filmtit.userspace.USDocumentUser;
 import cz.filmtit.userspace.USDocument;
 import cz.filmtit.userspace.USHibernateUtil;
 import cz.filmtit.userspace.USTranslationResult;
@@ -59,7 +59,7 @@ public class TestUSDocument {
     public  void testUSDocumentConstructor() {
         USUser user = new USUser("name");
         Document doc = new Document("Movie title", "cs");
-        USDocument resultUSDocument = new USDocument(doc, user, new ArrayList<USDocumentUsers>());
+        USDocument resultUSDocument = new USDocument(doc, user, new ArrayList<USDocumentUser>());
 
         assertEquals(resultUSDocument.getLanguageCode(), doc.getLanguage().getCode());
     }
@@ -71,7 +71,7 @@ public class TestUSDocument {
         // create a sample document and save it to the database to know the ID
         USUser user = new USUser("name");
         Document doc = new Document("Movie title", "cs");
-        USDocument sampleUSDocument = new USDocument(doc, user, new ArrayList<USDocumentUsers>());
+        USDocument sampleUSDocument = new USDocument(doc, user, new ArrayList<USDocumentUser>());
 
         sampleUSDocument.saveToDatabase(dbSession);
         usHibernateUtil.closeAndCommitSession(dbSession);
@@ -121,7 +121,7 @@ public class TestUSDocument {
     public void testDatabaseImmutability() {
         USUser user = new USUser("name");
         Document doc = new Document("Movie title", "cs");
-        USDocument resultUSDocument = new USDocument(doc, user, new ArrayList<USDocumentUsers>());
+        USDocument resultUSDocument = new USDocument(doc, user, new ArrayList<USDocumentUser>());
 
         resultUSDocument.setDatabaseId(2001);
     }

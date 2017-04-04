@@ -7,9 +7,11 @@ Uncomment this for XHTML entities
              xmlns:b="urn:import:com.github.gwtbootstrap.client.ui">
 
     <ui:style>
-
+        
     </ui:style>
-    <g:HTMLPanel>
-        <b:Button ui:field="addSubtitleItemBtn" >Add Subtitle Item</b:Button>        
+    <g:HTMLPanel ui:field="buttonPanel">
+        <b:Button ui:field="addSubtitleItemBtn" >Add Subtitle Item</b:Button>
+        <b:Button ui:field="previousVersionsBtn" >Load Previous Versions</b:Button>
+        <b:Button ui:field="searchReplaceBtn" ></b:Button>      
     </g:HTMLPanel>
 </ui:UiBinder>
