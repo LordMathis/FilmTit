@@ -507,7 +507,7 @@ public class Session {
         logger.info("User " + user.getUserName() + " opened document " + usDocument.getDatabaseId() + " ("
                 + usDocument.getTitle() + ").");
 
-        DocumentUserSettings userSettings = new DocumentUserSettings(this.getUserDatabaseId(), moviePath, posteditOn, islocalFile);
+        DocumentUserSettings userSettings = new DocumentUserSettings(this.getUserDatabaseId(), moviePath, posteditOn, islocalFile, null);
 
         return new DocumentResponse(usDocument.getDocument(), suggestions, userSettings);
     }
@@ -577,7 +577,7 @@ public class Session {
 
         for (USDocumentUser documentUser : documentUsers) {
             if (documentUser.getUserId() == this.getUserDatabaseId()) {
-                docSettings = new DocumentUserSettings(this.getUserDatabaseId(), documentUser.getMoviePath(), documentUser.getPosteditOn(), documentUser.getLocalFile());
+                docSettings = new DocumentUserSettings(this.getUserDatabaseId(), documentUser.getMoviePath(), documentUser.getPosteditOn(), documentUser.getLocalFile(), documentUser.getMaxChar());
                 break;
             }
         }
@@ -734,7 +734,7 @@ public class Session {
         for (USDocumentUser documentUser : documentUsers) {
 
             if (documentUser.getUserId() == this.getUserDatabaseId()) {
-                userSettings = new DocumentUserSettings(documentUser.getId(), documentUser.getMoviePath(), documentUser.getPosteditOn(), documentUser.getLocalFile());
+                userSettings = new DocumentUserSettings(documentUser.getId(), documentUser.getMoviePath(), documentUser.getPosteditOn(), documentUser.getLocalFile(), documentUser.getMaxChar());
                 break;
             }
         }
@@ -1316,7 +1316,7 @@ public class Session {
      * otherwise
      * @throws InvalidDocumentIdException
      */
-    public synchronized Void saveSettings(Document doc, String moviePath, Boolean posteditOn, Boolean localFile) throws InvalidDocumentIdException {
+    public synchronized Void saveSettings(Document doc, String moviePath, Boolean posteditOn, Boolean localFile, Integer maxChar) throws InvalidDocumentIdException {
         updateLastOperationTime();
 
         org.hibernate.Session session = usHibernateUtil.getSessionWithActiveTransaction();
@@ -1326,14 +1326,13 @@ public class Session {
             throw new InvalidDocumentIdException(String.valueOf(doc.getId()));
         }
 
-        boolean found = false;
         List<USDocumentUser> documentUsers = usdoc.getDocumentUsers();
         for (USDocumentUser documentUser : documentUsers) {
             if (documentUser.getUserId() == this.getUserDatabaseId()) {
                 documentUser.setMoviePath(moviePath);
                 documentUser.setPosteditOn(posteditOn);
                 documentUser.setLocalFile(localFile);
-                found = true;
+                documentUser.setMaxChar(maxChar);
                 break;
             }
         }

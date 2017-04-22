@@ -68,10 +68,10 @@ public class SubgestHandler implements FocusHandler, KeyDownHandler, KeyUpHandle
 
             //Gui.log(LevelLogEnum.Error, this.getClass().getName(), subbox.getTextWithNewlines());
             if (workspace.getLockedSubgestBox() == null) {
-                
+
                 new LockTranslationResult(subbox, workspace);
                 new ReloadTranslationResults(workspace.getCurrentDocument().getId(), workspace);
-                
+
             } else if (workspace.getLockedSubgestBox() != subbox) {
                 SubgestBox toSaveAndUnlock = workspace.getLockedSubgestBox();
                 toSaveAndUnlock.getTranslationResult().setUserTranslation(toSaveAndUnlock.getTextWithNewlines());
@@ -184,6 +184,20 @@ public class SubgestHandler implements FocusHandler, KeyDownHandler, KeyUpHandle
     public void onKeyUp(KeyUpEvent event) {
         if (event.getSource() instanceof SubgestBox) { // should be
             final SubgestBox subbox = (SubgestBox) event.getSource();
+
+            String textWithNewlines = subbox.getTextWithNewlines();
+            String[] split = textWithNewlines.split("\n");
+
+            if (split.length > 2) {
+                subbox.getFormatter().setBackColor("salmon");
+            }
+
+            for (String string : split) {
+                if (string.length() > workspace.getMaxNumChar()) {
+                    subbox.getFormatter().setBackColor("salmon");
+                }
+            }
+
             // auto-resize, if necessary:
             Scheduler.get().scheduleDeferred(new ScheduledCommand() {
                 @Override
