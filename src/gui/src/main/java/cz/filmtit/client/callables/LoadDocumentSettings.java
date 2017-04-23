@@ -39,7 +39,6 @@ public class LoadDocumentSettings extends Callable<DocumentUserSettings> {
     public void onSuccessAfterLog(DocumentUserSettings result) {
 
         Integer maxChar = result.getMaxNumChar() != null ? result.getMaxNumChar() : 42;
-        Gui.log(LevelLogEnum.Error, this.toString(), maxChar.toString());
 
         if (settingsDialog != null) {
             settingsDialog.getSetPostedit().setValue(result.getPosteditOn());

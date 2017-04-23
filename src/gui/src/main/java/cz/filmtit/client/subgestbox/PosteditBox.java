@@ -154,10 +154,13 @@ public class PosteditBox extends RichTextArea implements Comparable<PosteditBox>
         RegExp newlineTags = RegExp.compile("<p>|<div>|<br>", "g");
         RegExp toClean = RegExp.compile("</p>|</div>|&nbsp;", "g");
         RegExp newlineSequence = RegExp.compile("\n*");
+        RegExp spanTags = RegExp.compile("</?span[^>]*>", "g");
         text = newlineTags.replace(text, "\n");
         text = toClean.replace(text, "");
         text = newlineSequence.replace(text, "\n");
+        text = spanTags.replace(text, "");
         text = text.trim();
+        
         return text;
     }
 
@@ -193,6 +196,10 @@ public class PosteditBox extends RichTextArea implements Comparable<PosteditBox>
         if (posteditedString != null && !posteditedString.equals("")) {
             getSubstitute().setText(posteditedString);
             this.setHTML(posteditBoxHTML(posteditedString));
+            updateLastText();
+        } else {
+            getSubstitute().setText(translationResult.getUserTranslation());
+            this.setHTML(translationResult.getUserTranslation());
             updateLastText();
         }
     }

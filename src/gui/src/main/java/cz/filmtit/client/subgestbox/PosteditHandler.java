@@ -62,8 +62,6 @@ public class PosteditHandler implements FocusHandler, KeyDownHandler, KeyUpHandl
         if (event.getSource() instanceof PosteditBox) {
             final PosteditBox posteditBox = (PosteditBox) event.getSource();
 
-            Gui.log(LevelLogEnum.Error, this.getClass().getName(), posteditBox.getTextWithNewlines());
-
             if (workspace.getLockedSubgestBox() == null) {
                 new LockTranslationResult(posteditBox.getSubgestBox(), workspace);
                 new ReloadTranslationResults(workspace.getCurrentDocument().getId(), workspace);
@@ -108,11 +106,13 @@ public class PosteditHandler implements FocusHandler, KeyDownHandler, KeyUpHandl
                 });
             }
 
-            int position = (int) (posteditBox.getSubgestBox().getChunk().getStartTimeLong() / 1000);
+            int start = (int) (posteditBox.getSubgestBox().getChunk().getStartTimeLong() / 1000);
+            int end = (int) (posteditBox.getSubgestBox().getChunk().getEndTimeLong() / 1000);
+
             if (workspace.getYtVideoPlayer() != null) {
-                workspace.getYtVideoPlayer().playPart(position);
+                workspace.getYtVideoPlayer().playPart(start, end);
             } else if (workspace.getFileVideoPlayer() != null) {
-                workspace.getFileVideoPlayer().playPart(position);
+                workspace.getFileVideoPlayer().playPart(start, end);
             }
 
             posteditBox.updateVerticalSize();

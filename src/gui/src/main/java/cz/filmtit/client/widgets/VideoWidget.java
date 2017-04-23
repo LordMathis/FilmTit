@@ -10,5 +10,5 @@ package cz.filmtit.client.widgets;
  * @author matus
  */
 public interface VideoWidget {
-    public void playPart(int position);    
+    public void playPart(int start, int end);    
 }
