@@ -68,10 +68,10 @@ public class SubgestHandler implements FocusHandler, KeyDownHandler, KeyUpHandle
 
             //Gui.log(LevelLogEnum.Error, this.getClass().getName(), subbox.getTextWithNewlines());
             if (workspace.getLockedSubgestBox() == null) {
-                
+
                 new LockTranslationResult(subbox, workspace);
                 new ReloadTranslationResults(workspace.getCurrentDocument().getId(), workspace);
-                
+
             } else if (workspace.getLockedSubgestBox() != subbox) {
                 SubgestBox toSaveAndUnlock = workspace.getLockedSubgestBox();
                 toSaveAndUnlock.getTranslationResult().setUserTranslation(toSaveAndUnlock.getTextWithNewlines());
@@ -122,11 +122,12 @@ public class SubgestHandler implements FocusHandler, KeyDownHandler, KeyUpHandle
                 });
             }
 
-            int position = (int) (subbox.getChunk().getStartTimeLong() / 1000);
+            int start = (int) (subbox.getChunk().getStartTimeLong() / 1000);
+            int end = (int) (subbox.getChunk().getEndTimeLong() / 1000);
             if (workspace.getYtVideoPlayer() != null) {
-                workspace.getYtVideoPlayer().playPart(position);
+                workspace.getYtVideoPlayer().playPart(start, end);
             } else if (workspace.getFileVideoPlayer() != null) {
-                workspace.getFileVideoPlayer().playPart(position);
+                workspace.getFileVideoPlayer().playPart(start, end);
             }
 
             subbox.updateVerticalSize();
@@ -184,6 +185,20 @@ public class SubgestHandler implements FocusHandler, KeyDownHandler, KeyUpHandle
     public void onKeyUp(KeyUpEvent event) {
         if (event.getSource() instanceof SubgestBox) { // should be
             final SubgestBox subbox = (SubgestBox) event.getSource();
+
+            String textWithNewlines = subbox.getTextWithNewlines();
+            String[] split = textWithNewlines.split("\n");
+
+            if (split.length > 2) {
+                subbox.getFormatter().setBackColor("salmon");
+            }
+
+            for (String string : split) {
+                if (string.length() > workspace.getMaxNumChar()) {
+                    subbox.getFormatter().setBackColor("salmon");
+                }
+            }
+
             // auto-resize, if necessary:
             Scheduler.get().scheduleDeferred(new ScheduledCommand() {
                 @Override

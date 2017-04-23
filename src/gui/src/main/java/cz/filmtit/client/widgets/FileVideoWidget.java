@@ -107,10 +107,20 @@ public class FileVideoWidget extends Composite implements VideoWidget {
      * @param position positions at which to play video
      */
     @Override
-    public void playPart(int position) {
+    public void playPart(int start, final int end) {
         if (player != null) {
-            player.setCurrentTime(position);
+            player.setCurrentTime(start);
             player.play();
+            
+            new Timer() {
+                @Override
+                public void run() {
+                    if ((currentTime / 1000) > end) {
+                        player.pause();
+                        this.cancel();
+                    }
+                }
+            }.scheduleRepeating(1000);
         }
     }
 

@@ -11,6 +11,7 @@ import cz.filmtit.client.dialogs.SettingsDialog;
 import cz.filmtit.client.pages.TranslationWorkspace;
 import cz.filmtit.share.Document;
 import cz.filmtit.share.DocumentUserSettings;
+import cz.filmtit.share.LevelLogEnum;
 
 /**
  *
@@ -37,20 +38,25 @@ public class LoadDocumentSettings extends Callable<DocumentUserSettings> {
     @Override
     public void onSuccessAfterLog(DocumentUserSettings result) {
 
+        Integer maxChar = result.getMaxNumChar() != null ? result.getMaxNumChar() : 42;
+
         if (settingsDialog != null) {
             settingsDialog.getSetPostedit().setValue(result.getPosteditOn());
-            
+
             if (!result.isLocalFile() && !result.getMoviePath().isEmpty()) {
-                
+
                 settingsDialog.getYtURL().setValue("https://www.youtube.com/watch?v=" + result.getMoviePath());
             }
-            
-            settingsDialog.setEnabled(true);          
-                        
+            settingsDialog.getMaxChar().setValue(String.valueOf(maxChar));
+
+            settingsDialog.setEnabled(true);
+
         } else if (workspace != null) {
             workspace.setPosteditOn(result.getPosteditOn());
             workspace.setMoviePath(result.getMoviePath());
             workspace.setIsLocalFile(result.isLocalFile());
+            workspace.setMaxNumChar(maxChar);
+
         }
     }
 

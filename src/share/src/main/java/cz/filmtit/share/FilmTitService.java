@@ -161,11 +161,12 @@ public interface FilmTitService extends RemoteService {
      * @param posteditOn whether postedit API (third column) is turned on or not
      * @param localFile true if the video file is on the users computer, false
      * otherwise
+     * @param maxChar maximum number of characters per line
      * @throws InvalidDocumentIdException
      * @throws InvalidUserIdException
      * @throws InvalidSessionIdException
      */
-    Void saveSettings(String sessionId, Document doc, String moviePath, Boolean posteditOn, Boolean localFile) throws InvalidSessionIdException, InvalidDocumentIdException, InvalidUserIdException;
+    Void saveSettings(String sessionId, Document doc, String moviePath, Boolean posteditOn, Boolean localFile, Integer maxChar) throws InvalidSessionIdException, InvalidDocumentIdException, InvalidUserIdException;
 
     /**
      * loads user's settings for a given document

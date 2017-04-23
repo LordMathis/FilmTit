@@ -29,6 +29,13 @@ Uncomment this for XHTML entities
                             <b:CheckBox ui:field="posteditOn"></b:CheckBox>
                         </b:Controls>
                     </b:ControlGroup>
+                    
+                    <b:ControlGroup>
+                        <b:ControlLabel>Maximum number of characters per subtitle</b:ControlLabel>
+                        <b:Controls>
+                            <b:TextBox ui:field="maxChar"></b:TextBox>
+                        </b:Controls>
+                    </b:ControlGroup>
 
                 </b:Fieldset>
 

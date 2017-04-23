@@ -137,12 +137,6 @@
         </repository>
         
         <repository>
-            <id>JBoss Repository</id>
-            <url>https://repository.jboss.org/nexus/content/repositories/releases</url>
-            <name>JBoss Repository</name>
-        </repository>
-        
-        <repository>
             <id>sonatype</id>
             <url>http://oss.sonatype.org/content/repositories/snapshots</url>
             <snapshots>

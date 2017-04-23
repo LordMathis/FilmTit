@@ -18,16 +18,18 @@ public class DocumentUserSettings implements Serializable, IsSerializable {
     private volatile String moviePath;
     private volatile Boolean posteditOn;
     private volatile Boolean isLocalFile;
+    private volatile Integer maxNumChar;
 
     public DocumentUserSettings() {
         // do nothing
     }
     
-    public DocumentUserSettings(Long userId, String moviePath, Boolean posteditOn, Boolean isLocalFile) {
+    public DocumentUserSettings(Long userId, String moviePath, Boolean posteditOn, Boolean isLocalFile, Integer maxNumChar) {
         this.userId = userId;
         this.moviePath = moviePath;
         this.posteditOn = posteditOn;
         this.isLocalFile = isLocalFile;
+        this.maxNumChar = maxNumChar;
     }
     
     /**
@@ -77,6 +79,13 @@ public class DocumentUserSettings implements Serializable, IsSerializable {
      */
     public void setLocalFile(Boolean localFile) {
         this.isLocalFile = localFile;
+    }
+
+    /**
+     * @return the maxNumChar
+     */
+    public Integer getMaxNumChar() {
+        return maxNumChar;
     }
 
 }

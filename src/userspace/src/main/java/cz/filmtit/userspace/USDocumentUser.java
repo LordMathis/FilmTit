@@ -32,6 +32,9 @@ public class USDocumentUser implements Serializable {
     // true if video file is on User's computer, false otherwise
     private volatile Boolean localFile;
     
+    // Maximum number of characters per subtitle
+    private volatile Integer maxChar;
+    
     /*
         Constructors
     */
@@ -128,6 +131,20 @@ public class USDocumentUser implements Serializable {
      */
     public void setLocalFile(Boolean localFile) {
         this.localFile = localFile;
+    }
+
+    /**
+     * @return the maxChar
+     */
+    public Integer getMaxChar() {
+        return maxChar;
+    }
+
+    /**
+     * @param maxChar the maxChar to set
+     */
+    public void setMaxChar(Integer maxChar) {
+        this.maxChar = maxChar;
     }
 
 }

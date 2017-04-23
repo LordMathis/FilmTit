@@ -105,12 +105,12 @@ public class SubgestBox extends RichTextArea implements Comparable<SubgestBox> {
      * it is focused (and worked with)
      */
     public class FakeSubgestBox extends TextArea implements Comparable<FakeSubgestBox> {
-        
+
         private boolean replaced;
 
         public FakeSubgestBox(int tabIndex) {
             SubgestBox.this.substitute = SubgestBox.FakeSubgestBox.this;
-            
+
             replaced = false;
 
             this.addFocusHandler(new FocusHandler() {
@@ -473,10 +473,13 @@ public class SubgestBox extends RichTextArea implements Comparable<SubgestBox> {
         RegExp newlineTags = RegExp.compile("<p>|<div>|<br>", "g");
         RegExp toClean = RegExp.compile("</p>|</div>|&nbsp;", "g");
         RegExp newlineSequence = RegExp.compile("\n*");
+        RegExp spanTags = RegExp.compile("</?span[^>]*>", "g");
         text = newlineTags.replace(text, "\n");
         text = toClean.replace(text, "");
         text = newlineSequence.replace(text, "\n");
+        text = spanTags.replace(text, "");
         text = text.trim();
+
         return text;
     }
 

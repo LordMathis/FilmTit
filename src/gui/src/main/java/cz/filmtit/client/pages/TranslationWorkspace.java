@@ -125,6 +125,11 @@ public class TranslationWorkspace extends Composite {
     private Widget activePosteditWidget = null;
 
     private Map<ChunkIndex, Number> loadedRevisions;
+    
+    /**
+     * Maximum number of characters per line
+     */
+    private Integer maxNumChar;
 
     /**
      * column numbers in the subtitle-table
@@ -427,6 +432,7 @@ public class TranslationWorkspace extends Composite {
         posteditOn = userSettings.getPosteditOn();
         moviePath = userSettings.getMoviePath();
         isLocalFile = userSettings.isLocalFile();
+        maxNumChar = userSettings.getMaxNumChar();
 
         synchronizer = new SubtitleSynchronizer();
 
@@ -1466,5 +1472,19 @@ public class TranslationWorkspace extends Composite {
      */
     public void setReloadTranslationResultsCall(ReloadTranslationResults reloadTranslationResultsCall) {
         this.reloadTranslationResultsCall = reloadTranslationResultsCall;
+    }
+
+    /**
+     * @return the maxNumChar
+     */
+    public Integer getMaxNumChar() {
+        return maxNumChar;
+    }
+
+    /**
+     * @param maxNumChar the maxNumChar to set
+     */
+    public void setMaxNumChar(Integer maxNumChar) {
+        this.maxNumChar = maxNumChar;
     }
 }

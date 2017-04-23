@@ -9,5 +9,6 @@
     <property column="moviePath" name="moviePath" type="string"/>
     <property column="posteditOn" name="posteditOn" type="boolean"/>
     <property column="localFile" name="localFile" type="boolean"/>
+    <property column="maxChar" name="maxChar" type="int"/>
   </class>
 </hibernate-mapping>

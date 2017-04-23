@@ -1525,8 +1525,8 @@ public class FilmTitBackendServer extends RemoteServiceServlet implements
      * @throws InvalidSessionIdException
      */
     @Override
-    public synchronized Void saveSettings(String sessionId, Document doc, String moviePath, Boolean posteditOn, Boolean localFile) throws InvalidDocumentIdException, InvalidUserIdException, InvalidSessionIdException {
-        return getSessionIfCan(sessionId).saveSettings(doc, moviePath, posteditOn, localFile);
+    public synchronized Void saveSettings(String sessionId, Document doc, String moviePath, Boolean posteditOn, Boolean localFile, Integer maxChar) throws InvalidDocumentIdException, InvalidUserIdException, InvalidSessionIdException {
+        return getSessionIfCan(sessionId).saveSettings(doc, moviePath, posteditOn, localFile, maxChar);
     }
 
     /**
