@@ -103,6 +103,6 @@
 
     <mosesURL>http://lindat.mff.cuni.cz/services/moses/request.php</mosesURL>
 
-    <TMDbAPIkey>4357dbf50c1b7cfe117e9b3ff838cdeb</TPDbAPIkey>
+    <TMDbAPIkey></TPDbAPIkey>
 
 </configuration>
