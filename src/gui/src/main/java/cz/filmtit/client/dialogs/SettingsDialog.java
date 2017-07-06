@@ -115,12 +115,12 @@ public class SettingsDialog extends Dialog {
 
     @UiField
     TextBox shareIdBox;
-    
-    @UiField
-    TextBox maxChar;
 
     @UiField
     CheckBox posteditOn;
+    
+    @UiField
+    CheckBox autoplay;
 
     @UiField
     TextBox ytURL;
@@ -168,18 +168,10 @@ public class SettingsDialog extends Dialog {
             isLocalFile = true;
         }
         
-        Integer parsed;
-        
-        try {
-            parsed = Integer.parseInt(maxChar.getValue());
-        } catch (NumberFormatException ex) {
-            Window.alert(maxChar.getValue() + " is not a valid number");
-            return;
-        }
-
         Boolean posteditOn = getSetPostedit().getValue();
+        Boolean autoplayOn = getAutoplay().getValue();
 
-        new SaveSettings(user, doc, moviePath, posteditOn, isLocalFile, parsed, this);
+        new SaveSettings(user, doc, moviePath, posteditOn, isLocalFile, autoplayOn, this);
 
         this.close();
     }
@@ -193,17 +185,17 @@ public class SettingsDialog extends Dialog {
     }
 
     /**
-     * @return the maxChar
+     * @return the autoplay
      */
-    public TextBox getMaxChar() {
-        return maxChar;
+    public CheckBox getAutoplay() {
+        return autoplay;
     }
 
     /**
-     * @param maxChar the maxChar to set
+     * @param autoplay the autoplay to set
      */
-    public void setMaxChar(TextBox maxChar) {
-        this.maxChar = maxChar;
+    public void setAutoplay(CheckBox autoplay) {
+        this.autoplay = autoplay;
     }
 
 }

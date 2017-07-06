@@ -28,7 +28,7 @@
         <mapping resource="cz/filmtit/userspace/session.hbm.xml"/>
         <mapping resource="cz/filmtit/userspace/MediaSource.hbm.xml" />
         <mapping resource="cz/filmtit/userspace/log.hbm.xml" />
-        <mapping resource="cz/filmtit/userspace/USDocumentUsers.hbm.xml" />
+        <mapping resource="cz/filmtit/userspace/USDocumentUser.hbm.xml" />
         
         <listener class="org.hibernate.envers.event.AuditEventListener" type="post-insert"/>
         <listener class="org.hibernate.envers.event.AuditEventListener" type="post-update"/>

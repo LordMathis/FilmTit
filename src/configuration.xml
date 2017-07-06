@@ -101,7 +101,8 @@
 
     </core>
 
-    <mosesURL>u-pl17.ms.mff.cuni.cz:8080</mosesURL>
-    <freebase_key></freebase_key>
+    <mosesURL>http://lindat.mff.cuni.cz/services/moses/request.php</mosesURL>
+
+    <TMDbAPIkey>4357dbf50c1b7cfe117e9b3ff838cdeb</TPDbAPIkey>
 
 </configuration>

@@ -507,7 +507,7 @@ public class Session {
         logger.info("User " + user.getUserName() + " opened document " + usDocument.getDatabaseId() + " ("
                 + usDocument.getTitle() + ").");
 
-        DocumentUserSettings userSettings = new DocumentUserSettings(this.getUserDatabaseId(), moviePath, posteditOn, islocalFile, null);
+        DocumentUserSettings userSettings = new DocumentUserSettings(this.getUserDatabaseId(), moviePath, posteditOn, islocalFile, false);
 
         return new DocumentResponse(usDocument.getDocument(), suggestions, userSettings);
     }
@@ -577,7 +577,8 @@ public class Session {
 
         for (USDocumentUser documentUser : documentUsers) {
             if (documentUser.getUserId() == this.getUserDatabaseId()) {
-                docSettings = new DocumentUserSettings(this.getUserDatabaseId(), documentUser.getMoviePath(), documentUser.getPosteditOn(), documentUser.getLocalFile(), documentUser.getMaxChar());
+                docSettings = new DocumentUserSettings(this.getUserDatabaseId(), documentUser.getMoviePath(), documentUser.getPosteditOn(), 
+                        documentUser.getLocalFile(), documentUser.getAutoplay());
                 break;
             }
         }
@@ -734,7 +735,8 @@ public class Session {
         for (USDocumentUser documentUser : documentUsers) {
 
             if (documentUser.getUserId() == this.getUserDatabaseId()) {
-                userSettings = new DocumentUserSettings(documentUser.getId(), documentUser.getMoviePath(), documentUser.getPosteditOn(), documentUser.getLocalFile(), documentUser.getMaxChar());
+                userSettings = new DocumentUserSettings(documentUser.getId(), documentUser.getMoviePath(), documentUser.getPosteditOn(), 
+                        documentUser.getLocalFile(), documentUser.getAutoplay());
                 break;
             }
         }
@@ -1316,7 +1318,7 @@ public class Session {
      * otherwise
      * @throws InvalidDocumentIdException
      */
-    public synchronized Void saveSettings(Document doc, String moviePath, Boolean posteditOn, Boolean localFile, Integer maxChar) throws InvalidDocumentIdException {
+    public synchronized Void saveSettings(Document doc, String moviePath, Boolean posteditOn, Boolean localFile, Boolean autoplay) throws InvalidDocumentIdException {
         updateLastOperationTime();
 
         org.hibernate.Session session = usHibernateUtil.getSessionWithActiveTransaction();
@@ -1332,7 +1334,7 @@ public class Session {
                 documentUser.setMoviePath(moviePath);
                 documentUser.setPosteditOn(posteditOn);
                 documentUser.setLocalFile(localFile);
-                documentUser.setMaxChar(maxChar);
+                documentUser.setAutoplay(autoplay);
                 break;
             }
         }

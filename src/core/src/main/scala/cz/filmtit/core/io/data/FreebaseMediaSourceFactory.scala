@@ -34,7 +34,7 @@ import scala.Some
 /**
  * A [[cz.filmtit.core.model.MediaSourceFactory]] based on data from Freebase.com.
  *
- * @deprecated
+ * @deprecated Freebase API was stopped
  *
  * @author Joachim Daiber
  */

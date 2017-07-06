@@ -37,7 +37,7 @@
                 </b:ControlGroup>
                 
                 <b:ControlGroup>
-                    <b:ControlLabel>Turn Postedit API on:</b:ControlLabel>
+                    <b:ControlLabel>Turn post-edit API on:</b:ControlLabel>
                     <b:Controls>
                         <b:CheckBox ui:field="posteditCheckBox"></b:CheckBox>
                     </b:Controls>

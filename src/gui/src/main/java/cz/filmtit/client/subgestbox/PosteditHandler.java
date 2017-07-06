@@ -169,25 +169,14 @@ public class PosteditHandler implements FocusHandler, KeyDownHandler, KeyUpHandl
         if (event.getSource() instanceof PosteditBox) {
             final PosteditBox posteditBox = (PosteditBox) event.getSource();
 
-            String textWithNewlines = posteditBox.getTextWithNewlines();
-            String[] split = textWithNewlines.split("\n");
-
-            if (split.length > 2) {
-                posteditBox.getFormatter().setBackColor("salmon");
-            }
-
-            for (String string : split) {
-                if (string.length() > workspace.getMaxNumChar()) {
-                    posteditBox.getFormatter().setBackColor("salmon");
-                }
-            }
-
             Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
                 @Override
                 public void execute() {
                     posteditBox.updateVerticalSize();
                 }
             });
+            
+            workspace.getTimer().schedule(60000);
         }
     }
 

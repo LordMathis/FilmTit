@@ -186,19 +186,6 @@ public class SubgestHandler implements FocusHandler, KeyDownHandler, KeyUpHandle
         if (event.getSource() instanceof SubgestBox) { // should be
             final SubgestBox subbox = (SubgestBox) event.getSource();
 
-            String textWithNewlines = subbox.getTextWithNewlines();
-            String[] split = textWithNewlines.split("\n");
-
-            if (split.length > 2) {
-                subbox.getFormatter().setBackColor("salmon");
-            }
-
-            for (String string : split) {
-                if (string.length() > workspace.getMaxNumChar()) {
-                    subbox.getFormatter().setBackColor("salmon");
-                }
-            }
-
             // auto-resize, if necessary:
             Scheduler.get().scheduleDeferred(new ScheduledCommand() {
                 @Override

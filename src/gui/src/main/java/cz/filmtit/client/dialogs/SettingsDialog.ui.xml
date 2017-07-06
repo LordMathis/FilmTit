@@ -24,19 +24,12 @@ Uncomment this for XHTML entities
                     </b:ControlGroup>
 
                     <b:ControlGroup>
-                        <b:ControlLabel>Turn on Postedit API:</b:ControlLabel>
+                        <b:ControlLabel>Turn on post-edit API:</b:ControlLabel>
                         <b:Controls>
                             <b:CheckBox ui:field="posteditOn"></b:CheckBox>
                         </b:Controls>
                     </b:ControlGroup>
                     
-                    <b:ControlGroup>
-                        <b:ControlLabel>Maximum number of characters per subtitle</b:ControlLabel>
-                        <b:Controls>
-                            <b:TextBox ui:field="maxChar"></b:TextBox>
-                        </b:Controls>
-                    </b:ControlGroup>
-
                 </b:Fieldset>
 
                 <b:Fieldset>
@@ -55,6 +48,13 @@ Uncomment this for XHTML entities
                         <b:Controls>
                             <f:FileUploadExt ui:field="fileUpload" />
                             <b:Label type="WARNING">Local file will not be saved across sessions</b:Label>
+                        </b:Controls>
+                    </b:ControlGroup>
+                    
+                    <b:ControlGroup>
+                        <b:ControlLabel>Autoplay</b:ControlLabel>
+                        <b:Controls>
+                            <b:CheckBox ui:field="autoplay"></b:CheckBox>
                         </b:Controls>
                     </b:ControlGroup>
                 

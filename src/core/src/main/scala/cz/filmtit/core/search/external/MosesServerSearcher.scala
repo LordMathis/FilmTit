@@ -36,7 +36,7 @@ import cz.filmtit.share.{ Language, TranslationPair, TranslationError, Translati
  * The server translate only in one way and returns just
  * one translation result.
  *
- * @author Karel Bílek
+ * @author Karel Bílek, Matúš Námešný
  */
 
 /**
@@ -69,7 +69,7 @@ class MosesServerSearcher(
     val apiResponse = try {
 
       val params = "action=translate&model=0&sourceLang=" + language.getCode + "&targetLang=" + { if (language == l1) l2.getCode else l1.getCode } + "&nBestSize=5" + "&text=" + URLEncoder.encode(chunk.getSurfaceForm, "utf-8")
-      
+
       new JSONObject(
         Source.fromURL(
         url + "?" + params
@@ -109,13 +109,7 @@ class MosesServerSearcher(
       //Check the source of the translation:
       val source = TranslationSource.EXTERNAL_MT
 
-      //Use the quality metric as the prior score of the TP:
-      //TODO: second score: "match"?
-
-      val quality = translation.getString("score") match {
-        case "" => 0.0
-        case s: String => s.toDouble * -1
-      }
+      val quality = 1.0
 
       candidates += new TranslationPair(
         chunkL1,

@@ -18,25 +18,27 @@ along with FilmTit.  If not, see <http://www.gnu.org/licenses/>.*/
 package cz.filmtit.core.tests
 
 import java.util
+import java.io.File
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
-
-
+import cz.filmtit.core.Configuration
 import org.scalatest.Spec
 import cz.filmtit.share.MediaSource
-import cz.filmtit.core.io.data.OpenMovieDBMediaSourceFactory
+import cz.filmtit.core.io.data.TMDbMediaSourceFactory
 
 
 /**
  * Test specification for the data model classes.
  *
- * @author Joachim Daiber
+ * @author Joachim Daiber, Matúš Námešný
  */
 
 @RunWith(classOf[JUnitRunner])
 class MediaSourceFactorySpec extends Spec {
 
-  val msFactory = new OpenMovieDBMediaSourceFactory()
+  val configuration = new Configuration(new File("configuration.xml"))
+
+  val msFactory = new TMDbMediaSourceFactory(configuration.apiKey)
 
   describe("A MediaSourceFactory") {
 

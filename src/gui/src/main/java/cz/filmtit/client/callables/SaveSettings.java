@@ -23,17 +23,18 @@ public class SaveSettings extends Callable<Void>{
     private String moviePath;
     private Boolean posteditOn;
     private Boolean localFile;
+    private Boolean autoplay;
     private SettingsDialog settingsDialog;
     private Integer maxChar;
     
-    public SaveSettings(User user, Document doc, String moviePath, Boolean postediOn, Boolean localFile, Integer maxChar, SettingsDialog settingsDielog) {
+    public SaveSettings(User user, Document doc, String moviePath, Boolean postediOn, Boolean localFile, Boolean autoplay, SettingsDialog settingsDialog) {
         this.user = user;
         this.doc = doc;
         this.moviePath = moviePath;
         this.posteditOn = postediOn;
         this.localFile = localFile;
-        this.settingsDialog = settingsDielog;
-        this.maxChar = maxChar;
+        this.settingsDialog = settingsDialog;
+        this.autoplay = autoplay;
         enqueue();
     }
     
@@ -49,7 +50,7 @@ public class SaveSettings extends Callable<Void>{
 
     @Override
     protected void call() {
-        filmTitService.saveSettings(Gui.getSessionID(), doc, moviePath, posteditOn, localFile, maxChar, this);
+        filmTitService.saveSettings(Gui.getSessionID(), doc, moviePath, posteditOn, localFile, autoplay, this);
     }
     
 }
