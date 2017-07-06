@@ -38,4 +38,18 @@ gui/src/main/webapp/WEB-INF/lib/
 
 live.log.1
 
-myconfiguration.xml
+# config
+
+configuration.xml
+
+# netbeans stuff
+
+
+nbproject/private/
+build/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+nbactions.xml
+nb-configuration.xml

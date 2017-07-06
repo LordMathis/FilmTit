@@ -31,9 +31,9 @@ public class USDocumentUser implements Serializable {
     
     // true if video file is on User's computer, false otherwise
     private volatile Boolean localFile;
-    
-    // Maximum number of characters per subtitle
-    private volatile Integer maxChar;
+        
+    // Autoplay video when clicking on a SubgestBox or PosteditBox
+    private volatile Boolean autoplay;
     
     /*
         Constructors
@@ -134,17 +134,17 @@ public class USDocumentUser implements Serializable {
     }
 
     /**
-     * @return the maxChar
+     * @return the autoplay
      */
-    public Integer getMaxChar() {
-        return maxChar;
+    public Boolean getAutoplay() {
+        return autoplay;
     }
 
     /**
-     * @param maxChar the maxChar to set
+     * @param autoplay the autoplay to set
      */
-    public void setMaxChar(Integer maxChar) {
-        this.maxChar = maxChar;
+    public void setAutoplay(Boolean autoplay) {
+        this.autoplay = autoplay;
     }
 
 }

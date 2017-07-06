@@ -27,7 +27,7 @@ import java.nio.charset.MalformedInputException
 
 import cz.filmtit.share.{MediaSource, TranslationPair}
 import java.lang.System
-import cz.filmtit.core.io.data.OpenMovieDBMediaSourceFactory
+import cz.filmtit.core.io.data.TMDbMediaSourceFactory
 import cz.filmtit.core.{Configuration, Factory}
 
 /**
@@ -38,7 +38,7 @@ class Import(val configuration: Configuration) {
 
 
   var subtitles = new SubtitleMapping(configuration, checkForExistenceAndLanguages=false)
-  val mediasourceFactory: MediaSourceFactory = new OpenMovieDBMediaSourceFactory()
+  val mediasourceFactory: MediaSourceFactory = new TMDbMediaSourceFactory(configuration.apiKey)
 
   var hit = 0
   var miss = 0

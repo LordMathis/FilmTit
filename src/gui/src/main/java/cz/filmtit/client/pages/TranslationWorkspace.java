@@ -124,12 +124,15 @@ public class TranslationWorkspace extends Composite {
      */
     private Widget activePosteditWidget = null;
 
-    private Map<ChunkIndex, Number> loadedRevisions;
-    
-    /**
-     * Maximum number of characters per line
+    /*
+    * Loaded revisions of subtitle items
      */
-    private Integer maxNumChar;
+    private Map<ChunkIndex, Number> loadedRevisions;
+
+    /*
+    * automatic video playback
+     */
+    private Boolean autoplay;
 
     /**
      * column numbers in the subtitle-table
@@ -411,6 +414,35 @@ public class TranslationWorkspace extends Composite {
     }
 
     /**
+     * @return the reloadTranslationResultsCall
+     */
+    public ReloadTranslationResults getReloadTranslationResultsCall() {
+        return reloadTranslationResultsCall;
+    }
+
+    /**
+     * @param reloadTranslationResultsCall the reloadTranslationResultsCall to
+     * set
+     */
+    public void setReloadTranslationResultsCall(ReloadTranslationResults reloadTranslationResultsCall) {
+        this.reloadTranslationResultsCall = reloadTranslationResultsCall;
+    }
+
+    /**
+     * @return the autoplay
+     */
+    public Boolean getAutoplay() {
+        return autoplay;
+    }
+
+    /**
+     * @param autoplay the autoplay to set
+     */
+    public void setAutoplay(Boolean autoplay) {
+        this.autoplay = autoplay;
+    }
+
+    /**
      * UiBinder Interface
      */
     interface TranslationWorkspaceUiBinder extends UiBinder<Widget, TranslationWorkspace> {
@@ -432,7 +464,7 @@ public class TranslationWorkspace extends Composite {
         posteditOn = userSettings.getPosteditOn();
         moviePath = userSettings.getMoviePath();
         isLocalFile = userSettings.isLocalFile();
-        maxNumChar = userSettings.getMaxNumChar();
+        autoplay = userSettings.getAutoplay();
 
         synchronizer = new SubtitleSynchronizer();
 
@@ -466,10 +498,10 @@ public class TranslationWorkspace extends Composite {
         }
 
         if (!getIsLocalFile()) {
-            ytVideoPlayer = new YoutubeVideoWidget(moviePath, synchronizer);
+            ytVideoPlayer = new YoutubeVideoWidget(moviePath, synchronizer, autoplay);
             panelForVideo.setWidget(ytVideoPlayer);
         } else {
-            fileVideoPlayer = new FileVideoWidget(moviePath, synchronizer);
+            fileVideoPlayer = new FileVideoWidget(moviePath, synchronizer, autoplay);
             panelForVideo.setWidget(fileVideoPlayer);
         }
 
@@ -1193,7 +1225,7 @@ public class TranslationWorkspace extends Composite {
 
                 PosteditPair replacePair = new PosteditPair(result.getUserTranslation(), replacedString);
                 replacePair.setSource(PosteditSource.SEARCHANDREPLACE);
-                
+
                 result.getPosteditSuggestions().add(replacePair);
                 int index = synchronizer.getIndexOf(result);
                 PosteditBox.FakePosteditBox posteditBox = posteditBoxes.get(index);
@@ -1457,34 +1489,5 @@ public class TranslationWorkspace extends Composite {
             // the chunks are directly modified by the TimeEditDialog
             new TimeEditDialog(chunks, TranslationWorkspace.this);
         }
-    }
-
-    /**
-     * @return the reloadTranslationResultsCall
-     */
-    public ReloadTranslationResults getReloadTranslationResultsCall() {
-        return reloadTranslationResultsCall;
-    }
-
-    /**
-     * @param reloadTranslationResultsCall the reloadTranslationResultsCall to
-     * set
-     */
-    public void setReloadTranslationResultsCall(ReloadTranslationResults reloadTranslationResultsCall) {
-        this.reloadTranslationResultsCall = reloadTranslationResultsCall;
-    }
-
-    /**
-     * @return the maxNumChar
-     */
-    public Integer getMaxNumChar() {
-        return maxNumChar;
-    }
-
-    /**
-     * @param maxNumChar the maxNumChar to set
-     */
-    public void setMaxNumChar(Integer maxNumChar) {
-        this.maxNumChar = maxNumChar;
     }
 }

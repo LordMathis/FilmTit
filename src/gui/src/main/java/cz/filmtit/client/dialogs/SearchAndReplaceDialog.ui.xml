@@ -31,7 +31,7 @@ Uncomment this for XHTML entities
                         <b:Controls>
                             <b:TextBox ui:field="replaceBox"></b:TextBox>
                             <b:Paragraph>
-                                Program will search in second column (User Translated) and output the result as a suggestion for third column (Postedit). For this to work correctly you need to have turned postedit API on.
+                                Program will search in second column (User Translated) and output the result as a suggestion for third column (Post-edit). For this to work correctly you need to have turned post-edit API on.
                             </b:Paragraph>
                         </b:Controls>
                     </b:ControlGroup>

@@ -74,6 +74,8 @@ public class YoutubeVideoWidget extends Composite implements VideoWidget {
 
     ButtonPanel buttonPanel;
 
+    Boolean autoplay;
+
     /**
      * wrapper panel which holds the ui
      */
@@ -88,7 +90,7 @@ public class YoutubeVideoWidget extends Composite implements VideoWidget {
      *
      * @param src Youtube video id
      */
-    public YoutubeVideoWidget(final String src, SubtitleSynchronizer synchronizer) {
+    public YoutubeVideoWidget(final String src, SubtitleSynchronizer synchronizer, Boolean autoplay) {
 
         initWidget(uiBinder.createAndBindUi(this));
 
@@ -103,6 +105,8 @@ public class YoutubeVideoWidget extends Composite implements VideoWidget {
             rightLabel.setWidth("292px");
             rightLabel.setHeight("100%");
             rightLabel.addStyleName("subtitleDisplayedRight");
+
+            this.autoplay = autoplay;
 
             this.synchronizer = synchronizer;
 
@@ -158,21 +162,26 @@ public class YoutubeVideoWidget extends Composite implements VideoWidget {
      * @param position positions at which to play video
      */
     @Override
-    public void playPart(int start, final int end) {        
+    public void playPart(int start, final int end) {
         if (player != null) {
-                        
+
             player.getPlayer().seekTo(start - 1, true);
-            player.getPlayer().playVideo();
-            
-            new Timer() {
-                @Override
-                public void run() {
-                    if ((currentTime / 1000) > end + 1) {
-                        player.getPlayer().pauseVideo();
-                        this.cancel();
+
+            if (autoplay != null && autoplay) {
+
+                player.getPlayer().playVideo();
+
+                new Timer() {
+                    @Override
+                    public void run() {
+                        if ((currentTime / 1000) > end + 1) {
+                            player.getPlayer().pauseVideo();
+                            this.cancel();
+                        }
                     }
-                }
-            }.scheduleRepeating(1000);
+                }.scheduleRepeating(1000);
+
+            }
         }
     }
 

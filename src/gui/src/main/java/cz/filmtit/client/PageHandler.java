@@ -166,16 +166,10 @@ public class PageHandler {
     private ValueChangeHandler<String> historyChangeHandler = new ValueChangeHandler<String>() {
         @Override
         public void onValueChange(ValueChangeEvent<String> event) {
-            if (LocalStorageHandler.isOnline()) {
-                // find out which page the user wants
-                pageUrl = string2page(event.getValue());
-                // load the page
-                loadPage(true);
-            } else {
-                // do not switch pages in Offline Mode
-                // keep the URL unchanged
-                setPageUrl(pageLoaded);
-            }
+            // find out which page the user wants
+            pageUrl = string2page(event.getValue());
+            // load the page
+            loadPage(true);
         }
     };
 
@@ -395,10 +389,8 @@ public class PageHandler {
      * nothing.
      */
     public void refresh() {
-        if (LocalStorageHandler.isOnline()) {
-            setPageToLoad(pageLoaded);
-            loadPageToLoad(true);
-        }
+        setPageToLoad(pageLoaded);
+        loadPageToLoad(true);
     }
 
     /**

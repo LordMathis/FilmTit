@@ -39,7 +39,7 @@ public class SearchAndReplaceDialog extends Dialog {
         
         if (!workspace.isPosteditOn()) {
             submitButton.setEnabled(false);
-            alertPostedit.setText("WARNING: Postedit API is turned off. Search & Replace will only work when postedit API is turned on.");
+            alertPostedit.setText("WARNING: Post-edit API is turned off. Search & Replace will only work when post-edit API is turned on.");
             alertPostedit.setVisible(true);
         }
     }

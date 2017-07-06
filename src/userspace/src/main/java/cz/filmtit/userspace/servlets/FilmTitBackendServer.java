@@ -20,7 +20,7 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import cz.filmtit.core.Configuration;
 import cz.filmtit.core.ConfigurationSingleton;
 import cz.filmtit.core.Factory;
-import cz.filmtit.core.io.data.OpenMovieDBMediaSourceFactory;
+import cz.filmtit.core.io.data.TMDbMediaSourceFactory;
 import cz.filmtit.core.model.MediaSourceFactory;
 import cz.filmtit.core.model.TranslationMemory;
 import cz.filmtit.share.*;
@@ -144,7 +144,7 @@ public class FilmTitBackendServer extends RemoteServiceServlet implements
 
         loadTranslationMemory();
 
-        mediaSourceFactory = new OpenMovieDBMediaSourceFactory();
+        mediaSourceFactory = new TMDbMediaSourceFactory(configuration.apiKey());
 
         String serverAddress = configuration.serverAddress();
         new WatchSessionTimeOut().start(); // runs deleting timed out sessions
@@ -1525,8 +1525,8 @@ public class FilmTitBackendServer extends RemoteServiceServlet implements
      * @throws InvalidSessionIdException
      */
     @Override
-    public synchronized Void saveSettings(String sessionId, Document doc, String moviePath, Boolean posteditOn, Boolean localFile, Integer maxChar) throws InvalidDocumentIdException, InvalidUserIdException, InvalidSessionIdException {
-        return getSessionIfCan(sessionId).saveSettings(doc, moviePath, posteditOn, localFile, maxChar);
+    public synchronized Void saveSettings(String sessionId, Document doc, String moviePath, Boolean posteditOn, Boolean localFile, Boolean autoplay) throws InvalidDocumentIdException, InvalidUserIdException, InvalidSessionIdException {
+        return getSessionIfCan(sessionId).saveSettings(doc, moviePath, posteditOn, localFile, autoplay);
     }
 
     /**

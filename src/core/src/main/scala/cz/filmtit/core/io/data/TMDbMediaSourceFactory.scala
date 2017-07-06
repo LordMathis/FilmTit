@@ -10,6 +10,7 @@ import _root_.java.util
 import cz.filmtit.core.model.MediaSourceFactory
 import java.net.{ UnknownHostException, URLEncoder }
 import io.Source
+import java.io.File
 import org.apache.commons.logging.LogFactory
 import org.json.{ JSONArray, JSONObject }
 import cz.filmtit.share.MediaSource
@@ -17,15 +18,13 @@ import java.util.ArrayList
 import collection.mutable.ListBuffer
 
 /**
- * A [[cz.filmtit.core.model.MediaSourceFactory]] based on data from Open Movie Database.
- *
- * @deprecated OMDb API now requires API key only available for donating members
+ * A [[cz.filmtit.core.model.MediaSourceFactory]] based on data from Freebase.com.
  *
  * @author Matúš Námešný
  */
 
-class OpenMovieDBMediaSourceFactory extends MediaSourceFactory {
-  val url = "http://www.omdbapi.com/?";
+class TMDbMediaSourceFactory(val apiKey: String) extends MediaSourceFactory {
+  val url = "https://api.themoviedb.org/3/search/movie?api_key="+apiKey+"&language=en-US"
   val logger = LogFactory.getLog(this.getClass.getSimpleName)
 
   def getSuggestion(title: String, year: String): MediaSource = getSuggestions(title, year).get(0)
@@ -49,19 +48,19 @@ class OpenMovieDBMediaSourceFactory extends MediaSourceFactory {
 
       new JSONObject(
         Source.fromURL(
-        url + "s=" + params
+        url + "&query=" + params + "&page=1&include_adult=false"
       ).mkString
       )
 
     } catch {
       case e: UnknownHostException => {
-        logger.warn(url + "?\n" + e + "\nCould not reach Open Movie Database server.")
+        logger.warn(url + "?\n" + e + "\nCould not reach The Movie Database server.")
         return new ArrayList[MediaSource]()
       }
     }
 
     val suggestions: JSONArray = try {
-      apiResponse.getJSONArray("Search")
+      apiResponse.getJSONArray("results")
     } catch {
       case e: org.json.JSONException => new JSONArray()
     }
@@ -70,8 +69,8 @@ class OpenMovieDBMediaSourceFactory extends MediaSourceFactory {
 
     for (i <- 0 to suggestions.length() - 1) {
       val source = suggestions.getJSONObject(i)
-      val mediaSource = new MediaSource(source.getString("Title"), source.getString("Year"))
-      mediaSource.setThumbnailURL(source.getString("Poster"))
+      val mediaSource = new MediaSource(source.getString("title"), source.getString("release_date").slice(0,4))
+      mediaSource.setThumbnailURL("https://image.tmdb.org/t/p/w150" + source.getString("poster_path"))
 
       mediaSources.add(mediaSource)
 

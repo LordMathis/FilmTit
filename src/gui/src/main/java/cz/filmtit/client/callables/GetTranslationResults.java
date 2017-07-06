@@ -106,16 +106,10 @@ public class GetTranslationResults extends Callable<List<TranslationResult>> {
                 command.noMoreResults();
             }
         });
-        if (LocalStorageHandler.isOnline()) {
             displayWindow("Some of the translation suggestions cannot arrive "
                     + "because there is no connection to the server, "
                     + "probably because you are offline. "
                     + "You can try refreshing the page once back online.");
-        } else {
-            displayWindow("You went offline before some of the translation suggestions arrived. "
-                    + "You can try refreshing the page once back online to get them, "
-                    + "or you can just do without them.");
-        }
     }
 
     @Override

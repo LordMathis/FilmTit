@@ -33,7 +33,7 @@ import opennlp.tools.tokenize.{TokenizerModel, Tokenizer}
  */
 
 class Configuration(configurationFile: InputStream) {
-  
+
   def this(configurationFile: File) {
     this(new FileInputStream(configurationFile))
   }
@@ -43,8 +43,9 @@ class Configuration(configurationFile: InputStream) {
   }
 
   private val XMLFile = XML.load(configurationFile)
-  
+
   val mosesURL:java.net.URL = new java.net.URL((XMLFile \ "mosesURL").text)
+  val apiKey:String = (XMLFile \ "TMDbAPIkey").text
 
 
   //Languages:
@@ -126,4 +127,3 @@ class Configuration(configurationFile: InputStream) {
 
 
 }
-

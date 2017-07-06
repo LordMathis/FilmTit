@@ -14,7 +14,6 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with FilmTit.  If not, see <http://www.gnu.org/licenses/>.*/
-
 package cz.filmtit.userspace.tests;
 
 import cz.filmtit.core.Configuration;
@@ -32,6 +31,7 @@ import java.util.List;
  * @author JindĹ™ich LibovickĂ˝
  */
 public class MockHibernateUtil extends USHibernateUtil {
+
     protected static MockHibernateUtil instance = null;
 
     protected MockHibernateUtil() {
@@ -44,7 +44,6 @@ public class MockHibernateUtil extends USHibernateUtil {
         }
         return instance;
     }
-
 
     // use the user space path instead of the original core one
     @Override
@@ -65,8 +64,7 @@ public class MockHibernateUtil extends USHibernateUtil {
             serviceRegistry = new ServiceRegistryBuilder().applySettings(hibernateConfiguration.getProperties()).buildServiceRegistry();
             sessionFactory = hibernateConfiguration.buildSessionFactory(serviceRegistry);
             return sessionFactory;
-        }
-        catch (Throwable ex) {
+        } catch (Throwable ex) {
             // Make sure you log the exception, as it might be swallowed
             logger.error("Initial SessionFactory creation failed." + ex);
             throw new ExceptionInInitializerError(ex);
@@ -77,11 +75,11 @@ public class MockHibernateUtil extends USHibernateUtil {
         org.hibernate.Session dbSession = getInstance().getSessionWithActiveTransaction();
         dbSession.createQuery("delete from USTranslationResult").executeUpdate();
         dbSession.createQuery("delete from USDocument").executeUpdate();
+        dbSession.createQuery("delete from USDocumentUser").executeUpdate();
         dbSession.createQuery("delete from USUser").executeUpdate();
         dbSession.createQuery("delete from Session").executeUpdate();
         getInstance().closeAndCommitSession(dbSession);
     }
-
 
     public static void changeUtilsInAllClasses() {
         Configuration configuration = new Configuration("configuration.xml");

@@ -48,12 +48,14 @@ public class FileVideoWidget extends Composite implements VideoWidget {
 
     ButtonPanel buttonPanel;
 
+    Boolean autoplay;
+
     private static FileVideoWidgetUiBinder uiBinder = GWT.create(FileVideoWidgetUiBinder.class);
 
     interface FileVideoWidgetUiBinder extends UiBinder<Widget, FileVideoWidget> {
     }
 
-    public FileVideoWidget(String src, SubtitleSynchronizer synchronizer) {
+    public FileVideoWidget(String src, SubtitleSynchronizer synchronizer, Boolean autoplay) {
         initWidget(uiBinder.createAndBindUi(this));
 
         if (src != null && !src.isEmpty()) {
@@ -64,6 +66,8 @@ public class FileVideoWidget extends Composite implements VideoWidget {
             player.addSource(src);
             player.setControls(true);
             player.load();
+
+            this.autoplay = autoplay;
 
             this.synchronizer = synchronizer;
 
@@ -81,12 +85,12 @@ public class FileVideoWidget extends Composite implements VideoWidget {
 
             timer.scheduleRepeating(100);
 
-            leftLabel = new Label("Left Label");
+            leftLabel = new Label("");
             leftLabel.setWidth("292px");
             leftLabel.setHeight("100%");
             leftLabel.addStyleName("subtitleDisplayedLeft");
 
-            rightLabel = new Label("Right Label");
+            rightLabel = new Label("");
             rightLabel.setWidth("292px");
             rightLabel.setHeight("100%");
             rightLabel.addStyleName("subtitleDisplayedRight");
@@ -110,17 +114,20 @@ public class FileVideoWidget extends Composite implements VideoWidget {
     public void playPart(int start, final int end) {
         if (player != null) {
             player.setCurrentTime(start);
-            player.play();
-            
-            new Timer() {
-                @Override
-                public void run() {
-                    if ((currentTime / 1000) > end) {
-                        player.pause();
-                        this.cancel();
+
+            if (autoplay != null && autoplay) {
+                player.play();
+
+                new Timer() {
+                    @Override
+                    public void run() {
+                        if ((currentTime / 1000) > end) {
+                            player.pause();
+                            this.cancel();
+                        }
                     }
-                }
-            }.scheduleRepeating(1000);
+                }.scheduleRepeating(1000);
+            }
         }
     }
 

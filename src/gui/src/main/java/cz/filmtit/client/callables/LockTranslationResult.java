@@ -46,7 +46,6 @@ public class LockTranslationResult extends Callable<Void> {
         if (!workspace.getLockTranslationResultCalls().containsKey(tResult.getSourceChunk())) {
             workspace.getLockTranslationResultCalls().put(tResult.getSourceChunk(), this);
             enqueue();
-
         }
     }
 
