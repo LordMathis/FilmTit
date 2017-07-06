@@ -5,11 +5,11 @@
 
     <database>
         <connector>jdbc:postgresql://localhost/filmtit</connector>
-        <user>matus</user>
-        <password>4AMmnt0hpnd</password>
+        <user>postgres</user>
+        <password>postgres</password>
     </database>
 
-    <model_path>/home/matus/Projects/Java/NetBeans/Projects/FilmTit/src/models</model_path>
+    <model_path>models/</model_path>
 
     <tokenizers>
         <tokenizer language="en">en/token.bin</tokenizer>
@@ -102,6 +102,7 @@
     </core>
 
     <mosesURL>http://lindat.mff.cuni.cz/services/moses/request.php</mosesURL>
-    <TMDbAPIkey>4357dbf50c1b7cfe117e9b3ff838cdeb</TMDbAPIkey>
+
+    <TMDbAPIkey></TPDbAPIkey>
 
 </configuration>
