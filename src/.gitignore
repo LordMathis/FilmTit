@@ -1,50 +1,33 @@
 #eclipse stuff
 
 .classpath
-
 .project
-
 .settings
-
-
 .gwt
 
 
 #targets
-
-
 */target*
-
+target/*
 doc/result*
-
 gui/src/main/webapp/WEB-INF/lib/
 
 #IntelliJ stuff
-
 .idea
-
 */*.iml
 *.iml
 
-
-
-
 #vim stuff
-
 *.swp
 
 
 # runtime stuff
-
 live.log.1
 
 # config
-
 configuration.xml
 
 # netbeans stuff
-
-
 nbproject/private/
 build/
 nbbuild/
