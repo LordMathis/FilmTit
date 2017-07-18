@@ -56,7 +56,7 @@ import java.util.*;
  */
 public class TranslationWorkspace extends Composite {
 
-    // Variable definitions    
+    // Variable definitions
     /**
      * GWT UiBinder for TranslationWorkspace
      */
@@ -532,6 +532,7 @@ public class TranslationWorkspace extends Composite {
 
         if (isPosteditOn()) {
             UNDO_BUTTON_COLNUMBER = 7;
+            table.setWidget(0, POSTEDIT_COLNUMBER, new Label("Post-edit"));
         } else {
             UNDO_BUTTON_COLNUMBER = 5;
         }

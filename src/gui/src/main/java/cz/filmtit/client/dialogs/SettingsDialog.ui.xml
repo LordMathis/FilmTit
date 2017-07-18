@@ -12,7 +12,7 @@ Uncomment this for XHTML entities
         <my:CustomModal ui:field="dialogBox" title="Document Settings" backdrop="STATIC" keyboard="true">
 
             <b:Form type="HORIZONTAL" ui:field="settingsForm">
-            
+
                 <b:Fieldset>
                     <b:Legend>Document Settings</b:Legend>
 
@@ -24,12 +24,12 @@ Uncomment this for XHTML entities
                     </b:ControlGroup>
 
                     <b:ControlGroup>
-                        <b:ControlLabel>Turn on post-edit API:</b:ControlLabel>
+                        <b:ControlLabel>Turn on Post-edit Interface:</b:ControlLabel>
                         <b:Controls>
                             <b:CheckBox ui:field="posteditOn"></b:CheckBox>
                         </b:Controls>
                     </b:ControlGroup>
-                    
+
                 </b:Fieldset>
 
                 <b:Fieldset>
@@ -50,14 +50,14 @@ Uncomment this for XHTML entities
                             <b:Label type="WARNING">Local file will not be saved across sessions</b:Label>
                         </b:Controls>
                     </b:ControlGroup>
-                    
+
                     <b:ControlGroup>
                         <b:ControlLabel>Autoplay</b:ControlLabel>
                         <b:Controls>
                             <b:CheckBox ui:field="autoplay"></b:CheckBox>
                         </b:Controls>
                     </b:ControlGroup>
-                
+
                 </b:Fieldset>
 
                 <b:Fieldset>
@@ -69,7 +69,7 @@ Uncomment this for XHTML entities
                     </b:FormActions>
                 </b:Fieldset>
             </b:Form>
-            
+
         </my:CustomModal>
     </g:HTMLPanel>
 </ui:UiBinder>

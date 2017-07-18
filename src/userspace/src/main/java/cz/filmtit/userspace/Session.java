@@ -577,7 +577,7 @@ public class Session {
 
         for (USDocumentUser documentUser : documentUsers) {
             if (documentUser.getUserId() == this.getUserDatabaseId()) {
-                docSettings = new DocumentUserSettings(this.getUserDatabaseId(), documentUser.getMoviePath(), documentUser.getPosteditOn(), 
+                docSettings = new DocumentUserSettings(this.getUserDatabaseId(), documentUser.getMoviePath(), documentUser.getPosteditOn(),
                         documentUser.getLocalFile(), documentUser.getAutoplay());
                 break;
             }
@@ -735,7 +735,7 @@ public class Session {
         for (USDocumentUser documentUser : documentUsers) {
 
             if (documentUser.getUserId() == this.getUserDatabaseId()) {
-                userSettings = new DocumentUserSettings(documentUser.getId(), documentUser.getMoviePath(), documentUser.getPosteditOn(), 
+                userSettings = new DocumentUserSettings(documentUser.getId(), documentUser.getMoviePath(), documentUser.getPosteditOn(),
                         documentUser.getLocalFile(), documentUser.getAutoplay());
                 break;
             }

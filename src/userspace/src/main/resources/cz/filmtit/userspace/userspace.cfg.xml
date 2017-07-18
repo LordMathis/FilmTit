@@ -11,7 +11,7 @@
         </property>
         <property name="hibernate.connection.url">
             <!-- jdbc address to the database -->
-            jdbc:postgresql://localhost/filmtit_userspace
+            jdbc:postgresql://localhost/filmtit
         </property>
         <property name="hibernate.connection.username">postgres</property>
         <property name="hibernate.connection.password">postgres</property>
