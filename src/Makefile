@@ -1,6 +1,3 @@
-package:
-	mvn package -Dmaven.test.skip=true
-
 install:
 	mvn clean install -Dmaven.test.skip=true
 

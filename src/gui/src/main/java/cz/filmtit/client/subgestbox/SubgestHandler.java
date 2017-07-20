@@ -68,7 +68,6 @@ public class SubgestHandler implements FocusHandler, KeyDownHandler, KeyUpHandle
         if (event.getSource() instanceof SubgestBox) {
             final SubgestBox subbox = (SubgestBox) event.getSource();
 
-            //Gui.log(LevelLogEnum.Error, this.getClass().getName(), subbox.getTextWithNewlines());
             if (workspace.getLockedSubgestBox() == null) {
 
                 new LockTranslationResult(subbox, workspace);

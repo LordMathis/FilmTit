@@ -571,7 +571,6 @@ public class TranslationWorkspace extends Composite {
                         lockedSubgestBox.getPosteditBox().updateLastText();
                     }
                 } else {
-                    Gui.log(LevelLogEnum.Error, "TranslationWorkspace", "timer run out");
                     new UnlockTranslationResult(lockedSubgestBox, currentWorkspace);
                 }
 
@@ -1207,8 +1206,6 @@ public class TranslationWorkspace extends Composite {
 
     public void searchAndReplace(RegExp searchExp, String replace) {
 
-        Gui.log(LevelLogEnum.Error, "TranslationWorkspace.searchAndReplace", searchExp.toString());
-
         Map<ChunkIndex, TranslationResult> translationResults = currentDocument.getTranslationResults();
 
         Collection<TranslationResult> results = translationResults.values();
@@ -1222,8 +1219,6 @@ public class TranslationWorkspace extends Composite {
 
             if (matchResult.getGroupCount() > 0) {
                 String replacedString = searchExp.replace(result.getUserTranslation(), replace);
-
-                Gui.log(LevelLogEnum.Error, "searchAndReplace", "found " + searchExp.toString() + " : " + result.getUserTranslation() + "\n" + replacedString);
 
                 PosteditPair replacePair = new PosteditPair(result.getUserTranslation(), replacedString);
                 replacePair.setSource(PosteditSource.SEARCHANDREPLACE);

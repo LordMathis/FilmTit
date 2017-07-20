@@ -349,8 +349,6 @@ public class PosteditBox extends RichTextArea implements Comparable<PosteditBox>
                 PosteditPair selected = selectionModel.getSelectedObject();
                 if (selected != null) {
 
-                    Gui.log(LevelLogEnum.Error, "PosteditBox.onSelectionChange", selected.getOriginChunk().getSurfaceForm() + " " + selected.getPosteditedChunk().getSurfaceForm());
-
                     //translationResult.setSelectedTranslationPairID(selected.getId());
                     // copy the selected suggestion into the richtextarea with the annotation highlighting:
                     setHTML(posteditBoxHTML(selected.getPosteditedChunk().getSurfaceForm()));
@@ -379,7 +377,6 @@ public class PosteditBox extends RichTextArea implements Comparable<PosteditBox>
      * @return
      */
     public List<PosteditPair> getSuggestions() {
-        //Gui.log(LevelLogEnum.Error, "PosteditBox.getSuggestions()", String.valueOf(this.translationResult.getPosteditSuggestions().size()));
         return this.translationResult.getPosteditSuggestions();
     }
 

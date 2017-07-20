@@ -246,9 +246,6 @@ public class YoutubeVideoWidget extends Composite implements VideoWidget {
         Long correctTime = null;
 
         for (TranslationResult tr : subset) {
-            if (tr == null) {
-                Gui.log(LevelLogEnum.Error, "YoutubeVideoWidget", "TranslationResult null!");
-            }
 
             long start = (tr.getSourceChunk().getStartTimeLong());
             long end = (tr.getSourceChunk().getEndTimeLong());
