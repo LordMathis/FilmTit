@@ -51,10 +51,10 @@ import cz.filmtit.share.LevelLogEnum;
 
 /**
  * A page providing listing of user documents and the possibility to edit them
- *
+ * @author FilmTit, Matúš Námešný
  */
 public class UserPage extends Composite {
-    
+
     private Integer callLockResult;
 
     private static UserPageUiBinder uiBinder = GWT
@@ -224,7 +224,7 @@ public class UserPage extends Composite {
                 new DownloadDialog(doc);
             }
         });
-        
+
         // share button
         com.google.gwt.user.cellview.client.Column<Document, String> settingsButton = new com.google.gwt.user.cellview.client.Column<Document, String>(buttonCell) {
             @Override
@@ -274,9 +274,9 @@ public class UserPage extends Composite {
     }
 
     void editDocument(Document document) {
-        
+
         Gui.getPageHandler().setDocumentId(document.getId());
-        
+
         Gui.getPageHandler().loadPage(Page.TranslationWorkspace);
     }
 
@@ -298,17 +298,17 @@ public class UserPage extends Composite {
 
     @UiField
     Button btnDisplayCreator;
-    
+
     @UiHandler("btnDisplayCreator")
     void onClick(ClickEvent event) {
         // loading a new DocumentCreator
         Gui.getPageHandler().forgetCurrentDocumentCreator();
         Gui.getPageHandler().loadPage(Page.DocumentCreator);
     }
-    
+
     @UiField
     Button btnAddNewDoc;
-    
+
     @UiHandler("btnAddNewDoc")
     void newDocOnClick(ClickEvent event) {
         new AddDocumentDialog();

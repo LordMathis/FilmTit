@@ -1,4 +1,5 @@
 /*Copyright 2012 FilmTit authors - Karel Bílek, Josef Čech, Joachim Daiber, Jindřich Libovický, Rudolf Rosa, Jan Václ
+Copyright 2017 Matúš Námešný
 
 This file is part of FilmTit.
 
@@ -25,7 +26,7 @@ import cz.filmtit.share.TranslationSource
  * A back off level in a [[cz.filmtit.core.tm.BackoffTranslationMemory]]. On the level, candidates are retrieved
  * using the searcher object, ranked using the ranker object and used if their score is above the threshold value.
  *
- * @author Joachim Daiber
+ * @author Joachim Daiber, Matúš Námešný
  */
 
 class BackoffLevel(val searcher: TranslationPairSearcher, val ranker: Option[TranslationPairRanker], val threshold: Double, val translationType: TranslationSource) {

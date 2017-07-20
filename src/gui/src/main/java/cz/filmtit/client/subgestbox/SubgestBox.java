@@ -1,4 +1,5 @@
 /*Copyright 2012 FilmTit authors - Karel Bílek, Josef Čech, Joachim Daiber, Jindřich Libovický, Rudolf Rosa, Jan Václ
+Copyright 2017 Matúš Námešný
 
 This file is part of FilmTit.
 
@@ -61,6 +62,8 @@ import cz.filmtit.share.annotations.AnnotationType;
  * experience. The behaviour and features mentioned requires a custom event
  * handling, this is provided by a {@link SubgestHandler} instance (common to
  * all the SubgestBoxes within a {@link TranslationWorkspace}).
+ *
+ * @author FilmTit, Matúš Námešný
  */
 public class SubgestBox extends RichTextArea implements Comparable<SubgestBox> {
 

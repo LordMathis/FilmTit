@@ -1,4 +1,5 @@
 /*Copyright 2012 FilmTit authors - Karel Bílek, Josef Čech, Joachim Daiber, Jindřich Libovický, Rudolf Rosa, Jan Václ
+Copyright 2017 Matúš Námešný
 
 This file is part of FilmTit.
 
@@ -48,7 +49,7 @@ import java.util.Iterator;
 /**
  * This page is used to create a new document.
  *
- * @author rur
+ * @author rur, Matúš Námešný
  *
  */
 public class DocumentCreator extends Composite {
@@ -200,7 +201,7 @@ public class DocumentCreator extends Composite {
                 this
         );
 
-        // sets TranslationWorkspace.currentDocument and calls TranslationWorkspace.processText() on success       
+        // sets TranslationWorkspace.currentDocument and calls TranslationWorkspace.processText() on success
     }
 
     @UiField

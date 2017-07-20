@@ -1,4 +1,5 @@
 /*Copyright 2012 FilmTit authors - Karel Bílek, Josef Čech, Joachim Daiber, Jindřich Libovický, Rudolf Rosa, Jan Václ
+Copyright 2017 Matúš Námešný
 
 This file is part of FilmTit.
 
@@ -25,7 +26,7 @@ import java.util.List;
  * @author Jindřich Libovický, Matúš Námešný
  */
 public class DocumentResponse implements Serializable, IsSerializable {
-    
+
     public DocumentResponse(Document document, List<MediaSource> mediaSourceSuggestions, DocumentUserSettings userSettings) {
         this.document = document;
         this.mediaSourceSuggestions = mediaSourceSuggestions;

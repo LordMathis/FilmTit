@@ -1,4 +1,5 @@
 /*Copyright 2012 FilmTit authors - Karel Bílek, Josef Čech, Joachim Daiber, Jindřich Libovický, Rudolf Rosa, Jan Václ
+Copyright 2017 Matúš Námešný
 
 This file is part of FilmTit.
 
@@ -36,7 +37,7 @@ import java.text.Normalizer;
 public class SubtitleDownloadServlet extends HttpServlet {
 
     FilmTitBackendServer backend;
-    
+
     public SubtitleDownloadServlet(FilmTitBackendServer backend) {
         this.backend = backend;
     }
@@ -49,12 +50,12 @@ public class SubtitleDownloadServlet extends HttpServlet {
         String sessionId = request.getParameter("sessionId");
         String typeString = request.getParameter("type");
         String wayString = request.getParameter("way");
-        
+
         if (docId==null || sessionId==null||typeString==null||wayString==null) {
             writeError(response, "no parameter");
             return;
         }
-        
+
         Long docIdLong;
         try {
             docIdLong = new Long(docId);

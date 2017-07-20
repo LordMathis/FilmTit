@@ -1,4 +1,5 @@
 /*Copyright 2012 FilmTit authors - Karel Bílek, Josef Čech, Joachim Daiber, Jindřich Libovický, Rudolf Rosa, Jan Václ
+Copyright 2017 Matúš Námešný
 
 This file is part of FilmTit.
 
@@ -237,11 +238,11 @@ public class TranslationResult implements com.google.gwt.user.client.rpc.IsSeria
      */
     @Override
     public String toString() {
-        return "TranslationResult[" + 
-                sourceChunk.toString() + 
-                "->" + userTranslation + 
-                "(" + selectedTranslationPairID + 
-                ") ->" + posteditedString + 
+        return "TranslationResult[" +
+                sourceChunk.toString() +
+                "->" + userTranslation +
+                "(" + selectedTranslationPairID +
+                ") ->" + posteditedString +
                 "(" + selectedPosteditPairID + ")]";
     }
 

@@ -39,7 +39,7 @@ public enum TranslationSource implements com.google.gwt.user.client.rpc.IsSerial
     MULTIPLE       ("Multiple sources"),
 
     //Unknown:
-    UNKNOWN        ("Unkown source");    
+    UNKNOWN        ("Unkown source");
 
     private String description;
 
@@ -51,7 +51,7 @@ public enum TranslationSource implements com.google.gwt.user.client.rpc.IsSerial
     public String toString() {
         return "TranslationSource[" + description + "]";
     }
-    
+
     public String getDescription() {
     	return description;
     }

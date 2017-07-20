@@ -1,4 +1,5 @@
 /*Copyright 2012 FilmTit authors - Karel Bílek, Josef Čech, Joachim Daiber, Jindřich Libovický, Rudolf Rosa, Jan Václ
+Copyright 2017 Matúš Námešný
 
 This file is part of FilmTit.
 
@@ -30,7 +31,7 @@ import java.util.*;
  * which come from the Translation Memory and/or the Machine Translation System.
  * Shows the results in Translation Workspace on success.
  *
- * @author rur
+ * @author rur, Matúš Námešný
  *
  */
 public class GetTranslationResults extends Callable<List<TranslationResult>> {

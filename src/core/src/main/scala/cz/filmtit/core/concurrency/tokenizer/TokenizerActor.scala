@@ -38,7 +38,7 @@ class TokenizerActor(val tokenizer:Tokenizer) extends Actor {
     case TokenizerRequestPos(chunk) => {
       try {
          sender ! tokenizer.tokenizePos(chunk.getSurfaceForm)
- 
+
       } catch {
         case e: NullPointerException => throw new IOException("Could not run NER.")
       }
@@ -52,7 +52,7 @@ class TokenizerActor(val tokenizer:Tokenizer) extends Actor {
         case e: NullPointerException => throw new IOException("Could not run NER.")
       }
     }
-    
+
   }
 
 

@@ -1,4 +1,5 @@
 /*Copyright 2012 FilmTit authors - Karel Bílek, Josef Čech, Joachim Daiber, Jindřich Libovický, Rudolf Rosa, Jan Václ
+Copyright 2017 Matúš Námešný
 
 This file is part of FilmTit.
 
@@ -24,12 +25,12 @@ import cz.filmtit.share.exceptions.InvalidDocumentIdException;
 
 /**
  * Remove the given document from the list of user's documents.
- * @author rur
+ * @author rur, Matúš Námešný
  *
  */
 public class DeleteDocument extends cz.filmtit.client.Callable<Void> {
 	private long documentId;
-    
+
     @Override
     public String getName() {
         return getNameWithParameters(documentId);
@@ -39,7 +40,7 @@ public class DeleteDocument extends cz.filmtit.client.Callable<Void> {
     public void onSuccessAfterLog(Void o) {
         Gui.getPageHandler().refreshIf(Page.UserPage);
     }
-    
+
     @Override
     public void onFailureAfterLog(Throwable returned) {
     	if (returned instanceof InvalidDocumentIdException) {
@@ -50,21 +51,21 @@ public class DeleteDocument extends cz.filmtit.client.Callable<Void> {
         	super.onFailureAfterLog(returned);
     	}
     }
-    
+
     @Override
     protected void onFinalError(String message) {
         Gui.getPageHandler().refreshIf(Page.UserPage);
     	super.onFinalError(message);
     }
-     
+
     /**
      * Remove the given document from the list of user's documents.
      */
     public DeleteDocument(long id) {
         super();
-        
+
         documentId = id;
-        
+
         enqueue();
     }
 
@@ -73,4 +74,3 @@ public class DeleteDocument extends cz.filmtit.client.Callable<Void> {
     }
 
 }
-

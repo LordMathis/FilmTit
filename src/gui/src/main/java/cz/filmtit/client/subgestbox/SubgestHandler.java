@@ -1,4 +1,5 @@
 /*Copyright 2012 FilmTit authors - Karel Bílek, Josef Čech, Joachim Daiber, Jindřich Libovický, Rudolf Rosa, Jan Václ
+Copyright 2017 Matúš Námešný
 
 This file is part of FilmTit.
 
@@ -32,6 +33,7 @@ import cz.filmtit.share.LevelLogEnum;
 /**
  * Universal event-handler for all {@link SubgestBox} instances in one
  * {@link TranslationWorkspace} instance.
+ * @author FilmTit, Matúš Námešný
  */
 public class SubgestHandler implements FocusHandler, KeyDownHandler, KeyUpHandler, ChangeHandler {
 

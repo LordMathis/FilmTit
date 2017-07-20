@@ -1,4 +1,5 @@
 /*Copyright 2012 FilmTit authors - Karel Bílek, Josef Čech, Joachim Daiber, Jindřich Libovický, Rudolf Rosa, Jan Václ
+Copyright 2017
 
 This file is part of FilmTit.
 
@@ -39,6 +40,7 @@ import cz.filmtit.share.MediaSource;
 
 /**
  * Lets the user select the intended media source from the list of suggestions.
+ * @author FilmTit, Matúš Námešný
  */
 public class MediaSelector extends Dialog {
     private List<MediaSource> suggestions;
@@ -84,7 +86,7 @@ public class MediaSelector extends Dialog {
      * To be called on submit.
      */
     private ReceivesSelectSource receiver;
-    
+
     /**
      * Lets the user select the intended media source from the list of suggestions.
      * @param suggestions MediaSource suggestions.
@@ -95,7 +97,7 @@ public class MediaSelector extends Dialog {
         listbox = new CellList<MediaSource>(new MediaCell());
 
         initWidget(uiBinder.createAndBindUi(this));
-        
+
         listbox.addStyleName("mediasource_selector");
         listbox.setRowData(0, suggestions);
         listbox.setRowCount(suggestions.size());
@@ -108,7 +110,7 @@ public class MediaSelector extends Dialog {
                 selected = selectionModel.getSelectedObject();
             }
         });
-        
+
         this.suggestions = suggestions;
         this.receiver = receiver;
     }
@@ -122,13 +124,13 @@ public class MediaSelector extends Dialog {
 
     @UiField
     Button submitButton;
-    
+
     @UiHandler("submitButton")
     void submitButtonClicked(ClickEvent e) {
     	close();
     	receiver.selectSource(selected);
     }
-    
+
     @Override
     protected void onHide() {
     	receiver.selectSource(null);

@@ -1,4 +1,5 @@
 /*Copyright 2012 FilmTit authors - Karel Bílek, Josef Čech, Joachim Daiber, Jindřich Libovický, Rudolf Rosa, Jan Václ
+Copyright 2017 Matúš Námešný
 
 This file is part of FilmTit.
 
@@ -27,7 +28,7 @@ import org.hibernate.Query;
  * Represents a user of the application in the user space. It is a wrapper of
  * the User class from the share namespace.
  *
- * @author Jindřich Libovický
+ * @author Jindřich Libovický, Matúš Námešný
  */
 public class USUser extends DatabaseObject {
 
@@ -141,7 +142,7 @@ public class USUser extends DatabaseObject {
 
         Query query = session.createQuery("SELECT d FROM USDocument d RIGHT JOIN d.documentUsers DocumentUsers WHERE DocumentUsers.userId = :userId");
         query.setParameter("userId", getDatabaseId());
-        
+
         List list = query.list();
 
         for (Object o : list) {
@@ -264,7 +265,7 @@ public class USUser extends DatabaseObject {
     public void setPermanentlyLoggedId(boolean permanentlyLoggedId) {
         getUser().setPermanentlyLoggedIn(permanentlyLoggedId);
     }
-    
+
     /**
      * Gets the maximum number of suggestions user want to receive during a
      * document editing. (Calls the wrapped object.)

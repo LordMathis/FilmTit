@@ -46,6 +46,7 @@ import cz.filmtit.share.User;
 /**
  * Enables the user to change several settings, such as their password or the
  * maximum number of translation suggestions to show
+ * @author FilmTit, Matúš Námešný
  */
 public class Settings extends Composite implements ReceivesSettings {
 

@@ -1,4 +1,5 @@
 /*Copyright 2012 FilmTit authors - Karel Bílek, Josef Čech, Joachim Daiber, Jindřich Libovický, Rudolf Rosa, Jan Václ
+Copyright 2017 Matúš Námešný
 
 This file is part of FilmTit.
 
@@ -30,7 +31,7 @@ import cz.filmtit.share.*;
  * which then can be used to improve future suggestions. If in Offline Mode, the
  * user translation is not sent to User Space but is saved in the Local Storage.
  *
- * @author rur, matus n
+ * @author rur, Matúš Námešný
  *
  */
 public class SetUserTranslation extends Callable<Void> {
@@ -82,7 +83,7 @@ public class SetUserTranslation extends Callable<Void> {
                 new LockTranslationResult(toUnlockBox, workspace, timeChangeHandler);
             }
         }
-        
+
         new ReloadTranslationResults(workspace.getCurrentDocument().getId(), workspace);
 
     }

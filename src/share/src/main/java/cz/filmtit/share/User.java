@@ -1,4 +1,5 @@
 /*Copyright 2012 FilmTit authors - Karel Bílek, Josef Čech, Joachim Daiber, Jindřich Libovický, Rudolf Rosa, Jan Václ
+Copyright 2017 Matúš Námešný
 
 This file is part of FilmTit.
 
@@ -27,7 +28,7 @@ import java.util.List;
  * password are User Space specific and therefore are not part of the shared
  * class.
  *
- * @author Jindřich Libovický
+ * @author Jindřich Libovický, Matúš Námešný
  */
 public class User implements Serializable, IsSerializable {
 

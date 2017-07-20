@@ -1,4 +1,5 @@
 /*Copyright 2012 FilmTit authors - Karel Bílek, Josef Čech, Joachim Daiber, Jindřich Libovický, Rudolf Rosa, Jan Václ
+Copyright 2017 Matúš Námešný
 
 This file is part of FilmTit.
 
@@ -25,7 +26,7 @@ import java.util.List;
 /**
  * Represents a chunk with its timing.
  *
- * @author Karel Bílek, Jaochim Daiber
+ * @author Karel Bílek, Jaochim Daiber, Matúš Námešný
  */
 public class TimedChunk extends Chunk implements com.google.gwt.user.client.rpc.IsSerializable,
         Serializable, Comparable<TimedChunk> {
@@ -66,7 +67,7 @@ public class TimedChunk extends Chunk implements com.google.gwt.user.client.rpc.
      * Default constructor for GWT.
      */
     public TimedChunk() {
-        // nothing;    	
+        // nothing;
     }
 
     /**
